@@ -25,7 +25,7 @@ public class gcScheduler implements Job {
 	protected final gcLogger log;
 
 	protected static Scheduler scheduler = null;
-	protected static Boolean Paused = true;
+	protected static Boolean Paused = false;
 	private static boolean Started = false;
 
 	// instance / task maps
@@ -89,7 +89,7 @@ public class gcScheduler implements Job {
 
 
 	// pause
-	public static void PauseAll(boolean Paused) {
+	public static void pauseAll(boolean Paused) {
 		synchronized(gcScheduler.Paused) {
 			gcScheduler.Paused = Paused;
 			try {
@@ -105,8 +105,8 @@ public class gcScheduler implements Job {
 			}
 		}
 	}
-	public static void PauseAll() throws SchedulerException {
-		PauseAll(!Paused);
+	public static void pauseAll() {
+		pauseAll(!Paused);
 	}
 
 

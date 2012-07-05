@@ -6,6 +6,7 @@ import java.util.List;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
+import com.growcontrol.gcServer.commands.gcCommand;
 import com.growcontrol.gcServer.devices.gcServerDeviceLoader;
 import com.growcontrol.gcServer.logger.gcLogger;
 import com.growcontrol.gcServer.ntp.gcClock;
@@ -22,7 +23,6 @@ public class gcServer {
 	public static final gcLogger log = gcLogger.getLogger(null);
 
 	// server modules
-	public static final DefaultCommands defaultCommands = new DefaultCommands();
 	public static final gcServerPluginLoader pluginLoader = new gcServerPluginLoader();
 	public static final gcServerDeviceLoader deviceLoader = new gcServerDeviceLoader();
 
@@ -131,7 +131,6 @@ System.exit(0);
 
 	public static void processCommand(String line) {
 		if(line == null) return;
-if(line.equals("stop"))System.exit(0);
 		line = line.trim();
 		String command;
 		String[] args;
@@ -150,10 +149,17 @@ if(line.equals("stop"))System.exit(0);
 			args = new String[0];
 		}
 //		// try plugins first
-//		if(gcPluginLoader.onCommand(command, args, args.length)) return;
-//		// try default commands
-//		if(defaultCommands.hasCommand(command))
-//			if(gcDefaultCommands.onCommand(command, args)) return;
+//		if(gcPluginLoader.onCommand(command, args, args.length))
+//			return;
+		// try default internal commands
+		if(DefaultCommands.commands.hasCommand(command))
+			if(DefaultCommands.onCommand(DefaultCommands.commands.getCommand(command), args))
+				return;
+		gcCommand com = DefaultCommands.commands.getCommandAlias(command);
+		if(com != null)
+			if(DefaultCommands.onCommand(com, args))
+				return;
+		// command not found
 		for(String arg : args) command += " "+arg;
 		log.warning("Command not processed! "+command);
 	}
