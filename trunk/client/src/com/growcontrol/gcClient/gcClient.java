@@ -6,7 +6,7 @@ public class gcClient {
 
 
 	public static void main(String[] args) {
-		if(client != null) return;
+		if(client != null) throw new UnsupportedOperationException("Cannot redefine singleton gcClient; already running");
 		for(String arg : args) {
 			// version
 			if(arg.equalsIgnoreCase("version")) {
