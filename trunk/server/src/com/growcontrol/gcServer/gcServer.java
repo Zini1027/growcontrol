@@ -1,7 +1,10 @@
 package com.growcontrol.gcServer;
 
+import java.io.File;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
@@ -10,12 +13,15 @@ import com.growcontrol.gcServer.commands.gcCommand;
 import com.growcontrol.gcServer.devices.gcServerDeviceLoader;
 import com.growcontrol.gcServer.logger.gcLogger;
 import com.growcontrol.gcServer.ntp.gcClock;
+import com.growcontrol.gcServer.rxtx.Serial;
 import com.growcontrol.gcServer.scheduler.gcScheduler;
 import com.growcontrol.gcServer.scheduler.gcTicker;
 import com.growcontrol.gcServer.serverPlugin.gcServerPluginLoader;
 
-public class gcServer {
+public class gcServer extends Thread {
 	public static final String version = "3.0.1";
+	public static final String prompt = ">";
+
 	private static gcServer server = null;
 	private static boolean stopping = false;
 
@@ -48,7 +54,6 @@ public class gcServer {
 		}
 		// start gc server
 		server = new gcServer();
-		server.consoleLoop();
 	}
 
 
@@ -63,13 +68,15 @@ System.exit(0);
 			ASCIIHeader();
 		}
 		log.info("GrowControl "+version+" Server is starting..");
-
+		addLibraryPath();
 
 //		// configs
 //		public ConfigMain configMain = null;
 //		// load config
 //		configMain = new ConfigMain(new gcConfig("config.yml"));
 
+		// start jline console
+		if(!noconsole) this.start();
 
 		// query time server
 		gcClock.setUsingNTP(true);
@@ -80,23 +87,31 @@ System.exit(0);
 		ticker = new gcTicker();
 		sched.newTask("gcTicker", ticker, gcScheduler.newTriggerSeconds(1, true));
 
-//		// load plugins
-//		gcServerPluginLoader.LoadPlugins();
+		// load plugins
+		pluginLoader.LoadPlugins();
 
 //		// load devices
-//		deviceLoader.loadDevices(Arrays.asList(new String[] {"Lamp"}));
+//		deviceLoader.LoadDevices(Arrays.asList(new String[] {"Lamp"}));
 
 		// start schedulers
 		log.info("Starting schedulers..");
 		gcScheduler.Start();
+
+//TODO: remove this
+log.severe("Listing Com Ports:");
+for(Map.Entry<String, String> entry : Serial.listPorts().entrySet())
+log.severe(entry.getKey()+" - "+entry.getValue());
 	}
 
 
 	public static void Shutdown() {
 		log.info("Stopping GC Server..");
 		stopping = true;
+		// schedulers
 		gcScheduler.Shutdown();
-//		gcPluginLoader.unloadPlugins();
+		// plugins
+		pluginLoader.UnloadPlugins();
+		// loggers
 		AnsiConsole.systemUninstall();
 	}
 	public static void Reload() {
@@ -107,7 +122,7 @@ System.exit(0);
 
 
 	// console loop
-	private void consoleLoop() {
+	public void run() {
 		if(noconsole) return;
 		//TODO: password login
 		// If we input the special word then we will mask
@@ -132,12 +147,12 @@ System.exit(0);
 	public static void processCommand(String line) {
 		if(line == null) return;
 		line = line.trim();
-		String command;
+		String commandStr;
 		String[] args;
 		// get args list
 		if(line.contains(" ")) {
 			int index = line.indexOf(" ");
-			command = line.substring(0, index);
+			commandStr = line.substring(0, index);
 			List<String> argsList = new ArrayList<String>();
 			for(String arg : line.substring(index+1).split(" "))
 				if(!arg.isEmpty())
@@ -145,28 +160,58 @@ System.exit(0);
 			args = (String[]) argsList.toArray(new String[argsList.size()]);
 			argsList = null;
 		} else {
-			command = new String(line);
+			commandStr = new String(line);
 			args = new String[0];
 		}
-//		// try plugins first
-//		if(gcPluginLoader.onCommand(command, args, args.length))
-//			return;
+		// try plugins first
+		if(gcServerPluginLoader.doCommand(commandStr, args)) return;
 		// try default internal commands
-		if(DefaultCommands.commands.hasCommand(command))
-			if(DefaultCommands.onCommand(DefaultCommands.commands.getCommand(command), args))
-				return;
-		gcCommand com = DefaultCommands.commands.getCommandAlias(command);
-		if(com != null)
-			if(DefaultCommands.onCommand(com, args))
+		gcCommand command = DefaultCommands.commands.getCommandOrAlias(commandStr);
+		if(command != null)
+			if(DefaultCommands.onCommand(command, args))
 				return;
 		// command not found
-		for(String arg : args) command += " "+arg;
-		log.warning("Command not processed! "+command);
+		for(String arg : args) commandStr += " "+arg;
+		log.warning("Command not processed! "+commandStr);
 	}
 
 
 	public static boolean isConsoleEnabled() {
 		return !noconsole;
+	}
+
+
+	// add lib to paths
+	private static void addLibraryPath() {
+		// get lib path
+		String libPath = new File("lib").getAbsolutePath();
+		if(libPath == null || libPath.isEmpty()) return;
+		// get current paths
+		String currentPaths = System.getProperty("java.library.path");
+		if(currentPaths == null) return;
+		log.debug("Adding lib path");
+		// set library paths
+		if(currentPaths.isEmpty()) {
+			System.setProperty("java.library.path", libPath);
+		} else {
+			if(currentPaths.contains(libPath)) return;
+			System.setProperty("java.library.path", currentPaths+(currentPaths.contains(";")?";":":")+libPath);
+		}
+		// force library paths to refresh
+		try {
+			Field fieldSysPath;
+			fieldSysPath = ClassLoader.class.getDeclaredField("sys_paths");
+			fieldSysPath.setAccessible(true);
+			fieldSysPath.set(null, null);
+		} catch (SecurityException e) {
+			log.exception(e);
+		} catch (NoSuchFieldException e) {
+			log.exception(e);
+		} catch (IllegalArgumentException e) {
+			log.exception(e);
+		} catch (IllegalAccessException e) {
+			log.exception(e);
+		}
 	}
 
 

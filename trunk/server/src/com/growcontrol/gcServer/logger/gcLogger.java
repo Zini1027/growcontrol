@@ -10,7 +10,6 @@ import org.fusesource.jansi.AnsiConsole;
 import com.growcontrol.gcServer.gcServer;
 
 public class gcLogger {
-	private static final String prompt = "GC>";
 
 	protected String postfix = null;
 
@@ -54,7 +53,7 @@ public class gcLogger {
 				reader = new jline.ConsoleReader();
 				reader.setBellEnabled(false);
 				reader.setUseHistory(true);
-				reader.setDefaultPrompt(prompt);
+				reader.setDefaultPrompt(gcServer.prompt);
 				//reader.setDebug(new PrintWriter(new FileWriter("writer.debug", true)));
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -73,7 +72,7 @@ public class gcLogger {
 		if(reader == null) return null;
 		String line = null;
 		try {
-			line = reader.readLine(prompt);
+			line = reader.readLine();
 		} catch (IOException e) {
 			gcServer.log.exception(e);
 		}
@@ -136,6 +135,8 @@ public class gcLogger {
 
 	// print to handlers
 	public void print(String msg, LEVEL level) {
+//TODO: this hides extra quarts logs
+if(postfix!= null && postfix.equalsIgnoreCase("quartz"))return;
 		gcLogRecord logRecord = new gcLogRecord(msg, level, postfix);
 		for(gcLoggerHandler handler : logHandlers)
 			handler.print(logRecord);

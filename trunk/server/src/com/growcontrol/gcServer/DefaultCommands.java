@@ -3,6 +3,7 @@ package com.growcontrol.gcServer;
 import com.growcontrol.gcServer.commands.gcCommand;
 import com.growcontrol.gcServer.commands.gcCommandsHolder;
 import com.growcontrol.gcServer.scheduler.gcScheduler;
+import com.growcontrol.gcServer.serverPlugin.gcServerPluginLoader;
 
 public class DefaultCommands {
 
@@ -25,9 +26,7 @@ public class DefaultCommands {
 		commands.addCommand("version");
 		commands.addCommand("say")
 		.addAlias("broadcast");
-		// lists
-		commands.addCommand("plugins");
-		commands.addCommand("devices");
+		commands.addCommand("list");
 		// input / output
 		commands.addCommand("set");
 		commands.addCommand("get");
@@ -79,7 +78,26 @@ public class DefaultCommands {
 			return true;
 		}
 
-		// list plugins
+		// list plugins/devices/inputs/outputs
+		if(command.equals("list")) {
+			if(args.length >= 1) {
+				if(args[0].equalsIgnoreCase("plugins")) {
+					gcServerPluginLoader.listPlugins();
+					return true;
+				} else if(args[0].equalsIgnoreCase("devices")) {
+					listDevices();
+					return true;
+				} else if(args[0].equalsIgnoreCase("outputs")) {
+					listOutputs();
+					return true;
+				} else if(args[0].equalsIgnoreCase("inputs")) {
+					listInputs();
+					return true;
+				}
+			}
+			gcServer.log.info("Usage: "+command.getUsage());
+			return true;
+		}
 		if(command.equals("plugins")) {
 			//TODO:
 			gcServer.log.warning("command not yet implemented");
@@ -96,9 +114,9 @@ public class DefaultCommands {
 
 		// set input / output
 		if(command.equals("set")) {
-			//TODO:
-			gcServer.log.warning("command not yet implemented");
-//			return gcServer.deviceLoader.onCommand(command, args, args.length);
+			if(gcServerPluginLoader.doOutput(args)) return true;
+			String msg = ""; for(String arg : args) msg += arg;
+			gcServer.log.warning("Failed to find an output plugin! "+msg);
 			return true;
 		}
 		// get input / output
@@ -123,6 +141,18 @@ public class DefaultCommands {
 
 		return false;
 	}
+
+
+
+	private static void listDevices() {
+	}
+	private static void listOutputs() {
+	}
+	private static void listInputs() {
+	}
+
+
+
 
 
 //	if(command.equalsIgnoreCase("threads")) {
