@@ -150,6 +150,8 @@ log.severe("unique task name generation not finished!!!");
 	}
 
 
+	// milliseconds trigger
+	//TODO:
 	// seconds trigger
 	public static SimpleScheduleBuilder newTriggerSeconds(double seconds, int repeat) {
 		SimpleScheduleBuilder sched = SimpleScheduleBuilder.simpleSchedule()

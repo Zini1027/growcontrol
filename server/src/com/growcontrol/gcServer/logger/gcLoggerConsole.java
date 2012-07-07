@@ -30,8 +30,9 @@ private boolean strip = false;
 			reader.printString(ConsoleReader.RESET_LINE+"");
 			reader.printString(logRecord.toString(strip));
 			reader.printNewline();
-			reader.drawLine();
-//			reader.redrawLine();
+			reader.flushConsole();
+//			reader.drawLine();
+			reader.redrawLine();
 //			try {
 //				reader.drawLine();
 //			} catch (Throwable e) {

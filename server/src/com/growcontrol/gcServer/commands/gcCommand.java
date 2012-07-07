@@ -26,6 +26,15 @@ public class gcCommand {
 	}
 
 
+	// command description
+
+
+	// command usage
+	public String getUsage() {
+		return usageMsg;
+	}
+
+
 	// aliases
 	public gcCommand addAlias(String alias) {
 		if(alias != null) aliases.add(alias);

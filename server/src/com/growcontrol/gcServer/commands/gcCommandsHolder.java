@@ -6,7 +6,7 @@ import com.growcontrol.gcServer.gcServer;
 
 public class gcCommandsHolder {
 
-	private static final HashMap<String, gcCommand> commands = new HashMap<String, gcCommand>();
+	private HashMap<String, gcCommand> commands = new HashMap<String, gcCommand>();
 
 
 	// add a command
@@ -23,27 +23,18 @@ public class gcCommandsHolder {
 	}
 
 
-	// has command
-	public boolean hasCommand(String command) {
-		return commands.containsKey(command);
-	}
-	@deprecated
-	public boolean hasCommandAlias(String command) {
-		return (getCommandAlias(command) != null);
-	}
-
-
-	// get command
-	public gcCommand getCommand(String command) {
-		if(!hasCommand(command)) return null;
-		return commands.get(command);
-	}
-	public gcCommand getCommandAlias(String command) {
-		for(gcCommand com : commands.values())
-			if(com.hasAlias(command))
-				return com;
+	// get command by name or alias
+	public gcCommand getCommandOrAlias(String commandStr) {
+		if(commands.containsKey(commandStr))
+			return commands.get(commandStr);
+		for(gcCommand command : commands.values())
+			if(command.hasAlias(commandStr))
+				return command;
 		return null;
 	}
+//	public boolean hasCommandOrAlias(String commandStr) {
+//		return (getCommandOrAlias(commandStr) == null);
+//	}
 
 
 }
