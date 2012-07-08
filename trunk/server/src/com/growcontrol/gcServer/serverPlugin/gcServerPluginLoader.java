@@ -17,6 +17,7 @@ import java.util.jar.JarInputStream;
 import com.growcontrol.gcServer.gcServer;
 import com.growcontrol.gcServer.commands.gcCommand;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListenerCommand;
+import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListenerDevice;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListenerInput;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListenerOutput;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListenerTick;
@@ -31,6 +32,7 @@ public class gcServerPluginLoader {
 	protected static HashMap<String, gcServerPluginListenerTick>	listenersTick		= new HashMap<String, gcServerPluginListenerTick>();
 	protected static HashMap<String, gcServerPluginListenerOutput>	listenersOutput		= new HashMap<String, gcServerPluginListenerOutput>();
 //	protected static HashMap<String, gcServerPluginListenerInput>	listenersInput		= new HashMap<String, gcServerPluginListenerInput>();
+	protected static HashMap<String, gcServerPluginListenerDevice>	listenersDevice		= new HashMap<String, gcServerPluginListenerDevice>();
 
 
 	// load plugins
@@ -197,6 +199,10 @@ public class gcServerPluginLoader {
 	}
 	public static void registerListenerInput(String className, gcServerPluginListenerInput listener) {
 //TODO:
+	}
+	public static void registerListenerDevice(String className, gcServerPluginListenerDevice listener) {
+		if(listener == null) return;
+		listenersDevice.put(className, listener);
 	}
 
 
