@@ -4,6 +4,7 @@ import com.growcontrol.gcServer.gcServer;
 import com.growcontrol.gcServer.commands.gcCommand;
 import com.growcontrol.gcServer.logger.gcLogger;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListenerCommand;
+import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListenerDevice;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListenerInput;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListenerOutput;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListenerTick;
@@ -37,15 +38,23 @@ public abstract class gcServerPlugin {
 	// register listeners
 	protected void registerListenerCommand(gcServerPluginListenerCommand listener) {
 		gcServerPluginLoader.registerListenerCommand(pluginHolder.className, listener);
+		getLogger().debug("Registered command listener");
 	}
 	protected void registerListenerTick(gcServerPluginListenerTick listener) {
 		gcServerPluginLoader.registerListenerTick(pluginHolder.className, listener);
+		getLogger().debug("Registered tick listener");
 	}
 	protected void registerListenerOutput(gcServerPluginListenerOutput listener) {
 		gcServerPluginLoader.registerListenerOutput(pluginHolder.className, listener);
+		getLogger().debug("Registered output listener");
 	}
 	protected void registerListenerInput(gcServerPluginListenerInput listener) {
 		gcServerPluginLoader.registerListenerInput(pluginHolder.className, listener);
+		getLogger().debug("Registered input listener");
+	}
+	protected void registerListenerDevice(gcServerPluginListenerDevice listener) {
+		gcServerPluginLoader.registerListenerDevice(pluginHolder.className, listener);
+		getLogger().debug("Registered device listener");
 	}
 
 
