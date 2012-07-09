@@ -119,6 +119,21 @@ public class gcLogger {
 	}
 
 
+	// set custom prompt
+	public static void setPrompt(String newPrompt) {
+		try {
+			if(newPrompt == null)
+				reader.setDefaultPrompt(gcServer.prompt);
+			else
+				reader.setDefaultPrompt(newPrompt);
+			reader.redrawLine();
+			reader.flushConsole();
+		} catch (IOException e) {
+			gcServer.log.exception(e);
+		}
+	}
+
+
 	// stack trace
 	public void exception(Throwable e) {
 		if(e == null) return;
