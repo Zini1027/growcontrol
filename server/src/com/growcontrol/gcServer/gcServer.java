@@ -4,7 +4,6 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
@@ -13,7 +12,6 @@ import com.growcontrol.gcServer.commands.gcCommand;
 import com.growcontrol.gcServer.devices.gcServerDeviceLoader;
 import com.growcontrol.gcServer.logger.gcLogger;
 import com.growcontrol.gcServer.ntp.gcClock;
-import com.growcontrol.gcServer.rxtx.Serial;
 import com.growcontrol.gcServer.scheduler.gcScheduler;
 import com.growcontrol.gcServer.scheduler.gcTicker;
 import com.growcontrol.gcServer.serverPlugin.gcServerPluginLoader;
@@ -98,9 +96,9 @@ System.exit(0);
 		gcScheduler.Start();
 
 //TODO: remove this
-log.severe("Listing Com Ports:");
-for(Map.Entry<String, String> entry : Serial.listPorts().entrySet())
-log.severe(entry.getKey()+" - "+entry.getValue());
+//log.severe("Listing Com Ports:");
+//for(Map.Entry<String, String> entry : Serial.listPorts().entrySet())
+//log.severe(entry.getKey()+" - "+entry.getValue());
 	}
 
 
@@ -210,6 +208,16 @@ log.severe(entry.getKey()+" - "+entry.getValue());
 		} catch (IllegalArgumentException e) {
 			log.exception(e);
 		} catch (IllegalAccessException e) {
+			log.exception(e);
+		}
+	}
+
+
+	// sleep thread
+	public static void Sleep(long millis) {
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException e) {
 			log.exception(e);
 		}
 	}

@@ -112,6 +112,7 @@ public class gcServerPluginLoader {
 	public void UnloadPlugins() {
 		for(gcServerPluginHolder plugin : plugins.values()) {
 			gcServerPlugin.getLogger(plugin.pluginName).info("Stopping plugin..");
+			plugin.enabled = false;
 			plugin.doDisable();
 		}
 		plugins.clear();
