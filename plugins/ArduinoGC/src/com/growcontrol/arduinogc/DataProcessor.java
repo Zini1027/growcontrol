@@ -3,10 +3,10 @@ package com.growcontrol.arduinogc;
 public class DataProcessor {
 
 
-	public static void ProcessData(String data) {
-		ProcessLine(data);
+	public static void processData(String data) {
+		processLine(data);
 	}
-	private static void ProcessLine(String line) {
+	private static void processLine(String line) {
 	}
 
 

@@ -1,9 +1,10 @@
 package com.growcontrol.arduinogc.interfaces;
 
-public interface ArduinoInterface {
+public interface interfaceArduino {
 
 
 	public boolean isReady();
+	public void Close();
 
 
 }
