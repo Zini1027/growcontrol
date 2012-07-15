@@ -114,8 +114,12 @@ public class DefaultCommands {
 
 		// set input / output
 		if(command.equals("set")) {
-			if(gcServerPluginLoader.doOutput(args)) return true;
-			String msg = ""; for(String arg : args) msg += arg;
+			if(gcServerPluginLoader.doOutput(args)) {
+				String msg = ""; for(String arg : args) msg += arg+" ";
+				gcServer.log.debug("set> "+msg);
+				return true;
+			}
+			String msg = ""; for(String arg : args) msg += arg+" ";
 			gcServer.log.warning("Failed to find an output plugin! "+msg);
 			return true;
 		}

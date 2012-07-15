@@ -149,7 +149,7 @@ public class gcLogger {
 
 
 	// print to handlers
-	public void print(String msg, LEVEL level) {
+	public synchronized void print(String msg, LEVEL level) {
 //TODO: this hides extra quarts logs
 if(postfix!= null && postfix.equalsIgnoreCase("quartz"))return;
 		gcLogRecord logRecord = new gcLogRecord(msg, level, postfix);

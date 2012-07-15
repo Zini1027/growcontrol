@@ -29,10 +29,14 @@ public class gcServer extends Thread {
 	// server modules
 	public static final gcServerPluginLoader pluginLoader = new gcServerPluginLoader();
 	public static final gcServerDeviceLoader deviceLoader = new gcServerDeviceLoader();
+	public static ServerConfig config = null;
 
 	// schedulers
 	public static gcScheduler sched = null;
 	private static gcTicker ticker = null;
+
+	// rooms
+	List<String> rooms = null;
 
 	// runtime args
 	private static boolean noconsole = false;
@@ -66,12 +70,13 @@ System.exit(0);
 			ASCIIHeader();
 		}
 		log.info("GrowControl "+version+" Server is starting..");
-		addLibraryPath();
+		addLibraryPath("lib");
 
-//		// configs
-//		public ConfigMain configMain = null;
-//		// load config
-//		configMain = new ConfigMain(new gcConfig("config.yml"));
+		// load configs
+		config = new ServerConfig();
+		if(config==null || config.config==null) {
+			log.severe("Failed to load config.yml");
+		}
 
 		// start jline console
 		if(!noconsole) this.start();
@@ -79,6 +84,11 @@ System.exit(0);
 		// query time server
 		gcClock.setUsingNTP(true);
 		gcClock.updateNTP_Blocking();
+
+		// rooms
+		rooms = config.getRooms();
+		if(rooms == null) rooms = new ArrayList<String>();
+		log.info("Loaded "+Integer.toString(rooms.size())+" rooms");
 
 		// load scheduler paused
 		sched = gcScheduler.getScheduler("gcServer");
@@ -180,9 +190,11 @@ System.exit(0);
 
 
 	// add lib to paths
-	private static void addLibraryPath() {
+	private static void addLibraryPath(String libDir) {
 		// get lib path
-		String libPath = new File("lib").getAbsolutePath();
+		File file = new File(libDir);
+		if(file==null || !file.exists() || !file.isDirectory()) return;
+		String libPath = file.getAbsolutePath();
 		if(libPath == null || libPath.isEmpty()) return;
 		// get current paths
 		String currentPaths = System.getProperty("java.library.path");
