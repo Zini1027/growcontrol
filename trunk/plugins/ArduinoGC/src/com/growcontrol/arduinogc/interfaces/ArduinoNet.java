@@ -9,12 +9,9 @@ import java.net.UnknownHostException;
 
 import com.growcontrol.arduinogc.ArduinoGC;
 import com.growcontrol.arduinogc.DataProcessor;
-import com.growcontrol.arduinogc.msgQueue;
 import com.growcontrol.gcServer.gcServer;
 
-public class ArduinoNet extends Thread implements interfaceArduino {
-	private static final int THREAD_HEARTBEAT = 50;
-	private static final int THREAD_WAIT = 100;
+public class ArduinoNet extends ArduinoInterface {
 
 	protected final String host;
 	protected final int port;
@@ -28,13 +25,8 @@ public class ArduinoNet extends Thread implements interfaceArduino {
 	private String bufferIn = "";
 	private String bufferOut = "";
 
-	protected msgQueue queue = new msgQueue();
-	private boolean ready = false;
-	protected final ArduinoGC plugin;
 
-
-	public ArduinoNet(ArduinoGC plugin, String host, int port) {
-		this.plugin = plugin;
+	public ArduinoNet(String host, int port) {
 		if(host == null || host.isEmpty()) {
 			ArduinoGC.log.severe("Invalid host; not specified");
 			this.host = null; this.port = 0;
@@ -47,23 +39,23 @@ public class ArduinoNet extends Thread implements interfaceArduino {
 		}
 		this.host = host;
 		this.port = port;
+	}
+
+
+	// start / stop interface
+	public void StartInterface() {
 		// initialize arduino
 		queue.sendRawCommand("reset");
-		this.start();
+		super.StartInterface();
 	}
-	public void Close() {
-		reset();
-	}
-	// arduino is ready
-	@Override
-	public boolean isReady() {
-		return ready;
+	public void StopInterface() {
+		super.StopInterface();
 	}
 
 
 	// communication thread
 	public void run() {
-		while(plugin.isEnabled()) {
+		while(!stopping) {
 			// send from queue
 			sendMessages();
 			// check for incoming data
@@ -125,11 +117,11 @@ public class ArduinoNet extends Thread implements interfaceArduino {
 			ArduinoGC.log.exception(e);
 		}
 		ArduinoGC.log.debug("Waiting for reply..");
-		// sleep one heartbeet
+		// sleep one heartbeat
 		gcServer.Sleep(THREAD_HEARTBEAT);
 		int timeout = 2000;
 		while(client!=null && in!=null && client.isConnected()
-				&& plugin.isEnabled() && timeout>=0) {
+				&& !stopping && timeout>=0) {
 			// check got data
 			if(checkAvailable()) timeout = 100;
 			timeout -= THREAD_HEARTBEAT;

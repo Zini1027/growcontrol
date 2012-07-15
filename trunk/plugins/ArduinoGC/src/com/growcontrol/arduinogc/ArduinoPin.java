@@ -3,10 +3,10 @@ package com.growcontrol.arduinogc;
 
 public class ArduinoPin {
 
-
 	public int pinNum = 0;
 	public PinMode pinMode = PinMode.disabled;
 	public int pinState = 0;
+
 
 	public static enum PinMode {
 		disabled,

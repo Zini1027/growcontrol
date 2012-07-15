@@ -16,9 +16,7 @@ import com.growcontrol.arduinogc.DataProcessor;
 import com.growcontrol.arduinogc.msgQueue;
 import com.growcontrol.gcServer.gcServer;
 
-public class ArduinoUSB extends Thread implements interfaceArduino {
-	private static final int THREAD_HEARTBEAT = 50;
-	private static final int THREAD_WAIT = 100;
+public class ArduinoUSB extends ArduinoInterface {
 
 	protected final String comPort;
 
@@ -32,38 +30,32 @@ public class ArduinoUSB extends Thread implements interfaceArduino {
 	private String bufferOut = "";
 
 	protected msgQueue queue = new msgQueue();
-	private boolean ready = false;
-	protected final ArduinoGC plugin;
 
 
-	public ArduinoUSB(ArduinoGC plugin, String comPort) {
-		this.plugin = plugin;
+	public ArduinoUSB(String comPort) {
 		if(comPort == null || comPort.isEmpty()) {
 			ArduinoGC.log.severe("Invalid com port; not specified");
 			this.comPort = null;
 			return;
 		}
 		this.comPort = comPort;
+	}
+
+
+	// start / stop interface
+	public void StartInterface() {
 		// initialize arduino
 		queue.sendRawCommand("reset");
-		this.start();
+		super.StartInterface();
 	}
-	public void Close() {
-		serial.close();
-		out = null;
-		in = null;
-		serial = null;
-	}
-	// arduino is ready
-	@Override
-	public boolean isReady() {
-		return ready;
+	public void StopInterface() {
+		super.StopInterface();
 	}
 
 
 	// communication thread
 	public void run() {
-		while(plugin.isEnabled()) {
+		while(!stopping) {
 			// send from queue
 			sendMessages();
 			// check for incoming data
@@ -71,6 +63,10 @@ public class ArduinoUSB extends Thread implements interfaceArduino {
 			// sleep thread
 			gcServer.Sleep(THREAD_WAIT);
 		}
+		serial.close();
+		out = null;
+		in = null;
+		serial = null;
 	}
 
 
@@ -158,17 +154,18 @@ public class ArduinoUSB extends Thread implements interfaceArduino {
 			ArduinoGC.log.exception(e);
 		}
 		ArduinoGC.log.debug("Waiting for reply..");
-		// sleep one heartbeet
+		// sleep one heartbeat
 		gcServer.Sleep(THREAD_HEARTBEAT);
 		int timeout = 2000;
-		while(serial!=null && in!=null && plugin.isEnabled() && timeout>=0) {
+		while(serial!=null && in!=null &&
+				!stopping && timeout>=0) {
 			// check got data
 			if(checkAvailable()) timeout = 100;
 			timeout -= THREAD_HEARTBEAT;
 			// sleep one heartbeat
 			gcServer.Sleep(THREAD_HEARTBEAT);
 		}
-		reset();
+//		reset();
 		if(bufferIn.isEmpty()) {
 			ArduinoGC.log.warning("Arduino didn't answer!");
 		} else {
@@ -209,8 +206,8 @@ boolean b = true;if(b)return false;
 	}
 
 
-	// reset socket
-	private void reset() {
+//	// reset socket
+//	private void reset() {
 //		synchronized(client) {
 //			try {
 //				if(out    != null) out.close();
@@ -225,9 +222,7 @@ boolean b = true;if(b)return false;
 //			out = null;
 //			client = null;
 //		}
-	}
-
-
+//	}
 
 
 //try {
@@ -237,18 +232,6 @@ boolean b = true;if(b)return false;
 //} catch (SerialException e) {
 //	e.printStackTrace();
 //}
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //	public class SerialReader implements Runnable {
@@ -293,10 +276,6 @@ boolean b = true;if(b)return false;
 //	}
 
 
-
-
-
-
 //	@Override
 //	public void run() {
 //		while(plugin.isEnabled()) {
@@ -308,12 +287,6 @@ boolean b = true;if(b)return false;
 //			ArduinoGC.Sleep(THREAD_WAIT);
 //		}
 //	}
-
-
-
-
-
-
 
 
 }
