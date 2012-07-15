@@ -4,14 +4,19 @@ import java.io.IOException;
 
 import jline.ConsoleReader;
 
+import com.growcontrol.gcServer.logger.gcLogger.LEVEL;
+
 public class gcLoggerConsole implements gcLoggerHandler {
 
 private boolean strip = false;
 
 	private final jline.ConsoleReader reader;
+	private LEVEL level;
 
-	public gcLoggerConsole(jline.ConsoleReader reader) {
+
+	public gcLoggerConsole(jline.ConsoleReader reader, LEVEL level) {
 		this.reader = reader;
+		this.level = level;
 	}
 
 
@@ -22,6 +27,7 @@ private boolean strip = false;
 
 
 	public void print(gcLogRecord logRecord) {
+		if( gcLogger.levelToInt(logRecord.level) > gcLogger.levelToInt(level) ) return;
 		if(reader == null) {
 			System.out.print(logRecord.toString());
 			return;
@@ -42,6 +48,12 @@ private boolean strip = false;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+
+	@Override
+	public void setLogLevel(LEVEL level) {
+		this.level = level;
 	}
 
 

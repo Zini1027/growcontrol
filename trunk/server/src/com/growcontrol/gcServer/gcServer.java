@@ -77,6 +77,7 @@ System.exit(0);
 		if(config==null || config.config==null) {
 			log.severe("Failed to load config.yml");
 		}
+		log.setLogLevel(gcLogger.levelFromString(config.logLevel));
 
 		// start jline console
 		if(!noconsole) this.start();
@@ -113,6 +114,7 @@ System.exit(0);
 
 
 	public static void Shutdown() {
+		gcScheduler.pauseAll(true);
 		log.info("Stopping GC Server..");
 		stopping = true;
 		// schedulers
