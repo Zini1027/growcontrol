@@ -55,12 +55,12 @@ public class gcTimer extends gcServerPlugin implements gcServerPluginListenerTic
 	private static void LoadConfig() {
 		gcConfig config = gcConfig.loadFile("plugins/gcTimer", "config.yml");
 		if(config == null) {
-			gcTimer.log.severe("Failed to load config.yml");
+			log.severe("Failed to load config.yml");
 			return;
 		}
 		List<String> timerConfigs = config.getStringList("timers");
 		if(timerConfigs == null) {
-			gcTimer.log.severe("Failed to load timers from config.yml");
+			log.severe("Failed to load timers from config.yml");
 			return;
 		}
 		// load timer configs
@@ -71,7 +71,7 @@ public class gcTimer extends gcServerPlugin implements gcServerPluginListenerTic
 		if(!configFile.endsWith(".yml")) configFile += ".yml";
 		gcConfig config = gcConfig.loadFile("plugins/gcTimer/timers", configFile);
 		if(config == null) {
-			gcTimer.log.severe("Failed to load "+configFile);
+			log.severe("Failed to load "+configFile);
 			return;
 		}
 		String name = configFile.substring(0, configFile.lastIndexOf("."));
@@ -94,7 +94,7 @@ public class gcTimer extends gcServerPlugin implements gcServerPluginListenerTic
 				for(String line : config.getStringList("Spans")) {
 					if(line.isEmpty()) continue;
 					if(!line.contains("-")) {
-						gcTimer.log.warning("Timer spans line ignored: "+line);
+						log.warning("Timer spans line ignored: "+line);
 						continue;
 					}
 					long onTick = -1;
@@ -138,8 +138,8 @@ public class gcTimer extends gcServerPlugin implements gcServerPluginListenerTic
 				timer = new timerTicker(name, title);
 			else if(type.equals(TimerType.SEQUENCER))
 				timer = new timerSequencer(name, title);
-			else				gcTimer.log.severe("Unknown timer type: "+type.toString());
-			if(timer == null)	gcTimer.log.severe("Unable to create new timer!");
+			else				log.severe("Unknown timer type: "+type.toString());
+			if(timer == null)	log.severe("Unable to create new timer!");
 			// add to hash map
 			timersMap.put(name, timer);
 		}

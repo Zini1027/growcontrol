@@ -4,14 +4,14 @@ package com.growcontrol.gcpromptdisplay;
 public class PromptPin {
 
 	public int pinNum = 0;
-	public PinMode pinMode = PinMode.disabled;
+	public PinMode pinMode = PinMode.DISABLED;
 	public int pinState = 0;
 
 
 	public static enum PinMode {
-		disabled,
-		io,
-		pwm,
+		DISABLED,
+		IO,
+		PWM,
 	};
 
 
@@ -27,28 +27,28 @@ public class PromptPin {
 	// to/from string
 	public static String toString(PinMode pinMode) {
 		switch(pinMode) {
-		case disabled:	return "disabled";
-		case io:		return "io";
-		case pwm:		return "pwm";
+		case DISABLED:	return "disabled";
+		case IO:		return "io";
+		case PWM:		return "pwm";
 		}
 		return "disabled";
 	}
 	public static String toString(PinMode pinMode, int pinState) {
 		switch(pinMode) {
-		case disabled:	return "disabled";
-		case io:		return (pinState==0?"off":"ON ");
-		case pwm:		return Integer.toString(pinState)+"%";
+		case DISABLED:	return "disabled";
+		case IO:		return (pinState==0?"off":"ON ");
+		case PWM:		return Integer.toString(pinState)+"%";
 		}
 		return "disabled";
 	}
 	public static PinMode fromString(String pinMode) {
 		if(pinMode.equalsIgnoreCase("x"))
-			return PinMode.disabled;
+			return PinMode.DISABLED;
 		else if(pinMode.equalsIgnoreCase("io"))
-			return PinMode.io;
+			return PinMode.IO;
 		else if(pinMode.equalsIgnoreCase("pwm"))
-			return PinMode.pwm;
-		return PinMode.disabled;
+			return PinMode.PWM;
+		return PinMode.DISABLED;
 	}
 
 
