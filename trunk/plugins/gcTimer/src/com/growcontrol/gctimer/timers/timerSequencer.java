@@ -6,12 +6,17 @@ import com.growcontrol.gctimer.gcTimer.TimerType;
 public class timerSequencer extends gcServerDeviceBoolean implements deviceTimer {
 
 
-	public timerSequencer(String deviceName) {
-		super(deviceName);
+	public timerSequencer(String name, String title) {
+		super(name);
 	}
 	@Override
 	public TimerType getTimerType() {
 		return TimerType.SEQUENCER;
+	}
+
+
+	@Override
+	public void setDuration(String duration) {
 	}
 
 
