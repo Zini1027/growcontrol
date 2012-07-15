@@ -22,7 +22,7 @@ public class gcTicker implements Runnable {
 		}
 		lastTick = time;
 		sessionTicks++;
-		gcServer.log.debug("Tick "+Long.toString(sessionTicks));
+//		gcServer.log.debug("Tick "+Long.toString(sessionTicks));
 
 		// tick devices
 //		gcDeviceLoader.doTick();

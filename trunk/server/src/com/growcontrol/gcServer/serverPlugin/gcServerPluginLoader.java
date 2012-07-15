@@ -78,7 +78,7 @@ public class gcServerPluginLoader {
 						// try next class
 						if(!onEnable || !onDisable) continue;
 						// found plugin
-						gcServer.log.debug("Loading server plugin: "+name);
+						gcServer.log.debug("Loading server plugin: "+name.substring(0, name.lastIndexOf(".")) );
 						plugins.put(name, new gcServerPluginHolder(name, clss));
 						break;
 					}
