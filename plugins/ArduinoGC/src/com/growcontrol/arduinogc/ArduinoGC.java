@@ -47,12 +47,12 @@ public class ArduinoGC extends gcServerPlugin implements gcServerPluginListenerO
 	private void LoadConfig() {
 		gcConfig config = gcConfig.loadFile("plugins/ArduinoGC", "config.yml");
 		if(config == null) {
-			ArduinoGC.log.severe("Failed to load config.yml");
+			log.severe("Failed to load config.yml");
 			return;
 		}
 		List<String> controllers = config.getStringList("Controllers");
 		if(controllers == null) {
-			ArduinoGC.log.severe("Failed to load controllers from config.yml");
+			log.severe("Failed to load controllers from config.yml");
 			return;
 		}
 		// load controller configs
@@ -63,7 +63,7 @@ public class ArduinoGC extends gcServerPlugin implements gcServerPluginListenerO
 		if(!configFile.endsWith(".yml")) configFile += ".yml";
 		gcConfig config = gcConfig.loadFile("plugins/ArduinoGC/controllers", configFile);
 		if(config == null) {
-			ArduinoGC.log.severe("Failed to load "+configFile);
+			log.severe("Failed to load "+configFile);
 			return;
 		}
 		String name = configFile.substring(0, configFile.lastIndexOf("."));
@@ -100,8 +100,8 @@ log.severe("TYPE:  "+type);
 				String host = config.getString("Host");
 				int port = config.getInt("Port");
 				controller = new ArduinoNet(host, port);
-			} else					ArduinoGC.log.severe("Unknown controller type: "+type.toString());
-			if(controller == null)	ArduinoGC.log.severe("Unable to create new controller!");
+			} else					log.severe("Unknown controller type: "+type.toString());
+			if(controller == null)	log.severe("Unable to create new controller!");
 			// add to hash map
 			controllersMap.put(name, controller);
 		}
@@ -129,7 +129,7 @@ log.severe("TYPE:  "+type);
 		if(pinNum<0 || pinState<0) {
 			String msg = "";
 			for(String arg : args) msg += " "+arg;
-			ArduinoGC.log.severe("Invalid command"+msg);
+			log.severe("Invalid command"+msg);
 			return false;
 		}
 		controller.sendPinState(pinNum, pinState);

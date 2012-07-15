@@ -4,17 +4,17 @@ package com.growcontrol.arduinogc;
 public class ArduinoPin {
 
 	public int pinNum = 0;
-	public PinMode pinMode = PinMode.disabled;
+	public PinMode pinMode = PinMode.DISABLED;
 	public int pinState = 0;
 
 
 	public static enum PinMode {
-		disabled,
-		io,
-		pwm,
-		in,
-		inh,
-		analog
+		DISABLED,
+		IO,
+		PWM,
+		IN,
+		INH,
+		ANALOG
 	};
 
 
@@ -29,18 +29,18 @@ public class ArduinoPin {
 
 	public static PinMode fromString(String pinMode) {
 		if(pinMode.equalsIgnoreCase("x"))
-			return PinMode.disabled;
+			return PinMode.DISABLED;
 		else if(pinMode.equalsIgnoreCase("io"))
-			return PinMode.io;
+			return PinMode.IO;
 		else if(pinMode.equalsIgnoreCase("pwm"))
-			return PinMode.pwm;
+			return PinMode.PWM;
 		else if(pinMode.equalsIgnoreCase("in"))
-			return PinMode.in;
+			return PinMode.IN;
 		else if(pinMode.equalsIgnoreCase("inh"))
-			return PinMode.inh;
+			return PinMode.INH;
 		else if(pinMode.equalsIgnoreCase("analog"))
-			return PinMode.analog;
-		return PinMode.disabled;
+			return PinMode.ANALOG;
+		return PinMode.DISABLED;
 	}
 
 
