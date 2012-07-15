@@ -15,8 +15,8 @@ public class gcLogger {
 
 	// log levels
 	public static enum LEVEL {DEBUG, INFO, WARNING, SEVERE, FATAL};
-	protected static LEVEL consoleLevel = LEVEL.INFO;
-	protected static LEVEL fileLevel    = LEVEL.INFO;
+	protected static LEVEL consoleLevel = LEVEL.DEBUG;
+	protected static LEVEL fileLevel    = LEVEL.DEBUG;
 
 	// loggers
 	protected static List<gcLogger> loggers = new ArrayList<gcLogger>();
@@ -60,7 +60,7 @@ public class gcLogger {
 			}
 		}
 		// log to console
-		logHandlers.add(new gcLoggerConsole(reader));
+		logHandlers.add(new gcLoggerConsole(reader, consoleLevel));
 		// log to file
 //		logHandlers.add(new gcLoggerFile().setStrip(true));
 		inited = true;
@@ -102,6 +102,13 @@ public class gcLogger {
 		if(level.equals(LEVEL.INFO))	return "info";
 										return "debug";
 	}
+	public static LEVEL levelFromString(String level) {
+		if(level.equalsIgnoreCase("fatal"))		return LEVEL.FATAL;
+		if(level.equalsIgnoreCase("severe"))	return LEVEL.SEVERE;
+		if(level.equalsIgnoreCase("warning"))	return LEVEL.WARNING;
+		if(level.equalsIgnoreCase("info"))		return LEVEL.INFO;
+												return LEVEL.DEBUG;
+	}
 	public static int levelToInt(LEVEL level) {
 		if(level.equals(LEVEL.FATAL))	return LEVEL_FATAL;
 		if(level.equals(LEVEL.SEVERE))	return LEVEL_SEVERE;
@@ -109,6 +116,18 @@ public class gcLogger {
 		if(level.equals(LEVEL.INFO))	return LEVEL_INFO;
 										return LEVEL_DEBUG;
 	}
+
+
+	// set log level
+	public void setLogLevel(LEVEL level) {
+		if(level == null) return;
+		consoleLevel = level;
+		for(gcLoggerHandler handler : logHandlers)
+			handler.setLogLevel(level);
+		debug("Set log level to: "+levelToString(level));
+	}
+
+
 //	public boolean isLoggable(int level) {
 ////TODO: finish this
 //		return true;

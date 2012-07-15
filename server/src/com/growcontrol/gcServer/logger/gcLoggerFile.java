@@ -2,6 +2,8 @@ package com.growcontrol.gcServer.logger;
 
 import java.util.logging.FileHandler;
 
+import com.growcontrol.gcServer.logger.gcLogger.LEVEL;
+
 public class gcLoggerFile extends Thread implements gcLoggerHandler {
 
 @SuppressWarnings("unused")
@@ -36,6 +38,11 @@ public class gcLoggerFile extends Thread implements gcLoggerHandler {
 
 	public void print(gcLogRecord logRecord) {
 //		fileHandler
+	}
+
+
+	@Override
+	public void setLogLevel(LEVEL level) {
 	}
 
 
