@@ -6,7 +6,7 @@ import java.util.List;
 public class gcServerDevice {
 
 	public final String deviceName;
-	public static enum RunMode {AlwaysRun, TriggeredRun};
+	public static enum RunMode {REPEAT, RUNONCE, TRIGGERED};
 	protected RunMode runMode = null;
 	protected boolean running = false;
 	protected boolean retention = false;
@@ -20,7 +20,7 @@ public class gcServerDevice {
 		synchronized(runMode) {
 			if(this.runMode != null) return;
 			this.runMode = runMode;
-			if(runMode.equals(RunMode.AlwaysRun)) running = true;
+			if(runMode.equals(RunMode.REPEAT) || runMode.equals(RunMode.RUNONCE)) running = true;
 //TODO: update state now?
 		}
 	}
@@ -29,6 +29,21 @@ public class gcServerDevice {
 	// device name
 	public String getDeviceName() {
 		return deviceName;
+	}
+	public boolean isRunning() {
+		return running;
+	}
+
+
+	// enum from string
+	public static RunMode RunModeFromString(String mode) {
+		if(mode.equalsIgnoreCase("repeat") || mode.equalsIgnoreCase("repeating"))
+			return RunMode.REPEAT;
+		else if(mode.equalsIgnoreCase("runonce") || mode.equalsIgnoreCase("once"))
+			return RunMode.RUNONCE;
+		else if(mode.equalsIgnoreCase("triggered") || mode.equalsIgnoreCase("trig"))
+			return RunMode.TRIGGERED;
+		return null;
 	}
 
 
