@@ -1,6 +1,5 @@
-package com.growcontrol.gcClient.protocol;
+package com.growcontrol.gcClient.protocol.packets;
 
 public class packetDevice extends packet {
-	private static final long serialVersionUID = 1L;
 
 }
