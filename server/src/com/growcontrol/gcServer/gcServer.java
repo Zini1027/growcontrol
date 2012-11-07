@@ -9,7 +9,6 @@ import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
 import com.growcontrol.gcServer.commands.gcCommand;
-import com.growcontrol.gcServer.devices.gcServerDeviceLoader;
 import com.growcontrol.gcServer.logger.gcLogger;
 import com.growcontrol.gcServer.ntp.gcClock;
 import com.growcontrol.gcServer.scheduler.gcScheduler;
@@ -28,15 +27,15 @@ public class gcServer extends Thread {
 
 	// server modules
 	public static final gcServerPluginLoader pluginLoader = new gcServerPluginLoader();
-	public static final gcServerDeviceLoader deviceLoader = new gcServerDeviceLoader();
+//	public static final gcServerDeviceLoader deviceLoader = new gcServerDeviceLoader();
 	public static ServerConfig config = null;
 
 	// schedulers
 	public static gcScheduler sched = null;
 	private static gcTicker ticker = null;
 
-	// rooms
-	List<String> rooms = null;
+	// zones
+	List<String> zones = null;
 
 	// runtime args
 	private static boolean noconsole = false;
@@ -77,7 +76,7 @@ System.exit(0);
 		if(config==null || config.config==null) {
 			log.severe("Failed to load config.yml");
 		}
-		log.setLogLevel(gcLogger.levelFromString(config.logLevel));
+		log.setLogLevel(config.logLevel);
 
 		// start jline console
 		if(!noconsole) this.start();
@@ -87,9 +86,9 @@ System.exit(0);
 		gcClock.updateNTP_Blocking();
 
 		// rooms
-		rooms = config.getRooms();
-		if(rooms == null) rooms = new ArrayList<String>();
-		log.info("Loaded "+Integer.toString(rooms.size())+" rooms");
+		zones = config.getRooms();
+		if(zones == null) zones = new ArrayList<String>();
+		log.info("Loaded "+Integer.toString(zones.size())+" zones");
 
 		// load scheduler paused
 		sched = gcScheduler.getScheduler("gcServer");
@@ -155,7 +154,10 @@ System.exit(0);
 
 
 	public static void processCommand(String line) {
-		if(line == null) return;
+		if(line == null) {
+			gcServer.log.warning("line is null!");
+			return;
+		}
 		line = line.trim();
 		String commandStr;
 		String[] args;
@@ -363,6 +365,12 @@ System.exit(0);
 		AnsiConsole.out.println(Ansi.ansi().bg(Ansi.Color.BLACK)
 			.fg(Ansi.Color.GREEN).a("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 			.reset() );
+		AnsiConsole.out.println();
+
+		AnsiConsole.out.println("Copyright (C) 2007-2013 Mattsoft");
+		AnsiConsole.out.println("This program comes with ABSOLUTELY NO WARRANTY; for details type 'show w'.");
+		AnsiConsole.out.println("This is free software, and you are welcome to redistribute it");
+		AnsiConsole.out.println("under certain conditions; type 'show c' for details.");
 		AnsiConsole.out.println();
 
 // 1 |      PoiXson
