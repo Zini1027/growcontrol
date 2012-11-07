@@ -18,6 +18,8 @@ public class DefaultCommands {
 			.addAlias("quit")
 			.addAlias("shutdown");
 		commands.addCommand("kill");
+		commands.addCommand("start");
+		commands.addCommand("stop");
 		commands.addCommand("pause");
 		commands.addCommand("clear")
 			.addAlias("cls");
@@ -48,6 +50,16 @@ public class DefaultCommands {
 		// kill
 		if(command.equals("kill"))
 			System.exit(0);
+		// start
+		if(command.equals("start")) {
+			gcScheduler.pauseAll(false);
+			return true;
+		}
+		// stop
+		if(command.equals("stop")) {
+			gcScheduler.pauseAll(true);
+			return true;
+		}
 		// pause
 		if(command.equals("pause")) {
 			gcScheduler.pauseAll();
@@ -62,19 +74,42 @@ public class DefaultCommands {
 		if(command.equals("help")) {
 			//TODO:
 			gcServer.log.warning("command not yet implemented");
+			gcServer.log.info("[ Basic Commands ]");
+			gcServer.log.info("version - Displays the current running version.");
+			gcServer.log.info("start - Starts the scheduler.");
+			gcServer.log.info("stop  - Stops the scheduler.");
+			gcServer.log.info("pause - Pauses the scheduler.");
+			gcServer.log.info("clear - Clears the screen.");
+			gcServer.log.info("say - Broadcasts a message.");
+			gcServer.log.info("list plugins - Lists the loaded plugins.");
+			gcServer.log.info("list devices - Lists the loaded devices.");
+			gcServer.log.info("list outputs - Lists the available outputs.");
+			gcServer.log.info("list inputs  - Lists the available inputs.");
+			gcServer.log.info("[ Tools ]");
+			gcServer.log.info("ping - ");
+			gcServer.log.info("threads - ");
+// input / output
+//set
+//get
+//watch
+//stop
+//exit
+//quit
+//shutdown
+//kill
 			return true;
 		}
 		// version
 		if(command.equals("version")) {
 			//TODO:
-			gcServer.log.warning("command not yet implemented");
+			gcServer.log.info("GrowControl "+gcServer.version);
 			return true;
 		}
 		// say
 		if(command.equals("say")) {
 			String msg = "";
 			for(String line : args) msg += " "+line;
-			gcServer.log.info("Server says: "+msg);
+			gcServer.log.info("Server says:"+msg);
 			return true;
 		}
 
@@ -147,16 +182,12 @@ public class DefaultCommands {
 	}
 
 
-
 	private static void listDevices() {
 	}
 	private static void listOutputs() {
 	}
 	private static void listInputs() {
 	}
-
-
-
 
 
 //	if(command.equalsIgnoreCase("threads")) {

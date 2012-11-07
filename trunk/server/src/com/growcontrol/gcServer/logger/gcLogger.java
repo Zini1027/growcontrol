@@ -15,6 +15,12 @@ public class gcLogger {
 
 	// log levels
 	public static enum LEVEL {DEBUG, INFO, WARNING, SEVERE, FATAL};
+	protected static final int LEVEL_DEBUG   = 50;
+	protected static final int LEVEL_INFO    = 40;
+	protected static final int LEVEL_WARNING = 30;
+	protected static final int LEVEL_SEVERE  = 10;
+	protected static final int LEVEL_FATAL   = 0;
+
 	protected static LEVEL consoleLevel = LEVEL.DEBUG;
 	protected static LEVEL fileLevel    = LEVEL.DEBUG;
 
@@ -90,31 +96,32 @@ public class gcLogger {
 
 
 	// log levels
-	protected static final int LEVEL_DEBUG		= 50;
-	protected static final int LEVEL_INFO		= 40;
-	protected static final int LEVEL_WARNING	= 30;
-	protected static final int LEVEL_SEVERE		= 10;
-	protected static final int LEVEL_FATAL		= 0;
 	public static String levelToString(LEVEL level) {
-		if(level.equals(LEVEL.FATAL))	return "FATAL";
-		if(level.equals(LEVEL.SEVERE))	return "SEVERE";
-		if(level.equals(LEVEL.WARNING))	return "WARNING";
-		if(level.equals(LEVEL.INFO))	return "info";
-										return "debug";
+		if(level != null) {
+			if(level.equals(LEVEL.FATAL))	return "FATAL";
+			if(level.equals(LEVEL.SEVERE))	return "SEVERE";
+			if(level.equals(LEVEL.WARNING))	return "WARNING";
+			if(level.equals(LEVEL.INFO))	return "info";
+		}
+		return "debug";
 	}
 	public static LEVEL levelFromString(String level) {
-		if(level.equalsIgnoreCase("fatal"))		return LEVEL.FATAL;
-		if(level.equalsIgnoreCase("severe"))	return LEVEL.SEVERE;
-		if(level.equalsIgnoreCase("warning"))	return LEVEL.WARNING;
-		if(level.equalsIgnoreCase("info"))		return LEVEL.INFO;
-												return LEVEL.DEBUG;
+		if(level != null) {
+			if(level.equalsIgnoreCase("fatal"))		return LEVEL.FATAL;
+			if(level.equalsIgnoreCase("severe"))	return LEVEL.SEVERE;
+			if(level.equalsIgnoreCase("warning"))	return LEVEL.WARNING;
+			if(level.equalsIgnoreCase("info"))		return LEVEL.INFO;
+		}
+		return LEVEL.DEBUG;
 	}
 	public static int levelToInt(LEVEL level) {
-		if(level.equals(LEVEL.FATAL))	return LEVEL_FATAL;
-		if(level.equals(LEVEL.SEVERE))	return LEVEL_SEVERE;
-		if(level.equals(LEVEL.WARNING))	return LEVEL_WARNING;
-		if(level.equals(LEVEL.INFO))	return LEVEL_INFO;
-										return LEVEL_DEBUG;
+		if(level != null) {
+			if(level.equals(LEVEL.FATAL))	return LEVEL_FATAL;
+			if(level.equals(LEVEL.SEVERE))	return LEVEL_SEVERE;
+			if(level.equals(LEVEL.WARNING))	return LEVEL_WARNING;
+			if(level.equals(LEVEL.INFO))	return LEVEL_INFO;
+		}
+		return LEVEL_DEBUG;
 	}
 
 
@@ -125,6 +132,9 @@ public class gcLogger {
 		for(gcLoggerHandler handler : logHandlers)
 			handler.setLogLevel(level);
 		debug("Set log level to: "+levelToString(level));
+	}
+	public void setLogLevel(String level) {
+		setLogLevel(levelFromString(level));
 	}
 
 

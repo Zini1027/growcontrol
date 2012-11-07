@@ -64,7 +64,7 @@ public class gcScheduler implements Job {
 	}
 
 
-	// start/stop
+	// start
 	public static void Start() {
 		synchronized(Paused) {
 			if(Started) return;
@@ -76,8 +76,12 @@ public class gcScheduler implements Job {
 			Started = true;
 		}
 	}
+	// stop
 	public static void Shutdown() {
-		if(scheduler == null) return;
+		if(scheduler == null) {
+			gcServer.log.warning("scheduler is null!");
+			return;
+		}
 		synchronized(Paused) {
 			try {
 				scheduler.shutdown(true);
@@ -86,10 +90,12 @@ public class gcScheduler implements Job {
 			}
 		}
 	}
-
-
 	// pause
 	public static void pauseAll(boolean Paused) {
+		if(scheduler == null) {
+			gcServer.log.warning("scheduler is null!");
+			return;
+		}
 		synchronized(gcScheduler.Paused) {
 			gcScheduler.Paused = Paused;
 			try {
@@ -112,6 +118,10 @@ public class gcScheduler implements Job {
 
 	// new task
 	public boolean newTask(String taskName, Runnable task, ScheduleBuilder<?> schedBuilder) {
+		if(scheduler == null) {
+			gcServer.log.warning("scheduler is null!");
+			return false;
+		}
 		// generate unique task name
 		if(taskName == null) {
 log.severe("unique task name generation not finished!!!");
