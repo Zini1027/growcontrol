@@ -14,6 +14,7 @@ import com.growcontrol.gcServer.ntp.gcClock;
 import com.growcontrol.gcServer.scheduler.gcScheduler;
 import com.growcontrol.gcServer.scheduler.gcTicker;
 import com.growcontrol.gcServer.serverPlugin.gcServerPluginLoader;
+import com.growcontrol.gcServer.socketServer.socketServer;
 
 public class gcServer extends Thread {
 	public static final String version = "3.0.1";
@@ -33,6 +34,9 @@ public class gcServer extends Thread {
 	// schedulers
 	public static gcScheduler sched = null;
 	private static gcTicker ticker = null;
+
+	// socket pool
+	public static socketServer socket = null;
 
 	// zones
 	List<String> zones = null;
@@ -101,6 +105,9 @@ System.exit(0);
 //		// load devices
 //		deviceLoader.LoadDevices(Arrays.asList(new String[] {"Lamp"}));
 
+		// start socket listener
+		socket = new socketServer(1142);
+
 		// start schedulers
 		log.info("Starting schedulers..");
 		gcScheduler.Start();
@@ -116,6 +123,8 @@ System.exit(0);
 		gcScheduler.pauseAll(true);
 		log.info("Stopping GC Server..");
 		stopping = true;
+		// close sockets
+		socket.stop();
 		// schedulers
 		gcScheduler.Shutdown();
 		// plugins
@@ -291,10 +300,9 @@ System.exit(0);
 		// line 2
 		AnsiConsole.out.println(Ansi.ansi().bg(Ansi.Color.BLACK)
 			.bold().a("    ")
-			.fg(Ansi.Color.WHITE).a("©")
 			.fg(Ansi.Color.GREEN).a("GROW")
 			.fg(Ansi.Color.WHITE).a("CONTROL")
-			.fg(Ansi.Color.YELLOW).a("    _")
+			.fg(Ansi.Color.YELLOW).a("     _")
 			.a("                                            ")
 			.reset() );
 		// line 3
@@ -367,8 +375,8 @@ System.exit(0);
 			.reset() );
 		AnsiConsole.out.println();
 
-		AnsiConsole.out.println("Copyright (C) 2007-2013 Mattsoft");
-		AnsiConsole.out.println("This program comes with ABSOLUTELY NO WARRANTY; for details type 'show w'.");
+		AnsiConsole.out.println("Copyright (C) 2007-2013 PoiXson, Mattsoft");
+		AnsiConsole.out.println("This program comes with absolutely no warranty; for details type 'show w'.");
 		AnsiConsole.out.println("This is free software, and you are welcome to redistribute it");
 		AnsiConsole.out.println("under certain conditions; type 'show c' for details.");
 		AnsiConsole.out.println();
