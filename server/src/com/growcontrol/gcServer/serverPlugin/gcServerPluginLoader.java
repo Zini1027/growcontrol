@@ -26,6 +26,7 @@ public class gcServerPluginLoader {
 
 	protected static HashMap<String, gcServerPluginHolder> plugins = new HashMap<String, gcServerPluginHolder>();
 	private static final Class<?>[] parameters = new Class[]{URL.class};
+	protected String pluginsPath = "plugins";
 
 	// listeners
 	protected static HashMap<String, gcServerPluginListenerCommand>	listenersCommand	= new HashMap<String, gcServerPluginListenerCommand>();
@@ -45,14 +46,14 @@ public class gcServerPluginLoader {
 		}
 		try {
 			// get files list from /plugins
-			File dir = new File("plugins");
+			File dir = new File(pluginsPath);
 			if(!dir.isDirectory()) {
-				gcServer.log.severe("\\plugin folder not found!");
+				gcServer.log.severe("Plugins folder '"+pluginsPath+"' folder not found!");
 				return;
 			}
 			File[] files = dir.listFiles(new jarFilter());
 			if(files == null) {
-				gcServer.log.severe("Failed to get files list for \\plugins !");
+				gcServer.log.severe("Failed to get files list for '"+pluginsPath+"' !");
 				return;
 			}
 			// loop .jar files
@@ -172,6 +173,16 @@ public class gcServerPluginLoader {
 			msg += plugin.pluginName;
 		}
 		gcServer.log.info(msg);
+	}
+
+
+	// plugins path
+	public void setPath(String path) {
+		if(path == null) path = "plugins";
+		pluginsPath = path;
+	}
+	public String getPath() {
+		return pluginsPath;
 	}
 
 
