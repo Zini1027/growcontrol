@@ -20,7 +20,7 @@ public class socketServer implements Runnable {
 
 	public socketServer(int port) {
 		if(port < 1 || port > 65536) {
-			gcServer.log.severe("Port "+Integer.toString(port)+" is not valid! Out of range!");
+			gcServer.log.severe("Invalid port "+Integer.toString(port)+" is not valid! Out of range!");
 			this.port = 0;
 			thread = null;
 			return;
@@ -77,13 +77,10 @@ public class socketServer implements Runnable {
 
 	// flush disconnected sockets
 	public void checkClosed() {
-		for(Iterator<socketWorker> worker = socketPool.iterator(); worker.hasNext();) {
-			if(worker.next().isClosed()) {
-				gcServer.log.info(worker.getIP()+" disconnected");
-				worker.remove();
-			}
-		}
-		gcServer.log.debug("Sockets in use: "+Integer.toString(socketPool.size()));
+		for(Iterator<socketWorker> it = socketPool.iterator(); it.hasNext();)
+			if(it.next().isClosed())
+				it.remove();
+		gcServer.log.debug("Sockets loaded: "+Integer.toString(socketPool.size()));
 	}
 
 }

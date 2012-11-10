@@ -17,7 +17,7 @@ import com.growcontrol.gcServer.serverPlugin.gcServerPluginLoader;
 import com.growcontrol.gcServer.socketServer.socketServer;
 
 public class gcServer extends Thread {
-	public static final String version = "3.0.1";
+	public static final String version = "3.0.2";
 	public static final String prompt = ">";
 
 	private static gcServer server = null;
@@ -29,7 +29,10 @@ public class gcServer extends Thread {
 	// server modules
 	public static final gcServerPluginLoader pluginLoader = new gcServerPluginLoader();
 //	public static final gcServerDeviceLoader deviceLoader = new gcServerDeviceLoader();
+
+	// config files
 	public static ServerConfig config = null;
+	public static String configsPath = null;
 
 	// schedulers
 	public static gcScheduler sched = null;
@@ -47,15 +50,27 @@ public class gcServer extends Thread {
 
 	public static void main(String[] args) {
 		if(server != null) throw new UnsupportedOperationException("Cannot redefine singleton gcServer; already running");
+		// process args
 		for(String arg : args) {
 			// version
 			if(arg.equalsIgnoreCase("version")) {
 				System.out.println("GrowControl "+version+" Server");
 				System.exit(0);
 			// no console
-			} else if(arg.equalsIgnoreCase("noconsole"))
-				//noconsole = true;
-				noconsole = false; // disabled for now
+			} else if(arg.equalsIgnoreCase("noconsole")) {
+				noconsole = true;
+			// debug mode
+			} else if(arg.equalsIgnoreCase("debug")) {
+				log.setLogLevel(gcLogger.LEVEL.DEBUG);
+			// configs path
+			} else if(arg.startsWith("configspath=")) {
+				configsPath = arg.substring(12);
+				log.debug("Set configs path to: "+configsPath);
+			// plugins path
+			} else if(arg.startsWith("pluginspath=")) {
+				pluginLoader.setPath(arg.substring(12));
+				log.debug("Set plugins path to: "+pluginLoader.getPath());
+			}
 		}
 		// start gc server
 		server = new gcServer();
@@ -76,11 +91,15 @@ System.exit(0);
 		addLibraryPath("lib");
 
 		// load configs
-		config = new ServerConfig();
+		config = new ServerConfig(configsPath);
 		if(config==null || config.config==null) {
 			log.severe("Failed to load config.yml");
+			System.exit(1);
 		}
-		log.setLogLevel(config.logLevel);
+		// set log level
+		if(config.logLevel != null && !config.logLevel.isEmpty())
+			if(!log.getLogLevel().equals(gcLogger.LEVEL.DEBUG))
+				log.setLogLevel(config.logLevel);
 
 		// start jline console
 		if(!noconsole) this.start();
@@ -90,7 +109,7 @@ System.exit(0);
 		gcClock.updateNTP_Blocking();
 
 		// rooms
-		zones = config.getRooms();
+		zones = config.getZones();
 		if(zones == null) zones = new ArrayList<String>();
 		log.info("Loaded "+Integer.toString(zones.size())+" zones");
 
@@ -106,7 +125,7 @@ System.exit(0);
 //		deviceLoader.LoadDevices(Arrays.asList(new String[] {"Lamp"}));
 
 		// start socket listener
-		socket = new socketServer(1142);
+		socket = new socketServer(config.listenPort);
 
 		// start schedulers
 		log.info("Starting schedulers..");

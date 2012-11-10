@@ -1,0 +1,6 @@
+Version: 
+Log Level: info
+Tick Interval: 1000
+Listen Port: 1142
+Zones:
+- Zone 1

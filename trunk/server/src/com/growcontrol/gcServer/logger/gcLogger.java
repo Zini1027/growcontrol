@@ -12,7 +12,7 @@ import com.growcontrol.gcServer.gcServer;
 
 public class gcLogger {
 
-	protected String postfix = null;
+	protected String loggerName = null;
 
 	// log levels
 	public static enum LEVEL {DEBUG, INFO, WARNING, SEVERE, FATAL};
@@ -22,8 +22,8 @@ public class gcLogger {
 	protected static final int LEVEL_SEVERE  = 10;
 	protected static final int LEVEL_FATAL   = 0;
 
-	protected static LEVEL consoleLevel = LEVEL.DEBUG;
-	protected static LEVEL fileLevel    = LEVEL.DEBUG;
+	protected static LEVEL logLevel  = LEVEL.INFO;
+	protected static LEVEL fileLevel = LEVEL.DEBUG;
 
 	// loggers
 	protected static List<gcLogger> loggers = new ArrayList<gcLogger>();
@@ -37,15 +37,17 @@ public class gcLogger {
 
 
 	// get logger
-	public static synchronized gcLogger getLogger(String name) {
-		for(gcLogger logger : loggers)
-			if(logger.postfix.equalsIgnoreCase(name))
-				return logger;
-		return new gcLogger(name);
+	public static gcLogger getLogger(String name) {
+		synchronized(loggers) {
+			for(gcLogger logger : loggers)
+				if(logger.loggerName.equalsIgnoreCase(name))
+					return logger;
+			return new gcLogger(name);
+		}
 	}
 	protected gcLogger(String name) {
+		loggerName = name;
 		if(!inited) init();
-		postfix = name;
 	}
 
 
@@ -67,7 +69,7 @@ public class gcLogger {
 			}
 		}
 		// log to console
-		logHandlers.add(new gcLoggerConsole(reader, consoleLevel));
+		logHandlers.add(new gcLoggerConsole(reader, logLevel));
 		// log to file
 //		logHandlers.add(new gcLoggerFile().setStrip(true));
 		inited = true;
@@ -127,7 +129,7 @@ public class gcLogger {
 	// set log level
 	public void setLogLevel(LEVEL level) {
 		if(level == null) return;
-		consoleLevel = level;
+		logLevel = level;
 		for(gcLoggerHandler handler : logHandlers)
 			handler.setLogLevel(level);
 		debug("Set log level to: "+levelToString(level));
@@ -135,15 +137,23 @@ public class gcLogger {
 	public void setLogLevel(String level) {
 		setLogLevel(levelFromString(level));
 	}
+	// get log level
+	public LEVEL getLogLevel() {
+		return logLevel;
+	}
+	public String getLogLevelString() {
+		return levelToString(getLogLevel());
+	}
 
 
-//	public boolean isLoggable(int level) {
-////TODO: finish this
-//		return true;
-//	}
+	public static boolean isLoggable(LEVEL setLevel, LEVEL level) {
+		return isLoggable(setLevel, levelToInt(level));
+	}
+	public static boolean isLoggable(LEVEL setLevel, int level) {
+		return levelToInt(setLevel) >= level;
+	}
 	public boolean isDebug() {
-		return true;
-//		return (consoleLevel >= LEVEL_DEBUG || fileLevel >= LEVEL_DEBUG);
+		return logLevel.equals(LEVEL.DEBUG) || fileLevel.equals(LEVEL.DEBUG);
 	}
 
 
@@ -179,8 +189,8 @@ public class gcLogger {
 	// print to handlers
 	public synchronized void print(String msg, LEVEL level) {
 //TODO: this hides extra quarts logs
-if(postfix!= null && postfix.equalsIgnoreCase("quartz"))return;
-		gcLogRecord logRecord = new gcLogRecord(msg, level, postfix);
+if(loggerName!= null && loggerName.equalsIgnoreCase("quartz"))return;
+		gcLogRecord logRecord = new gcLogRecord(msg, level, loggerName);
 		for(gcLoggerHandler handler : logHandlers)
 			handler.print(logRecord);
 	}

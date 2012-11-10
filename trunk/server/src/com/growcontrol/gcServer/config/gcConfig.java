@@ -59,11 +59,15 @@ public class gcConfig {
 		else
 			fileStr = filePath + File.separator + fileName;
 		try {
-			return new FileInputStream(new File(fileStr));
+			File file = new File(fileStr);
+			if(!file.exists()) throw new FileNotFoundException("File not found!");
+			return new FileInputStream(file);
 		} catch (FileNotFoundException ignore) {
+			gcServer.log.debug("Failed to load config file: "+fileStr);
 			try {
 				return gcServer.class.getResourceAsStream(fileStr);
 			} catch(Exception ignore2) {
+				gcServer.log.debug("Not found as a resource either!");
 				return null;
 			}
 		}
