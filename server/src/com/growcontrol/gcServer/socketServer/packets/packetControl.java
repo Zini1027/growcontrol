@@ -1,5 +1,5 @@
-package com.growcontrol.gcClient.protocol.packets;
+package com.growcontrol.gcServer.socketServer.packets;
 
-public class packetControl extends packet {
+public class packetControl extends serverPacket {
 
 }

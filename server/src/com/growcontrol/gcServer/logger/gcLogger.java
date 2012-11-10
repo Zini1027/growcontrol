@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
 import com.growcontrol.gcServer.gcServer;
@@ -87,11 +88,9 @@ public class gcLogger {
 	// clear console
 	public void clear() {
 		if(reader == null) return;
-		try {
-			reader.clearScreen();
-		} catch (IOException e) {
-			gcServer.log.exception(e);
-		}
+		AnsiConsole.out.println(Ansi.ansi()
+			.eraseScreen()
+			.cursor(0, 0) );
 	}
 
 
