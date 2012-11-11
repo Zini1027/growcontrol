@@ -6,6 +6,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.growcontrol.gcServer.gcServer;
 
@@ -13,12 +16,16 @@ public class socketWorker implements Runnable {
 
 	protected Socket socket;
 	protected Thread thread;
+	protected boolean closed = false;
+
 	protected BufferedReader in  = null;
 	protected PrintWriter    out = null;
-	protected boolean closed = false;
+	protected Queue<String> inQueue  = new ConcurrentLinkedQueue<String>();
+//	protected Queue<String> outQueue = new ConcurrentLinkedQueue<String>();
 
 
 	public socketWorker(Socket socket) {
+		if(socket == null) throw new NullPointerException();
 		this.socket = socket;
 		try {
 			in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -34,27 +41,46 @@ public class socketWorker implements Runnable {
 	// listen for incomming data
 	@Override
 	public void run() {
+		gcServer.log.info("Connected: "+getIPString());
+		String line = "";
 		while(!closed) {
 			try {
-				int bit = in.read();
-				if(bit == -1) {
-					closed = true;
-					break;
-				}
-				gcServer.log.warning("GOT "+ ((char)bit) );
+				line = in.readLine();
+				if(line == null) break;
+			} catch (SocketException ignore) {
+				break;
 			} catch (IOException e) {
+				e.printStackTrace();
 				gcServer.log.exception(e);
+				break;
 			}
+			line = line.trim();
+			if(line.isEmpty()) continue;
+			inQueue.add(line);
 		}
-		gcServer.log.info(getIPString()+" disconnected");
+		close();
+		gcServer.log.info("Disconnected: "+getIPString());
+//		outQueue.clear();
+		socket = null;
+		in  = null;
+		out = null;
 	}
 
 
+	// close socket
+	public void close() {
+		if(socket == null) return;
+		try {
+			socket.close();
+		} catch (IOException e) {
+			gcServer.log.exception(e);
+		}
+	}
 	// is connected/closed
 	public boolean isClosed() {
 		if(socket == null || in == null || out == null)
 			closed = true;
-		if(socket.isClosed() || out.checkError())
+		else if(socket.isClosed() || out.checkError())
 			closed = true;
 		return closed;
 	}
