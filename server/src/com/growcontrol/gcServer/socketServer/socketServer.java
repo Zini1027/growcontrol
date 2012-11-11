@@ -3,6 +3,7 @@ package com.growcontrol.gcServer.socketServer;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -48,11 +49,12 @@ public class socketServer implements Runnable {
 			try {
 				// wait for a connection
 				socket = listenerSocket.accept();
-			} catch (IOException e) {
+			} catch (SocketException e) {
 				if(stopping) {
 					gcServer.log.info("Stopping socket listener");
 					break;
 				}
+			} catch (IOException e) {
 				gcServer.log.exception(e);
 			}
 			socketWorker worker = new socketWorker(socket);
@@ -71,6 +73,10 @@ public class socketServer implements Runnable {
 			} catch (IOException e) {
 				gcServer.log.exception(e);
 			}
+		}
+		// close sockets
+		for(Iterator<socketWorker> it = socketPool.iterator(); it.hasNext();) {
+			it.next().close();
 		}
 	}
 
