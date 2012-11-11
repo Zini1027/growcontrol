@@ -15,8 +15,10 @@ private boolean strip = false;
 
 
 	public gcLoggerConsole(jline.ConsoleReader reader, LEVEL level) {
+		if(reader == null) throw new NullPointerException();
+		if(level  == null) throw new NullPointerException();
 		this.reader = reader;
-		this.level = level;
+		this.level  = level;
 	}
 
 
@@ -27,6 +29,7 @@ private boolean strip = false;
 
 
 	public void print(gcLogRecord logRecord) {
+		if(logRecord == null) throw new NullPointerException();
 		if(!gcLogger.isLoggable(level, logRecord.level)) return;
 //		if( gcLogger.levelToInt(logRecord.level) > gcLogger.levelToInt(level) ) return;
 		if(reader == null) {

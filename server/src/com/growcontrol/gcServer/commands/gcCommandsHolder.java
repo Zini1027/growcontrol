@@ -11,6 +11,7 @@ public class gcCommandsHolder {
 
 	// add a command
 	public gcCommand addCommand(String name) {
+		if(name == null) throw new NullPointerException();
 		gcCommand command;
 		if(commands.containsKey(name)) {
 			gcServer.log.warning("Command already registered: "+name);
@@ -25,6 +26,7 @@ public class gcCommandsHolder {
 
 	// get command by name or alias
 	public gcCommand getCommandOrAlias(String commandStr) {
+		if(commandStr == null) throw new NullPointerException();
 		if(commands.containsKey(commandStr))
 			return commands.get(commandStr);
 		for(gcCommand command : commands.values())

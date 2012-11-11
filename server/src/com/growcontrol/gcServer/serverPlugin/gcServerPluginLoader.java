@@ -122,6 +122,7 @@ public class gcServerPluginLoader {
 
 	// jar loading functions
 	private static List<String> getClassNames(String jarName) throws IOException {
+		if(jarName == null) throw new NullPointerException();
 		ArrayList<String> classes = new ArrayList<String>(10);
 		JarInputStream jarFile = new JarInputStream(new FileInputStream(jarName));
 		JarEntry jarEntry;
@@ -134,6 +135,8 @@ public class gcServerPluginLoader {
 		return classes;
 	}
 	private static Class<?> getClass(File file, String name) throws Exception {
+		if(file == null) throw new NullPointerException();
+		if(name == null) throw new NullPointerException();
 		addURL(file.toURI().toURL());
 		URLClassLoader clazzLoader;
 		Class<?> clazz;
@@ -143,6 +146,7 @@ public class gcServerPluginLoader {
 		return clazz;
 	}
 	private static void addURL(URL u) throws IOException {
+		if(u == null) throw new NullPointerException();
 		URLClassLoader sysLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
 		URL urls[] = sysLoader.getURLs();
 		// skip if already loaded
@@ -178,8 +182,10 @@ public class gcServerPluginLoader {
 
 	// plugins path
 	public void setPath(String path) {
-		if(path == null) path = "plugins";
-		pluginsPath = path;
+		if(path == null)
+			pluginsPath = "plugins";
+		else
+			pluginsPath = path;
 	}
 	public String getPath() {
 		return pluginsPath;
@@ -198,28 +204,36 @@ public class gcServerPluginLoader {
 //TODO: how to unregister listeners?
 	// register listeners
 	public static void registerListenerCommand(String className, gcServerPluginListenerCommand listener) {
-		if(listener == null) return;
+		if(className == null) throw new NullPointerException();
+		if(listener  == null) throw new NullPointerException();
 		listenersCommand.put(className, listener);
 	}
 	public static void registerListenerTick(String className, gcServerPluginListenerTick listener) {
-		if(listener == null) return;
+		if(className == null) throw new NullPointerException();
+		if(listener  == null) throw new NullPointerException();
 		listenersTick.put(className, listener);
 	}
 	public static void registerListenerOutput(String className, gcServerPluginListenerOutput listener) {
-		if(listener == null) return;
+		if(className == null) throw new NullPointerException();
+		if(listener  == null) throw new NullPointerException();
 		listenersOutput.put(className, listener);
 	}
 	public static void registerListenerInput(String className, gcServerPluginListenerInput listener) {
+		if(className == null) throw new NullPointerException();
+		if(listener  == null) throw new NullPointerException();
 //TODO:
 	}
 	public static void registerListenerDevice(String className, gcServerPluginListenerDevice listener) {
-		if(listener == null) return;
+		if(className == null) throw new NullPointerException();
+		if(listener  == null) throw new NullPointerException();
 		listenersDevice.put(className, listener);
 	}
 
 
 	// run listeners
 	public static boolean doCommand(String commandStr, String[] args) {
+		if(commandStr == null) throw new NullPointerException();
+		if(args       == null) throw new NullPointerException();
 		for(Map.Entry<String, gcServerPluginListenerCommand> entry : listenersCommand.entrySet()) {
 			// get plugin
 			gcServerPluginHolder plugin = getPluginByClassName(entry.getKey());
@@ -247,6 +261,7 @@ public class gcServerPluginLoader {
 		}
 	}
 	public static boolean doOutput(String[] args) {
+		if(args == null) throw new NullPointerException();
 		if(args.length < 1) return false;
 		for(Map.Entry<String, gcServerPluginListenerOutput> entry : listenersOutput.entrySet()) {
 			// get plugin

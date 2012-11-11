@@ -139,8 +139,8 @@ System.exit(0);
 
 
 	public static void Shutdown() {
+		log.warning("Stopping GC Server..");
 		gcScheduler.pauseAll(true);
-		log.info("Stopping GC Server..");
 		stopping = true;
 		// close sockets
 		socket.stop();
@@ -178,14 +178,13 @@ System.exit(0);
 				log.exception(e);
 			}
 		}
+		System.out.println();
+		System.out.println();
 	}
 
 
 	public static void processCommand(String line) {
-		if(line == null) {
-			gcServer.log.warning("line is null!");
-			return;
-		}
+		if(line == null) throw new NullPointerException();
 		line = line.trim();
 		String commandStr;
 		String[] args;
@@ -223,6 +222,7 @@ System.exit(0);
 
 	// add lib to paths
 	private static void addLibraryPath(String libDir) {
+		if(libDir == null) throw new NullPointerException();
 		// get lib path
 		File file = new File(libDir);
 		if(file==null || !file.exists() || !file.isDirectory()) return;
@@ -285,18 +285,21 @@ System.exit(0);
 	}
 	// min/max by object
 	public static boolean MinMax(Integer value, int min, int max) {
+		if(value == null) throw new NullPointerException();
 		boolean changed = false;
 		if(value < min) {value = min; changed = true;}
 		if(value > max) {value = max; changed = true;}
 		return changed;
 	}
 	public static boolean MinMax(Long value, long min, long max) {
+		if(value == null) throw new NullPointerException();
 		boolean changed = false;
 		if(value < min) {value = min; changed = true;}
 		if(value > max) {value = max; changed = true;}
 		return changed;
 	}
 	public static boolean MinMax(Double value, double min, double max) {
+		if(value == null) throw new NullPointerException();
 		boolean changed = false;
 		if(value < min) {value = min; changed = true;}
 		if(value > max) {value = max; changed = true;}

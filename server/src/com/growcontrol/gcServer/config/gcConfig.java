@@ -21,7 +21,7 @@ public class gcConfig {
 	// new instance
 	public static gcConfig loadFile(String filePath, String fileName) {
 		if(fileName==null || fileName.isEmpty()) return null;
-		gcConfig config = new gcConfig(loadConfigFile(filePath, fileName));
+		gcConfig config = new gcConfig(openFile(filePath, fileName));
 		return config;
 	}
 	public static gcConfig loadFile(String fileName) {
@@ -31,7 +31,7 @@ public class gcConfig {
 
 	// config instance
 	private gcConfig(InputStream fileInput) {
-		if(fileInput == null) return;
+		if(fileInput == null) throw new NullPointerException();
 		try {
 			Yaml yml = new Yaml();
 			synchronized(data) {
@@ -50,8 +50,9 @@ public class gcConfig {
 
 
 	// load config file
-	protected static InputStream loadConfigFile(String filePath, String fileName) {
-		if(fileName==null || fileName.isEmpty()) return null;
+	protected static InputStream openFile(String filePath, String fileName) {
+		if(fileName == null) throw new NullPointerException();
+		if(fileName.isEmpty()) return null;
 		if(!fileName.endsWith(".yml")) fileName += ".yml";
 		String fileStr;
 		if(filePath==null || filePath.isEmpty())

@@ -21,9 +21,11 @@ public abstract class gcServerPlugin {
 		return pluginHolder.isEnabled();
 	}
 	public void setHolder(gcServerPluginHolder pluginHolder) {
+		if(pluginHolder == null) throw new NullPointerException();
 		this.pluginHolder = pluginHolder;
 	}
 	protected void registerPlugin(String pluginName) {
+		if(pluginName == null) throw new NullPointerException();
 		pluginHolder.pluginName = pluginName;
 		gcServer.log.info("Starting server plugin: "+pluginName);
 	}
@@ -31,28 +33,34 @@ public abstract class gcServerPlugin {
 
 	// register commands
 	protected gcCommand registerCommand(String name) {
+		if(name == null) throw new NullPointerException();
 		return pluginHolder.commands.addCommand(name);
 	}
 
 
 	// register listeners
 	protected void registerListenerCommand(gcServerPluginListenerCommand listener) {
+		if(listener == null) throw new NullPointerException();
 		gcServerPluginLoader.registerListenerCommand(pluginHolder.className, listener);
 		getLogger().debug("Registered command listener");
 	}
 	protected void registerListenerTick(gcServerPluginListenerTick listener) {
+		if(listener == null) throw new NullPointerException();
 		gcServerPluginLoader.registerListenerTick(pluginHolder.className, listener);
 		getLogger().debug("Registered tick listener");
 	}
 	protected void registerListenerOutput(gcServerPluginListenerOutput listener) {
+		if(listener == null) throw new NullPointerException();
 		gcServerPluginLoader.registerListenerOutput(pluginHolder.className, listener);
 		getLogger().debug("Registered output listener");
 	}
 	protected void registerListenerInput(gcServerPluginListenerInput listener) {
+		if(listener == null) throw new NullPointerException();
 		gcServerPluginLoader.registerListenerInput(pluginHolder.className, listener);
 		getLogger().debug("Registered input listener");
 	}
 	protected void registerListenerDevice(gcServerPluginListenerDevice listener) {
+		if(listener == null) throw new NullPointerException();
 		gcServerPluginLoader.registerListenerDevice(pluginHolder.className, listener);
 		getLogger().debug("Registered device listener");
 	}

@@ -78,7 +78,7 @@ public class gcLogger {
 
 	// read console input
 	public static String readLine() {
-		if(reader == null) return null;
+		if(reader == null) throw new NullPointerException();
 		String line = null;
 		try {
 			line = reader.readLine();
@@ -89,7 +89,7 @@ public class gcLogger {
 	}
 	// clear console
 	public void clear() {
-		if(reader == null) return;
+		if(reader == null) throw new NullPointerException();
 		AnsiConsole.out.println(Ansi.ansi()
 			.eraseScreen()
 			.cursor(0, 0) );
@@ -128,7 +128,7 @@ public class gcLogger {
 
 	// set log level
 	public void setLogLevel(LEVEL level) {
-		if(level == null) return;
+		if(level == null) throw new NullPointerException();
 		logLevel = level;
 		for(gcLoggerHandler handler : logHandlers)
 			handler.setLogLevel(level);
@@ -150,6 +150,7 @@ public class gcLogger {
 		return isLoggable(setLevel, levelToInt(level));
 	}
 	public static boolean isLoggable(LEVEL setLevel, int level) {
+		if(setLevel == null) throw new NullPointerException();
 		return levelToInt(setLevel) >= level;
 	}
 	public boolean isDebug() {
@@ -188,6 +189,7 @@ public class gcLogger {
 
 	// print to handlers
 	public synchronized void print(String msg, LEVEL level) {
+		if(level == null) throw new NullPointerException();
 //TODO: this hides extra quarts logs
 if(loggerName!= null && loggerName.equalsIgnoreCase("quartz"))return;
 		gcLogRecord logRecord = new gcLogRecord(msg, level, loggerName);
