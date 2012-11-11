@@ -18,6 +18,7 @@ public final class gcLogRecord {
 
 
 	gcLogRecord(String msg, gcLogger.LEVEL level, String postfix) {
+		if(level == null) throw new NullPointerException();
 		if(msg == null)
 			this.msg = "null";
 		else

@@ -9,6 +9,7 @@ public class clientPacket {
 	public clientPacket() {
 	}
 	public clientPacket(String packetString) {
+		if(packetString == null) throw new NullPointerException();
 		this.packetString = packetString;
 	}
 
@@ -27,6 +28,7 @@ public class clientPacket {
 		return sendHELLO(version, username, null);
 	}
 	public static clientPacket sendHELLO(String version, String username, String password) {
+		if(version == null) throw new NullPointerException();
 		String hello = "HELLO "+version;
 		if(username != null && !username.isEmpty()) {
 			hello += " "+username;

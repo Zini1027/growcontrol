@@ -19,6 +19,7 @@ public class connection {
 
 
 	public connection(String host, int port) {
+		if(host == null) throw new NullPointerException();
 		this.host = host;
 		this.port = port;
 		try {
@@ -36,6 +37,7 @@ public class connection {
 
 
 	public boolean sendPacket(clientPacket packet) {
+		if(packet == null) throw new NullPointerException();
 		if(socket == null || !socket.isConnected()) return false;
 		out.print(clientPacket.EOL);
 		out.print(packet.getPacketString());

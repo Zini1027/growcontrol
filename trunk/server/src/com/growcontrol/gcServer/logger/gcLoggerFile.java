@@ -37,12 +37,14 @@ public class gcLoggerFile extends Thread implements gcLoggerHandler {
 
 
 	public void print(gcLogRecord logRecord) {
+		if(logRecord == null) throw new NullPointerException();
 //		fileHandler
 	}
 
 
 	@Override
 	public void setLogLevel(LEVEL level) {
+//		this.level = level;
 	}
 
 

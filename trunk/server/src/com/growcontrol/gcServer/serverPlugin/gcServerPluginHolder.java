@@ -28,6 +28,8 @@ public class gcServerPluginHolder {
 	// new plugin instance
 	public gcServerPluginHolder(String className, Class<?> pluginClass)
 	throws InstantiationException, IllegalAccessException {
+		if(className   == null) throw new NullPointerException();
+		if(pluginClass == null) throw new NullPointerException();
 		this.className = className;
 		plugin = (gcServerPlugin) pluginClass.newInstance();
 		plugin.setHolder(this);

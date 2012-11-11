@@ -17,6 +17,7 @@ public class gcServerDevice {
 		this.deviceName = deviceName;
 	}
 	public void StartDevice(RunMode runMode) {
+		if(runMode == null) throw new NullPointerException();
 		synchronized(runMode) {
 			if(this.runMode != null) return;
 			this.runMode = runMode;
@@ -37,6 +38,7 @@ public class gcServerDevice {
 
 	// enum from string
 	public static RunMode RunModeFromString(String mode) {
+		if(mode == null) throw new NullPointerException();
 		if(mode.equalsIgnoreCase("repeat") || mode.equalsIgnoreCase("repeating"))
 			return RunMode.REPEAT;
 		else if(mode.equalsIgnoreCase("runonce") || mode.equalsIgnoreCase("once"))
@@ -49,11 +51,13 @@ public class gcServerDevice {
 
 	// output commands
 	public void addOutputCommand(String commandStr) {
+		if(commandStr == null) throw new NullPointerException();
 		synchronized(outputCommands) {
 			this.outputCommands.add(commandStr);
 		}
 	}
 	public void addOutputCommands(List<String> outputCommands) {
+		if(outputCommands == null) throw new NullPointerException();
 		synchronized(outputCommands) {
 			this.outputCommands.addAll(outputCommands);
 		}

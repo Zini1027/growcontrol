@@ -41,6 +41,7 @@ public class gcScheduler implements Job {
 
 	// scheduler instance
 	public static synchronized gcScheduler getScheduler(String groupName) {
+		if(groupName == null) throw new NullPointerException();
 		if(schedMap.containsKey(groupName))
 			return schedMap.get(groupName);
 		gcScheduler sched = new gcScheduler(groupName);
@@ -52,6 +53,7 @@ public class gcScheduler implements Job {
 		groupName = null;
 	}
 	public gcScheduler(String groupName) {
+		if(groupName == null) throw new NullPointerException();
 		this.groupName = groupName;
 		log = gcLogger.getLogger("quartz:"+groupName);
 		if(scheduler == null) {
@@ -118,6 +120,8 @@ public class gcScheduler implements Job {
 
 	// new task
 	public boolean newTask(String taskName, Runnable task, ScheduleBuilder<?> schedBuilder) {
+		if(task == null) throw new NullPointerException();
+		if(schedBuilder == null) throw new NullPointerException();
 		if(scheduler == null) {
 			gcServer.log.warning("scheduler is null!");
 			return false;
@@ -183,6 +187,7 @@ log.severe("unique task name generation not finished!!!");
 	// cron trigger
 	// example: "0/20 * * * * ?"
 	public static CronScheduleBuilder newTriggerCron(String cron) {
+		if(cron == null) throw new NullPointerException();
 		return CronScheduleBuilder.cronSchedule(cron);
 	}
 
@@ -190,6 +195,7 @@ log.severe("unique task name generation not finished!!!");
 	// run task
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
+		if(context == null) throw new NullPointerException();
 		JobDetail details = context.getJobDetail();
 		JobDataMap dataMap = details.getJobDataMap();
 		String groupName = dataMap.getString(GROUP_NAME);

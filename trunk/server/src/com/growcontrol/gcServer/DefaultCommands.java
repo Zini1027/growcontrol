@@ -42,6 +42,8 @@ public class DefaultCommands {
 
 	// run commands
 	public static boolean onCommand(gcCommand command, String[] args) {
+		if(command == null) throw new NullPointerException();
+		if(args    == null) throw new NullPointerException();
 		// stop
 		if(command.equals("stop")) {
 			gcServer.Shutdown();

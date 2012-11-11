@@ -4,14 +4,15 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import com.growcontrol.gcClient.protocol.connection;
-import com.growcontrol.gcClient.protocol.packets.clientPacketHello;
+import com.growcontrol.gcClient.frames.frameLogin;
+import com.growcontrol.gcClient.socketClient.connection;
 
 public class gcClient {
 	public static final String version = "3.0.1";
 	private static gcClient client = null;
 	public static connection conn = null;
 
+frameLogin login;
 
 	public static void main(String[] args) {
 		if(client != null) throw new UnsupportedOperationException("Cannot redefine singleton gcClient; already running");
@@ -28,6 +29,8 @@ public class gcClient {
 
 
 	public gcClient() {
+//login = new frameLogin();
+//return;
 		// connect to server
 		conn = new connection("192.168.3.174", 1142);
 		conn.sendPacket(new clientPacketHello(version, "lorenzo", "pass"));
@@ -36,6 +39,7 @@ public class gcClient {
 
 	// md5
 	public static String md5(String text) throws NoSuchAlgorithmException, UnsupportedEncodingException { 
+		if(text == null) throw new NullPointerException();
 		MessageDigest md = MessageDigest.getInstance("MD5");
 		byte[] md5hash = new byte[32];
 		md.update(text.getBytes("iso-8859-1"), 0, text.length());
@@ -43,6 +47,7 @@ public class gcClient {
 		return md5_convertToHex(md5hash);
 	}
 	private static String md5_convertToHex(byte[] data) { 
+		if(data == null) throw new NullPointerException();
 		StringBuffer buf = new StringBuffer();
 		for(int i=0; i<data.length; i++) {
 			int halfbyte = (data[i] >>> 4) & 0x0F;

@@ -21,6 +21,7 @@ public class serverPacket {
 
 	// HEY <server version>
 	public static serverPacket sendHEY(String version) {
+		if(version == null) throw new NullPointerException();
 		String hey = "HEY "+version;
 		serverPacket packet = new serverPacket(hey+EOL);
 		return packet;
