@@ -1,6 +1,5 @@
 package com.growcontrol.gcServer;
 
-import java.io.File;
 import java.util.List;
 
 import com.growcontrol.gcServer.config.gcConfig;
@@ -10,11 +9,6 @@ public class ServerConfig {
 	protected gcConfig config = null;
 	protected String configsPath = "";
 
-	public String version = null;
-	public String logLevel = null;
-	public long tickInterval = 1000;
-	public int listenPort = 1142;
-
 
 	// load config.yml
 	public ServerConfig() {
@@ -22,25 +16,56 @@ public class ServerConfig {
 	}
 	public ServerConfig(String path) {
 		if(path != null) configsPath = path;
-		if(!configsPath.isEmpty())
-			if(!configsPath.endsWith(File.separator))
-				configsPath += File.separator;
-		gcServer.log.debug("Loading config file: "+configsPath+"config.yml");
-		if(configsPath.isEmpty())
-			config = gcConfig.loadFile("config.yml");
-		else
+		try {
 			config = gcConfig.loadFile(configsPath, "config.yml");
-		if(config == null) return;
-		version = config.getString("Version");
-		logLevel = config.getString("Log Level");
-		tickInterval = config.getLong("Tick Interval");
-		listenPort = config.getInt("Listen Port");
-		if(listenPort < 1) listenPort = 1142;
+		} catch (Exception e) {
+			gcServer.log.exception(e);
+		}
+	}
+
+
+	// version
+	public String getVersion() {
+		if(config == null)
+			return null;
+		return config.getString("Version");
+	}
+
+
+	// log level
+	public String getLogLevel() {
+		if(config == null)
+			return null;
+		return config.getString("Log Level");
+	}
+
+
+	// tick interval
+	public long getTickInterval() {
+		if(config == null)
+			return 1000;
+		return gcServer.MinMax(
+			config.getLong("Tick Interval"),
+			1,
+			60000);
+	}
+
+
+	// listen port
+	public int getListenPort() {
+		if(config == null)
+			return 1142;
+		return gcServer.MinMax(
+			config.getInt("Listen Port"),
+			1,
+			65536);
 	}
 
 
 	// zones (rooms)
 	public List<String> getZones() {
+		if(config == null)
+			return null;
 		try {
 			@SuppressWarnings("unchecked")
 			List<String> zones = (List<String>) config.get("zones");
