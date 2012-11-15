@@ -1,0 +1,8 @@
+name: gcTimer
+servermain: com.growcontrol.gctimer.gcTimer.class
+clientmain:
+version: 1.0.0
+author: lorenzop
+website: http://www.growcontrol.com/
+depend: []
+softdepend: []

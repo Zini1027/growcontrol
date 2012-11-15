@@ -1,6 +1,7 @@
 package com.growcontrol.arduinogc;
 
 import com.growcontrol.gcServer.commands.gcCommand;
+import com.growcontrol.gcServer.serverPlugin.events.gcServerEvent;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListenerCommand;
 
 public class CommandsListener implements gcServerPluginListenerCommand {
@@ -8,6 +9,7 @@ public class CommandsListener implements gcServerPluginListenerCommand {
 
 	@Override
 	public boolean onCommand(gcCommand command, String[] args) {
+ArduinoGC.log.severe("Command: "+command.toString());
 //		// set output
 //		if(command.equalsIgnoreCase("set")) {
 //			if(numArgs < 3) return false;
@@ -34,6 +36,13 @@ public class CommandsListener implements gcServerPluginListenerCommand {
 //		if(command.equalsIgnoreCase("watch")) {
 //			return true;
 //		}
+		return false;
+	}
+
+	@Override
+	public boolean fire(gcServerEvent event) {
+		// TODO Auto-generated method stub
+		ArduinoGC.log.severe("Commands listener fired!");
 		return false;
 	}
 
