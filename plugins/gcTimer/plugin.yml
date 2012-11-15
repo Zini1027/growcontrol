@@ -1,8 +1,8 @@
-name: gcTimer
-servermain: com.growcontrol.gctimer.gcTimer.class
-clientmain:
-version: 1.0.0
-author: lorenzop
-website: http://www.growcontrol.com/
-depend: []
-softdepend: []
+Plugin Name: gcTimer
+Plugin Version: 1.0.0
+Server Main: com.growcontrol.gctimer.gcTimer.class
+Client Main:
+Author: lorenzop
+Website: http://www.growcontrol.com/
+Depend: []
+SoftDepend: []
