@@ -3,11 +3,8 @@ package com.growcontrol.gcServer.serverPlugin;
 import com.growcontrol.gcServer.gcServer;
 import com.growcontrol.gcServer.commands.gcCommand;
 import com.growcontrol.gcServer.logger.gcLogger;
-import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListenerCommand;
-import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListenerDevice;
-import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListenerInput;
-import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListenerOutput;
-import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListenerTick;
+import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListener;
+import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListener.ListenerType;
 
 public abstract class gcServerPlugin {
 
@@ -39,30 +36,8 @@ public abstract class gcServerPlugin {
 
 
 	// register listeners
-	protected void registerListenerCommand(gcServerPluginListenerCommand listener) {
-		if(listener == null) throw new NullPointerException();
-		gcServerPluginLoader.registerListenerCommand(pluginHolder.className, listener);
-		getLogger().debug("Registered command listener");
-	}
-	protected void registerListenerTick(gcServerPluginListenerTick listener) {
-		if(listener == null) throw new NullPointerException();
-		gcServerPluginLoader.registerListenerTick(pluginHolder.className, listener);
-		getLogger().debug("Registered tick listener");
-	}
-	protected void registerListenerOutput(gcServerPluginListenerOutput listener) {
-		if(listener == null) throw new NullPointerException();
-		gcServerPluginLoader.registerListenerOutput(pluginHolder.className, listener);
-		getLogger().debug("Registered output listener");
-	}
-	protected void registerListenerInput(gcServerPluginListenerInput listener) {
-		if(listener == null) throw new NullPointerException();
-		gcServerPluginLoader.registerListenerInput(pluginHolder.className, listener);
-		getLogger().debug("Registered input listener");
-	}
-	protected void registerListenerDevice(gcServerPluginListenerDevice listener) {
-		if(listener == null) throw new NullPointerException();
-		gcServerPluginLoader.registerListenerDevice(pluginHolder.className, listener);
-		getLogger().debug("Registered device listener");
+	protected void registerListener(ListenerType type, gcServerPluginListener listener) {
+		gcServer.pluginManager.registerListener(pluginHolder.className, type, listener);
 	}
 
 

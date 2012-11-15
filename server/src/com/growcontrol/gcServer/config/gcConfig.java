@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import org.yaml.snakeyaml.Yaml;
 
@@ -18,19 +20,41 @@ public class gcConfig {
 	protected HashMap<String, Object> data = new HashMap<String, Object>();
 
 
-	// new instance
+	// new instance (file)
 	public static gcConfig loadFile(String filePath, String fileName) {
-		if(fileName==null || fileName.isEmpty()) return null;
-		gcConfig config = new gcConfig(openFile(filePath, fileName));
-		return config;
+		if(fileName == null) throw new NullPointerException();
+		if(fileName.isEmpty()) return null;
+		return new gcConfig(openFile(filePath, fileName));
 	}
 	public static gcConfig loadFile(String fileName) {
 		return loadFile(null, fileName);
 	}
 
 
+	// load yml path / filename
+	public static gcConfig loadResource(String filePath, String fileName) {
+		return new gcConfig(openResource(filePath, fileName));
+	}
+	// load yml filename
+	public static gcConfig loadResource(String fileName) {
+		return loadResource(null, fileName);
+	}
+
+
+	// load yml from jar
+	public static gcConfig loadJarResource(File jarFile, String fileName) throws IOException {
+		if(jarFile == null) throw new NullPointerException();
+		if(fileName == null) throw new NullPointerException();
+		JarFile jar = new JarFile(jarFile);
+		JarEntry entry = jar.getJarEntry(fileName);
+		if(entry == null) return null;
+		InputStream fileStream = jar.getInputStream(entry);
+		return new gcConfig(fileStream);
+	}
+
+
 	// config instance
-	private gcConfig(InputStream fileInput) {
+	public gcConfig(InputStream fileInput) {
 		if(fileInput == null) throw new NullPointerException();
 		try {
 			Yaml yml = new Yaml();
@@ -53,24 +77,55 @@ public class gcConfig {
 	protected static InputStream openFile(String filePath, String fileName) {
 		if(fileName == null) throw new NullPointerException();
 		if(fileName.isEmpty()) return null;
-		if(!fileName.endsWith(".yml")) fileName += ".yml";
-		String fileStr;
-		if(filePath==null || filePath.isEmpty())
-			fileStr = fileName;
-		else
-			fileStr = filePath + File.separator + fileName;
+		String path = sanFilePath(filePath, fileName);
+		gcServer.log.debug("Loading config file: "+path);
+		return openFile(path);
+	}
+	protected static InputStream openFile(String fileStr) {
+		if(fileStr == null) throw new NullPointerException();
+		if(fileStr.isEmpty()) return null;
 		try {
 			File file = new File(fileStr);
 			if(!file.exists()) throw new FileNotFoundException("File not found!");
 			return new FileInputStream(file);
 		} catch (FileNotFoundException ignore) {
 			gcServer.log.debug("Failed to load config file: "+fileStr);
-			try {
-				return gcServer.class.getResourceAsStream(fileStr);
-			} catch(Exception ignore2) {
-				gcServer.log.debug("Not found as a resource either!");
-				return null;
-			}
+			return openResource(fileStr);
+		}
+	}
+
+
+	// load resource config
+	protected static InputStream openResource(String filePath, String fileName) {
+		if(fileName == null) throw new NullPointerException();
+		if(fileName.isEmpty()) return null;
+		return openResource(sanFilePath(filePath, fileName));
+	}
+	protected static InputStream openResource(String fileStr) {
+		if(fileStr == null) throw new NullPointerException();
+		if(fileStr.isEmpty()) return null;
+		try {
+			return gcServer.class.getResourceAsStream(fileStr);
+		} catch(Exception ignore2) {
+			gcServer.log.debug("Not found as a resource either!");
+			return null;
+		}
+	}
+
+
+	protected static String sanFilePath(String filePath, String fileName) {
+		if(fileName == null) throw new NullPointerException();
+		if(fileName.isEmpty()) return null;
+		if(!fileName.endsWith(".yml")) fileName += ".yml";
+		if(filePath == null || filePath.isEmpty())
+			return fileName;
+		if(filePath.endsWith("/") || filePath.endsWith("\\") || fileName.startsWith("/") || fileName.startsWith("\\"))
+		{
+			return filePath + fileName;
+		}
+		else
+		{
+			return filePath + File.separator + fileName;
 		}
 	}
 

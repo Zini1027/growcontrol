@@ -13,7 +13,7 @@ import com.growcontrol.gcServer.logger.gcLogger;
 import com.growcontrol.gcServer.ntp.gcClock;
 import com.growcontrol.gcServer.scheduler.gcScheduler;
 import com.growcontrol.gcServer.scheduler.gcTicker;
-import com.growcontrol.gcServer.serverPlugin.gcServerPluginLoader;
+import com.growcontrol.gcServer.serverPlugin.gcServerPluginManager;
 import com.growcontrol.gcServer.socketServer.socketServer;
 
 public class gcServer extends Thread {
@@ -27,7 +27,7 @@ public class gcServer extends Thread {
 	public static final gcLogger log = gcLogger.getLogger(null);
 
 	// server modules
-	public static final gcServerPluginLoader pluginLoader = new gcServerPluginLoader();
+	public static final gcServerPluginManager pluginManager = new gcServerPluginManager();
 //	public static final gcServerDeviceLoader deviceLoader = new gcServerDeviceLoader();
 
 	// config files
@@ -68,8 +68,8 @@ public class gcServer extends Thread {
 				log.debug("Set configs path to: "+configsPath);
 			// plugins path
 			} else if(arg.startsWith("pluginspath=")) {
-				pluginLoader.setPath(arg.substring(12));
-				log.debug("Set plugins path to: "+pluginLoader.getPath());
+				pluginManager.setPath(arg.substring(12));
+				log.debug("Set plugins path to: "+pluginManager.getPath());
 			}
 		}
 		// start gc server
@@ -97,9 +97,10 @@ System.exit(0);
 			System.exit(1);
 		}
 		// set log level
-		if(config.logLevel != null && !config.logLevel.isEmpty())
+		String logLevel = config.getLogLevel();
+		if(logLevel != null && !logLevel.isEmpty())
 			if(!log.getLogLevel().equals(gcLogger.LEVEL.DEBUG))
-				log.setLogLevel(config.logLevel);
+				log.setLogLevel(logLevel);
 
 		// start jline console
 		if(!noconsole) this.start();
@@ -119,13 +120,13 @@ System.exit(0);
 		sched.newTask("gcTicker", ticker, gcScheduler.newTriggerSeconds(1, true));
 
 		// load plugins
-		pluginLoader.LoadPlugins();
+		pluginManager.LoadPlugins();
 
 //		// load devices
 //		deviceLoader.LoadDevices(Arrays.asList(new String[] {"Lamp"}));
 
 		// start socket listener
-		socket = new socketServer(config.listenPort);
+		socket = new socketServer(config.getListenPort());
 
 		// start schedulers
 		log.info("Starting schedulers..");
@@ -147,7 +148,7 @@ System.exit(0);
 		// schedulers
 		gcScheduler.Shutdown();
 		// plugins
-		pluginLoader.UnloadPlugins();
+		pluginManager.UnloadPlugins();
 		// loggers
 		AnsiConsole.systemUninstall();
 	}
@@ -203,7 +204,7 @@ System.exit(0);
 			args = new String[0];
 		}
 		// try plugins first
-		if(gcServerPluginLoader.doCommand(commandStr, args)) return;
+		if(pluginManager.doCommand(commandStr, args)) return;
 		// try default internal commands
 		gcCommand command = DefaultCommands.commands.getCommandOrAlias(commandStr);
 		if(command != null)
