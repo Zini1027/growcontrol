@@ -1,0 +1,8 @@
+name: ArduinoGC
+servermain: com.growcontrol.arduinogc.ArduinoGC.class
+clientmain: com.growcontrol.arduinogc.gui.ArduinoGC.class
+version: 1.4.0
+author: lorenzop
+website: http://www.growcontrol.com/
+depend: []
+softdepend: []

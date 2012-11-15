@@ -9,6 +9,7 @@ import com.growcontrol.arduinogc.interfaces.ArduinoUSB;
 import com.growcontrol.gcServer.config.gcConfig;
 import com.growcontrol.gcServer.logger.gcLogger;
 import com.growcontrol.gcServer.serverPlugin.gcServerPlugin;
+import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListener.ListenerType;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListenerOutput;
 
 public class ArduinoGC extends gcServerPlugin implements gcServerPluginListenerOutput {
@@ -28,8 +29,8 @@ public class ArduinoGC extends gcServerPlugin implements gcServerPluginListenerO
 		registerCommand("arduinogc")
 			.addAlias("arduino");
 		// register listeners
-		registerListenerCommand(new CommandsListener());
-		registerListenerOutput(this);
+		registerListener(ListenerType.COMMAND, new CommandsListener());
+//		registerListenerOutput(this);
 		// load configs
 		LoadConfig();
 	}

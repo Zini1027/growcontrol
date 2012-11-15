@@ -1,0 +1,8 @@
+name: gcPromptDisplay
+servermain: com.growcontrol.gcpromptdisplay.gcPromptDisplay.class
+clientmain:
+version: 1.0.0
+author: lorenzop
+website: http://www.growcontrol.com/
+depend: []
+softdepend: []
