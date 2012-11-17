@@ -30,12 +30,14 @@ public class gcLoggerFile extends Thread implements gcLoggerHandler {
 	}
 
 
+	@Override
 	public gcLoggerHandler setStrip(boolean enabled) {
 		strip = enabled;
 		return this;
 	}
 
 
+	@Override
 	public void print(gcLogRecord logRecord) {
 		if(logRecord == null) throw new NullPointerException();
 //		fileHandler

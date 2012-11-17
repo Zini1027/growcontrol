@@ -8,12 +8,13 @@ import java.util.List;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
-import com.growcontrol.gcServer.commands.gcCommand;
+import com.growcontrol.gcServer.commands.DefaultCommands;
 import com.growcontrol.gcServer.logger.gcLogger;
 import com.growcontrol.gcServer.ntp.gcClock;
-import com.growcontrol.gcServer.scheduler.gcScheduler;
+import com.growcontrol.gcServer.scheduler.gcSchedulerManager;
 import com.growcontrol.gcServer.scheduler.gcTicker;
 import com.growcontrol.gcServer.serverPlugin.gcServerPluginManager;
+import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListener.ListenerType;
 import com.growcontrol.gcServer.socketServer.socketServer;
 
 public class gcServer extends Thread {
@@ -34,8 +35,8 @@ public class gcServer extends Thread {
 	public static ServerConfig config = null;
 	public static String configsPath = null;
 
-	// schedulers
-	public static gcScheduler sched = null;
+	// server scheduler
+	private static gcSchedulerManager scheduler = null;
 	private static gcTicker ticker = null;
 
 	// socket pool
@@ -103,6 +104,7 @@ System.exit(0);
 				log.setLogLevel(logLevel);
 
 		// start jline console
+		pluginManager.registerListener(ListenerType.COMMAND, new DefaultCommands());
 		if(!noconsole) this.start();
 
 		// query time server
@@ -114,10 +116,10 @@ System.exit(0);
 		if(zones == null) zones = new ArrayList<String>();
 		log.info("Loaded "+Integer.toString(zones.size())+" zones");
 
-		// load scheduler paused
-		sched = gcScheduler.getScheduler("gcServer");
+		// load scheduler (paused)
+		scheduler = gcSchedulerManager.getScheduler("gcServer");
+		// load ticker
 		ticker = new gcTicker();
-		sched.newTask("gcTicker", ticker, gcScheduler.newTriggerSeconds(1, true));
 
 		// load plugins
 		pluginManager.LoadPlugins();
@@ -130,7 +132,7 @@ System.exit(0);
 
 		// start schedulers
 		log.info("Starting schedulers..");
-		gcScheduler.Start();
+		gcSchedulerManager.StartAll();
 
 //TODO: remove this
 //log.severe("Listing Com Ports:");
@@ -140,15 +142,18 @@ System.exit(0);
 
 
 	public static void Shutdown() {
-		log.warning("Stopping GC Server..");
-		gcScheduler.pauseAll(true);
+//TODO: make this threaded!
 		stopping = true;
+		System.out.println();
+		log.warning("Stopping GC Server..");
+		// pause scheduler
+		gcSchedulerManager.StopAll();
 		// close sockets
 		socket.stop();
-		// schedulers
-		gcScheduler.Shutdown();
 		// plugins
 		pluginManager.UnloadPlugins();
+		// end schedulers
+		gcSchedulerManager.ShutdownAll();
 		// loggers
 		AnsiConsole.systemUninstall();
 	}
@@ -159,7 +164,7 @@ System.exit(0);
 	}
 
 
-	// console loop
+	// console input loop
 	public void run() {
 		if(noconsole) return;
 		//TODO: password login
@@ -182,8 +187,7 @@ System.exit(0);
 		System.out.println();
 		System.out.println();
 	}
-
-
+	// process command
 	public static void processCommand(String line) {
 		if(line == null) throw new NullPointerException();
 		line = line.trim();
@@ -203,19 +207,24 @@ System.exit(0);
 			commandStr = new String(line);
 			args = new String[0];
 		}
-		// try plugins first
-		if(pluginManager.doCommand(commandStr, args)) return;
-		// try default internal commands
-		gcCommand command = DefaultCommands.commands.getCommandOrAlias(commandStr);
-		if(command != null)
-			if(DefaultCommands.onCommand(command, args))
-				return;
+		// trigger event
+		pluginManager.triggerEventCommand(commandStr, args);
 		// command not found
 		for(String arg : args) commandStr += " "+arg;
 		log.warning("Command not processed! "+commandStr);
 	}
 
 
+	// schedulers
+	public static gcSchedulerManager getScheduler() {
+		return scheduler;
+	}
+	public static gcTicker getTicker() {
+		return ticker;
+	}
+
+
+	// is console input enabled
 	public static boolean isConsoleEnabled() {
 		return !noconsole;
 	}
@@ -399,9 +408,9 @@ System.exit(0);
 		AnsiConsole.out.println();
 
 		AnsiConsole.out.println("Copyright (C) 2007-2013 PoiXson, Mattsoft");
-		AnsiConsole.out.println("This program comes with absolutely no warranty; for details type 'show w'.");
-		AnsiConsole.out.println("This is free software, and you are welcome to redistribute it");
-		AnsiConsole.out.println("under certain conditions; type 'show c' for details.");
+		AnsiConsole.out.println("This program comes with absolutely no warranty.");
+		AnsiConsole.out.println("This is free software, and you are welcome to redistribute it under certain conditions.");
+		AnsiConsole.out.println("for details type 'show w' for warranty, or 'show c' for conditions");
 		AnsiConsole.out.println();
 
 // 1 |      PoiXson

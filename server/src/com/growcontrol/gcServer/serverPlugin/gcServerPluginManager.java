@@ -2,18 +2,25 @@ package com.growcontrol.gcServer.serverPlugin;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
 
 import com.growcontrol.gcServer.gcServer;
+import com.growcontrol.gcServer.serverPlugin.events.gcServerEvent;
+import com.growcontrol.gcServer.serverPlugin.events.gcServerEvent.EventPriority;
 import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
-import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListener;
-import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListener.ListenerType;
-import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListenerHolder;
+import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListener;
+import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListener.ListenerType;
+import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListenerHolder;
 
 public class gcServerPluginManager {
 
@@ -21,7 +28,7 @@ public class gcServerPluginManager {
 	protected String pluginsPath = "plugins";
 
 	// listeners
-	protected gcServerPluginListenerHolder listenersCommand = new gcServerPluginListenerHolder(ListenerType.COMMAND);
+	protected final gcServerListenerHolder listenersCommand = new gcServerListenerHolder(ListenerType.COMMAND);
 //	protected static HashMap<String, gcServerPluginListenerCommand>	listenersCommand	= new HashMap<String, gcServerPluginListenerCommand>();
 //	protected static HashMap<String, gcServerPluginListenerTick>	listenersTick		= new HashMap<String, gcServerPluginListenerTick>();
 //	protected static HashMap<String, gcServerPluginListenerOutput>	listenersOutput		= new HashMap<String, gcServerPluginListenerOutput>();
@@ -127,6 +134,104 @@ public class gcServerPluginManager {
 	}
 
 
+	// register listeners
+	public void registerListener(ListenerType type, gcServerListener listener) {
+		registerListener(null, type, listener);
+	}
+	public void registerListener(String className, ListenerType type, gcServerListener listener) {
+		if(type.equals(ListenerType.COMMAND))
+			listenersCommand.registerListener(listener);
+	}
+//TODO: how to unregister listeners?
+	public void unregisterListeners() {
+	}
+
+
+	// run event listeners
+	public boolean triggerEventCommand(String commandStr, String[] args) {
+		if(commandStr == null) throw new NullPointerException();
+		if(args       == null) throw new NullPointerException();
+		return triggerEvent( new gcServerEventCommand(commandStr, args) );
+	}
+	public boolean triggerEvent(gcServerEvent event) {
+		if(event == null) throw new NullPointerException();
+		// highest
+		triggerEventPriority(event, EventPriority.HIGHEST);
+		// high
+		triggerEventPriority(event, EventPriority.HIGH);
+		// normal
+		triggerEventPriority(event, EventPriority.NORMAL);
+		// low
+		triggerEventPriority(event, EventPriority.LOW);
+		// lowest
+		triggerEventPriority(event, EventPriority.LOWEST);
+		return event.isHandled();
+	}
+	private boolean triggerEventPriority(gcServerEvent event, EventPriority priority) {
+		if(event == null) throw new NullPointerException();
+		// command listeners
+		if(event instanceof gcServerEventCommand)
+			return listenersCommand.triggerEvent(event, priority);
+		// somethingelse listeners
+//		if(event instanceof gcServerEventSomethingelse)
+//			return listenersSomethingelse.triggerEvent(event, priority);
+		return event.isHandled();
+	}
+
+
+
+
+//		for(Map.Entry<String, gcServerPluginListenerCommand> entry : listenersCommand.entrySet()) {
+//			// get plugin
+//			gcServerPluginHolder plugin = getPluginByClassName(entry.getKey());
+//			if(plugin == null) continue;
+//			// has command
+//			gcCommand command = plugin.commands.getCommandOrAlias(commandStr);
+//			if(command == null) continue;
+//			// get listener
+//			gcServerPluginListenerCommand listener = entry.getValue();
+//			if(listener == null) continue;
+//			// run listener
+//			if(listener.onCommand(command, args)) return true;
+//		}
+//		return false;
+
+
+//	public void doTick() {
+//		for(Map.Entry<String, gcServerPluginListenerTick> entry : listenersTick.entrySet()) {
+//			// validate plugin
+//			if(getPluginByClassName(entry.getKey()) == null) continue;
+//			// get listener
+//			gcServerPluginListenerTick listener = entry.getValue();
+//			if(listener == null) continue;
+//			// run listener
+//			listener.onTick();
+//		}
+//	}
+//	public boolean doOutput(String[] args) {
+//		if(args == null) throw new NullPointerException();
+//		if(args.length < 1) return false;
+//		for(Map.Entry<String, gcServerPluginListenerOutput> entry : listenersOutput.entrySet()) {
+//			// get plugin
+//			gcServerPluginHolder plugin = getPluginByClassName(entry.getKey());
+//			if(plugin == null) continue;
+////TODO: should outputs be registered?
+////			// is output registered
+////			plugin.isOutputRegistered()
+//			// get listener
+//			gcServerPluginListenerOutput listener = entry.getValue();
+//			if(listener == null) continue;
+//			// run listener
+//			if(listener.onOutput(args)) return true;
+//		}
+//		return false;
+//	}
+//	public boolean doInput(String[] args) {
+//TODO:
+//		return false;
+//	}
+
+
 	// list class names
 	public static List<String> getClassNames(String jarName) throws IOException {
 		if(jarName == null) throw new NullPointerException();
@@ -209,78 +314,6 @@ public class gcServerPluginManager {
 		gcServerPluginHolder plugin = plugins.get(className);
 		return plugin;
 	}
-
-
-	// register listeners
-	public void registerListener(String className, ListenerType type, gcServerPluginListener listener) {
-		if(type.equals(ListenerType.COMMAND))
-			listenersCommand.registerListener(listener);
-	}
-//TODO: how to unregister listeners?
-	public void unregisterListeners() {
-	}
-
-
-	// run listeners
-	public boolean doCommand(String commandStr, String[] args) {
-		if(commandStr == null) throw new NullPointerException();
-		if(args       == null) throw new NullPointerException();
-
-
-		listenersCommand.fireListeners(new gcServerEventCommand(commandStr, args));
-
-
-
-
-
-//		for(Map.Entry<String, gcServerPluginListenerCommand> entry : listenersCommand.entrySet()) {
-//			// get plugin
-//			gcServerPluginHolder plugin = getPluginByClassName(entry.getKey());
-//			if(plugin == null) continue;
-//			// has command
-//			gcCommand command = plugin.commands.getCommandOrAlias(commandStr);
-//			if(command == null) continue;
-//			// get listener
-//			gcServerPluginListenerCommand listener = entry.getValue();
-//			if(listener == null) continue;
-//			// run listener
-//			if(listener.onCommand(command, args)) return true;
-//		}
-		return false;
-	}
-//	public void doTick() {
-//		for(Map.Entry<String, gcServerPluginListenerTick> entry : listenersTick.entrySet()) {
-//			// validate plugin
-//			if(getPluginByClassName(entry.getKey()) == null) continue;
-//			// get listener
-//			gcServerPluginListenerTick listener = entry.getValue();
-//			if(listener == null) continue;
-//			// run listener
-//			listener.onTick();
-//		}
-//	}
-//	public boolean doOutput(String[] args) {
-//		if(args == null) throw new NullPointerException();
-//		if(args.length < 1) return false;
-//		for(Map.Entry<String, gcServerPluginListenerOutput> entry : listenersOutput.entrySet()) {
-//			// get plugin
-//			gcServerPluginHolder plugin = getPluginByClassName(entry.getKey());
-//			if(plugin == null) continue;
-////TODO: should outputs be registered?
-////			// is output registered
-////			plugin.isOutputRegistered()
-//			// get listener
-//			gcServerPluginListenerOutput listener = entry.getValue();
-//			if(listener == null) continue;
-//			// run listener
-//			if(listener.onOutput(args)) return true;
-//		}
-//		return false;
-//	}
-//	public boolean doInput(String[] args) {
-//TODO:
-//		return false;
-//	}
 
 
 }
