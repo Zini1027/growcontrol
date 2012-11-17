@@ -2,8 +2,9 @@ package com.growcontrol.gcServer.serverPlugin.events;
 
 import com.growcontrol.gcServer.gcServer;
 
-public abstract class gcServerEvent {
+public class gcServerEvent {
 
+	public static enum EventPriority {LOWEST, LOW, NORMAL, HIGH, HIGHEST}
 
 	protected boolean handled = false;
 

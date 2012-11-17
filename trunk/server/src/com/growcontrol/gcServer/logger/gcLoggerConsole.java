@@ -22,12 +22,14 @@ private boolean strip = false;
 	}
 
 
+	@Override
 	public gcLoggerHandler setStrip(boolean enabled) {
 		strip = enabled;
 		return this;
 	}
 
 
+	@Override
 	public void print(gcLogRecord logRecord) {
 		if(logRecord == null) throw new NullPointerException();
 		if(!gcLogger.isLoggable(level, logRecord.level)) return;

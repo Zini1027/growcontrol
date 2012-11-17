@@ -1,95 +1,115 @@
-package com.growcontrol.gcServer;
+package com.growcontrol.gcServer.commands;
 
-import com.growcontrol.gcServer.commands.gcCommand;
-import com.growcontrol.gcServer.commands.gcCommandsHolder;
-import com.growcontrol.gcServer.scheduler.gcScheduler;
-import com.growcontrol.gcServer.serverPlugin.gcServerPluginLoader;
+import com.growcontrol.gcServer.gcServer;
+import com.growcontrol.gcServer.serverPlugin.events.gcServerEvent.EventPriority;
+import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
+import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListenerCommand;
 
-public class DefaultCommands {
-
-	public static final gcCommandsHolder commands = getDefaultCommands();
+public class DefaultCommands extends gcServerListenerCommand {
 
 
-	private static gcCommandsHolder getDefaultCommands() {
+	public DefaultCommands() {
+		setPriority(EventPriority.LOWEST);
 		gcCommandsHolder commands = new gcCommandsHolder();
 		// basic commands
 		commands.addCommand("stop")
 			.addAlias("exit")
 			.addAlias("quit")
 			.addAlias("shutdown");
-		commands.addCommand("kill");
-		commands.addCommand("start");
-		commands.addCommand("stop");
-		commands.addCommand("pause");
-		commands.addCommand("clear")
-			.addAlias("cls");
-		commands.addCommand("help")
-			.addAlias("?");
-		commands.addCommand("version");
-		commands.addCommand("say")
-		.addAlias("broadcast");
-		commands.addCommand("list");
-		// input / output
-		commands.addCommand("set");
-		commands.addCommand("get");
-		commands.addCommand("watch");
-		// tools
-		commands.addCommand("ping");
-		commands.addCommand("threads");
-		return commands;
+//		commands.addCommand("kill");
+//		commands.addCommand("start");
+//		commands.addCommand("pause");
+//		commands.addCommand("clear")
+//			.addAlias("cls");
+//		commands.addCommand("help")
+//			.addAlias("?");
+//		commands.addCommand("version");
+//		commands.addCommand("say")
+//		.addAlias("broadcast");
+//		commands.addCommand("list");
+//		// input / output
+//		commands.addCommand("set");
+//		commands.addCommand("get");
+//		commands.addCommand("watch");
+//		// tools
+//		commands.addCommand("ping");
+//		commands.addCommand("threads");
+		
 	}
 
 
-	// run commands
-	public static boolean onCommand(gcCommand command, String[] args) {
-		if(command == null) throw new NullPointerException();
-		if(args    == null) throw new NullPointerException();
-		// stop
-		if(command.equals("stop")) {
+	@Override
+	public boolean onCommand(gcServerEventCommand event) {
+System.out.println("COMMAND: "+event.getCommandStr());
+//TODO: command aliases aren't working with this yet
+		if(event.equals("stop")) {
 			gcServer.Shutdown();
 			return true;
 		}
-		// kill
-		if(command.equals("kill"))
-			System.exit(0);
-		// start
-		if(command.equals("start")) {
-			gcScheduler.pauseAll(false);
-			return true;
-		}
-		// stop
-		if(command.equals("stop")) {
-			gcScheduler.pauseAll(true);
-			return true;
-		}
-		// pause
-		if(command.equals("pause")) {
-			gcScheduler.pauseAll();
-			return true;
-		}
-		// clear
-		if(command.equals("clear")) {
-			gcServer.log.clear();
-			return true;
-		}
-		// help
-		if(command.equals("help")) {
-			//TODO:
-			gcServer.log.warning("command not yet implemented");
-			gcServer.log.info("[ Basic Commands ]");
-			gcServer.log.info("version - Displays the current running version.");
-			gcServer.log.info("start - Starts the scheduler.");
-			gcServer.log.info("stop  - Stops the scheduler.");
-			gcServer.log.info("pause - Pauses the scheduler.");
-			gcServer.log.info("clear - Clears the screen.");
-			gcServer.log.info("say - Broadcasts a message.");
-			gcServer.log.info("list plugins - Lists the loaded plugins.");
-			gcServer.log.info("list devices - Lists the loaded devices.");
-			gcServer.log.info("list outputs - Lists the available outputs.");
-			gcServer.log.info("list inputs  - Lists the available inputs.");
-			gcServer.log.info("[ Tools ]");
-			gcServer.log.info("ping - ");
-			gcServer.log.info("threads - ");
+		return false;
+	}
+
+
+
+
+
+
+
+
+//	public static final gcCommandsHolder commands = getDefaultCommands();
+
+
+//		return commands;
+//	}
+
+
+//	// run commands
+//	public static boolean onCommand(gcCommand command, String[] args) {
+//		if(command == null) throw new NullPointerException();
+//		if(args    == null) throw new NullPointerException();
+//		// stop
+
+//		// kill
+//		if(command.equals("kill"))
+//			System.exit(0);
+//		// start
+//		if(command.equals("start")) {
+//			gcScheduler.pauseAll(false);
+//			return true;
+//		}
+//		// stop
+//		if(command.equals("stop")) {
+//			gcScheduler.pauseAll(true);
+//			return true;
+//		}
+//		// pause
+//		if(command.equals("pause")) {
+//			gcScheduler.pauseAll();
+//			return true;
+//		}
+//		// clear
+//		if(command.equals("clear")) {
+//			gcServer.log.clear();
+//			return true;
+//		}
+//		// help
+//		if(command.equals("help")) {
+//			//TODO:
+//			gcServer.log.warning("command not yet implemented");
+//			gcServer.log.info("[ Basic Commands ]");
+//			gcServer.log.info("version - Displays the current running version.");
+//			gcServer.log.info("start - Starts the scheduler.");
+//			gcServer.log.info("stop  - Stops the scheduler.");
+//			gcServer.log.info("pause - Pauses the scheduler.");
+//			gcServer.log.info("clear - Clears the screen.");
+//			gcServer.log.info("say - Broadcasts a message.");
+//			gcServer.log.info("list plugins - Lists the loaded plugins.");
+//			gcServer.log.info("list devices - Lists the loaded devices.");
+//			gcServer.log.info("list outputs - Lists the available outputs.");
+//			gcServer.log.info("list inputs  - Lists the available inputs.");
+//			gcServer.log.info("[ Tools ]");
+//			gcServer.log.info("ping - ");
+//			gcServer.log.info("threads - ");
 // input / output
 //set
 //get
@@ -99,97 +119,111 @@ public class DefaultCommands {
 //quit
 //shutdown
 //kill
-			return true;
-		}
-		// version
-		if(command.equals("version")) {
-			//TODO:
-			gcServer.log.info("GrowControl "+gcServer.version);
-			return true;
-		}
-		// say
-		if(command.equals("say")) {
-			String msg = "";
-			for(String line : args) msg += " "+line;
-			gcServer.log.info("Server says:"+msg);
-			return true;
-		}
+//			return true;
+//		}
+//		// version
+//		if(command.equals("version")) {
+//			//TODO:
+//			gcServer.log.info("GrowControl "+gcServer.version);
+//			return true;
+//		}
+//		// say
+//		if(command.equals("say")) {
+//			String msg = "";
+//			for(String line : args) msg += " "+line;
+//			gcServer.log.info("Server says:"+msg);
+//			return true;
+//		}
 
 		// list plugins/devices/inputs/outputs
-		if(command.equals("list")) {
-			if(args.length >= 1) {
-				if(args[0].equalsIgnoreCase("plugins")) {
-					gcServerPluginLoader.listPlugins();
-					return true;
-				} else if(args[0].equalsIgnoreCase("devices")) {
-					listDevices();
-					return true;
-				} else if(args[0].equalsIgnoreCase("outputs")) {
-					listOutputs();
-					return true;
-				} else if(args[0].equalsIgnoreCase("inputs")) {
-					listInputs();
-					return true;
-				}
-			}
-			gcServer.log.info("Usage: "+command.getUsage());
-			return true;
-		}
-		if(command.equals("plugins")) {
-			//TODO:
-			gcServer.log.warning("command not yet implemented");
-//			gcPluginLoader.listPlugins();
-			return true;
-		}
-		// list devices
-		if(command.equals("devices")) {
-			//TODO:
-			gcServer.log.warning("command not yet implemented");
-//			gcServer.deviceLoader.listDevices();
-			return true;
-		}
+//		if(command.equals("list")) {
+//			if(args.length >= 1) {
+//				if(args[0].equalsIgnoreCase("plugins")) {
+////					gcServerPluginLoader.listPlugins();
+//					return true;
+//				} else if(args[0].equalsIgnoreCase("devices")) {
+//					listDevices();
+//					return true;
+//				} else if(args[0].equalsIgnoreCase("outputs")) {
+//					listOutputs();
+//					return true;
+//				} else if(args[0].equalsIgnoreCase("inputs")) {
+//					listInputs();
+//					return true;
+//				}
+//			}
+//			gcServer.log.info("Usage: "+command.getUsage());
+//			return true;
+//		}
+//		if(command.equals("plugins")) {
+//			//TODO:
+//			gcServer.log.warning("command not yet implemented");
+////			gcPluginLoader.listPlugins();
+//			return true;
+//		}
+//		// list devices
+//		if(command.equals("devices")) {
+//			//TODO:
+//			gcServer.log.warning("command not yet implemented");
+////			gcServer.deviceLoader.listDevices();
+//			return true;
+//		}
+//
+//		// set input / output
+//		if(command.equals("set")) {
+////			if(gcServerPluginLoader.doOutput(args)) {
+////				String msg = ""; for(String arg : args) msg += arg+" ";
+////				gcServer.log.debug("set> "+msg);
+////				return true;
+////			}
+////			String msg = ""; for(String arg : args) msg += arg+" ";
+////			gcServer.log.warning("Failed to find an output plugin! "+msg);
+//			return true;
+//		}
+//		// get input / output
+//		if(command.equals("get")) {
+//			//TODO:
+//			gcServer.log.warning("command not yet implemented");
+//			return true;
+//		}
+//		// watch input / output
+//		if(command.equals("watch")) {
+//			//TODO:
+//			gcServer.log.warning("command not yet implemented");
+//			return true;
+//		}
+//
+//		// ping
+//		if(command.equals("ping")) {
+//			//TODO:
+//			gcServer.log.warning("command not yet implemented");
+//			return true;
+//		}
+//
+//		return false;
+//	}
 
-		// set input / output
-		if(command.equals("set")) {
-			if(gcServerPluginLoader.doOutput(args)) {
-				String msg = ""; for(String arg : args) msg += arg+" ";
-				gcServer.log.debug("set> "+msg);
-				return true;
-			}
-			String msg = ""; for(String arg : args) msg += arg+" ";
-			gcServer.log.warning("Failed to find an output plugin! "+msg);
-			return true;
-		}
-		// get input / output
-		if(command.equals("get")) {
-			//TODO:
-			gcServer.log.warning("command not yet implemented");
-			return true;
-		}
-		// watch input / output
-		if(command.equals("watch")) {
-			//TODO:
-			gcServer.log.warning("command not yet implemented");
-			return true;
-		}
 
-		// ping
-		if(command.equals("ping")) {
-			//TODO:
-			gcServer.log.warning("command not yet implemented");
-			return true;
-		}
-
-		return false;
-	}
+//	private static void listDevices() {
+//	}
+//	private static void listOutputs() {
+//	}
+//	private static void listInputs() {
+//	}
 
 
-	private static void listDevices() {
-	}
-	private static void listOutputs() {
-	}
-	private static void listInputs() {
-	}
+//	@Override
+//	public boolean onEvent(gcServerEvent event) {
+//		// TODO Auto-generated method stub
+//		return false;
+//	}
+
+
+//	@Override
+//	public boolean onCommand(gcCommand command, String[] args) {
+//		// TODO Auto-generated method stub
+//		return false;
+//	}
 
 
 //	if(command.equalsIgnoreCase("threads")) {

@@ -3,8 +3,8 @@ package com.growcontrol.gcServer.serverPlugin;
 import com.growcontrol.gcServer.gcServer;
 import com.growcontrol.gcServer.commands.gcCommand;
 import com.growcontrol.gcServer.logger.gcLogger;
-import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListener;
-import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListener.ListenerType;
+import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListener;
+import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListener.ListenerType;
 
 public abstract class gcServerPlugin {
 
@@ -36,7 +36,7 @@ public abstract class gcServerPlugin {
 
 
 	// register listeners
-	protected void registerListener(ListenerType type, gcServerPluginListener listener) {
+	protected void registerListener(ListenerType type, gcServerListener listener) {
 		gcServer.pluginManager.registerListener(pluginHolder.className, type, listener);
 	}
 
