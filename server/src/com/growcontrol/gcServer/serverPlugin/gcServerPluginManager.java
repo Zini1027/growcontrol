@@ -151,27 +151,30 @@ public class gcServerPluginManager {
 	public boolean triggerEventCommand(String commandStr, String[] args) {
 		if(commandStr == null) throw new NullPointerException();
 		if(args       == null) throw new NullPointerException();
-		return triggerEvent( new gcServerEventCommand(commandStr, args) );
+		gcServerEventCommand event = new gcServerEventCommand(commandStr, args);
+		if(triggerEvent(event)) event.setHandled();
+		return event.isHandled();
 	}
 	public boolean triggerEvent(gcServerEvent event) {
 		if(event == null) throw new NullPointerException();
 		// highest
-		triggerEventPriority(event, EventPriority.HIGHEST);
+		if(triggerEventPriority(event, EventPriority.HIGHEST)) event.setHandled();
 		// high
-		triggerEventPriority(event, EventPriority.HIGH);
+		if(triggerEventPriority(event, EventPriority.HIGH))    event.setHandled();
 		// normal
-		triggerEventPriority(event, EventPriority.NORMAL);
+		if(triggerEventPriority(event, EventPriority.NORMAL))  event.setHandled();
 		// low
-		triggerEventPriority(event, EventPriority.LOW);
+		if(triggerEventPriority(event, EventPriority.LOW))     event.setHandled();
 		// lowest
-		triggerEventPriority(event, EventPriority.LOWEST);
+		if(triggerEventPriority(event, EventPriority.LOWEST))  event.setHandled();
 		return event.isHandled();
 	}
 	private boolean triggerEventPriority(gcServerEvent event, EventPriority priority) {
 		if(event == null) throw new NullPointerException();
 		// command listeners
 		if(event instanceof gcServerEventCommand)
-			return listenersCommand.triggerEvent(event, priority);
+			if(listenersCommand.triggerEvent(event, priority))
+				event.setHandled();
 		// somethingelse listeners
 //		if(event instanceof gcServerEventSomethingelse)
 //			return listenersSomethingelse.triggerEvent(event, priority);

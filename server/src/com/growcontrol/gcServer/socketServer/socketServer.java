@@ -43,19 +43,20 @@ public class socketServer implements Runnable {
 		}
 		gcServer.log.info("Listening on port: "+Integer.toString(port));
 		// loop for new connections
-		while(!stopping) {
+		while(true) {
 			checkClosed();
 			Socket socket = null;
 			try {
 				// wait for a connection
 				socket = listenerSocket.accept();
-			} catch (SocketException e) {
-				if(stopping) {
-					gcServer.log.info("Stopping socket listener");
-					break;
-				}
+			} catch (SocketException ignore) {
 			} catch (IOException e) {
 				gcServer.log.exception(e);
+			}
+			// closing sockets
+			if(stopping) {
+				gcServer.log.info("Stopping socket listener..");
+				break;
 			}
 			socketWorker worker = new socketWorker(socket);
 			socketPool.add(worker);

@@ -188,16 +188,23 @@ public class gcLogger {
 
 
 	// print to handlers
+	public void print(String msg) {
+		print(msg, LEVEL.INFO);
+	}
 	public synchronized void print(String msg, LEVEL level) {
+		if(msg == null) throw new NullPointerException();
 		if(level == null) throw new NullPointerException();
-//TODO: this hides extra quarts logs
-if(loggerName!= null && loggerName.equalsIgnoreCase("quartz"))return;
-		gcLogRecord logRecord = new gcLogRecord(msg, level, loggerName);
+		printRaw( new gcLogRecord(msg, level, loggerName) );
+	}
+	public synchronized void printRaw(gcLogRecord logRecord) {
+		if(logRecord == null) throw new NullPointerException();
 		for(gcLoggerHandler handler : logHandlers)
 			handler.print(logRecord);
 	}
-	public void print(String line) {
-		print(line, LEVEL.INFO);
+	public synchronized void printRaw(String msg) {
+		if(msg == null) throw new NullPointerException();
+		for(gcLoggerHandler handler : logHandlers)
+			handler.print(msg);
 	}
 
 

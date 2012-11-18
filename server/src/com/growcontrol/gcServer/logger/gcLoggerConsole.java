@@ -8,8 +8,6 @@ import com.growcontrol.gcServer.logger.gcLogger.LEVEL;
 
 public class gcLoggerConsole implements gcLoggerHandler {
 
-private boolean strip = false;
-
 	private final jline.ConsoleReader reader;
 	private LEVEL level;
 
@@ -23,24 +21,23 @@ private boolean strip = false;
 
 
 	@Override
-	public gcLoggerHandler setStrip(boolean enabled) {
-		strip = enabled;
-		return this;
-	}
-
-
-	@Override
 	public void print(gcLogRecord logRecord) {
 		if(logRecord == null) throw new NullPointerException();
 		if(!gcLogger.isLoggable(level, logRecord.level)) return;
-//		if( gcLogger.levelToInt(logRecord.level) > gcLogger.levelToInt(level) ) return;
+		print(logRecord.toString());
+	}
+	@Override
+	public void print(String msg) {
+		if(msg == null) throw new NullPointerException();
+		// no console handler
 		if(reader == null) {
-			System.out.print(logRecord.toString());
+			System.out.print(msg);
 			return;
 		}
+		// print using jansi
 		try {
 			reader.printString(ConsoleReader.RESET_LINE+"");
-			reader.printString(logRecord.toString(strip));
+			reader.printString(msg);
 			reader.printNewline();
 			reader.flushConsole();
 //			reader.drawLine();

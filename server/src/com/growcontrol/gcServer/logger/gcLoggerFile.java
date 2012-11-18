@@ -31,15 +31,13 @@ public class gcLoggerFile extends Thread implements gcLoggerHandler {
 
 
 	@Override
-	public gcLoggerHandler setStrip(boolean enabled) {
-		strip = enabled;
-		return this;
-	}
-
-
-	@Override
 	public void print(gcLogRecord logRecord) {
 		if(logRecord == null) throw new NullPointerException();
+//		fileHandler
+	}
+	@Override
+	public void print(String msg) {
+		if(msg == null) throw new NullPointerException();
 //		fileHandler
 	}
 
@@ -48,10 +46,6 @@ public class gcLoggerFile extends Thread implements gcLoggerHandler {
 	public void setLogLevel(LEVEL level) {
 //		this.level = level;
 	}
-
-
-
-
 
 
 //	private synchronized void rotate() {
@@ -75,11 +69,6 @@ public class gcLoggerFile extends Thread implements gcLoggerHandler {
 //		}
 //		setLevel(oldLevel);
 //	}
-
-
-
-
-
 
 
 }

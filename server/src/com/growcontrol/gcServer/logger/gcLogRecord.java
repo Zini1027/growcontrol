@@ -38,11 +38,6 @@ public final class gcLogRecord {
 		line += msg;
 		return line;
 	}
-	public String toString(boolean strip) {
-//		if(strip) return pattern.matcher(toString(logRecord)).replaceAll("");
-//		return this.pattern.matcher(stringbuilder.toString()).replaceAll("");
-		return toString();
-	}
 
 
 	public static String formatDate(long millis) {
