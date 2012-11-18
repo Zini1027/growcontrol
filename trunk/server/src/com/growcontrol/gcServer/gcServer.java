@@ -1,19 +1,22 @@
 package com.growcontrol.gcServer;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.lang.reflect.Field;
+import java.nio.channels.FileLock;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
-import com.growcontrol.gcServer.commands.DefaultCommands;
 import com.growcontrol.gcServer.logger.gcLogger;
 import com.growcontrol.gcServer.ntp.gcClock;
 import com.growcontrol.gcServer.scheduler.gcSchedulerManager;
 import com.growcontrol.gcServer.scheduler.gcTicker;
 import com.growcontrol.gcServer.serverPlugin.gcServerPluginManager;
+import com.growcontrol.gcServer.serverPlugin.commands.DefaultCommands;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListener.ListenerType;
 import com.growcontrol.gcServer.socketServer.socketServer;
 
@@ -80,6 +83,8 @@ public class gcServer extends Thread {
 
 	// server instance
 	public gcServer() {
+		// single instance lock
+		lockInstance("gc.lock");
 		if(noconsole) {
 			System.out.println("Console input is disabled due to noconsole command argument.");
 //TODO: currently no way to stop the server with no console input
@@ -314,6 +319,49 @@ System.exit(0);
 		if(value < min) {value = min; changed = true;}
 		if(value > max) {value = max; changed = true;}
 		return changed;
+	}
+
+
+	// single instance lock
+	private static boolean lockInstance(final String lockFile) {
+		try {
+			final File file = new File(lockFile);
+			final RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
+			final FileLock fileLock = randomAccessFile.getChannel().tryLock();
+			int pid = getPid();
+			if(pid > 0)
+				randomAccessFile.write(Integer.toString(pid).getBytes());
+			if(fileLock != null) {
+				Runtime.getRuntime().addShutdownHook(new Thread() {
+					public void run() {
+						try {
+							fileLock.release();
+							randomAccessFile.close();
+							file.delete();
+						} catch (Exception e) {
+							gcServer.log.severe("Unable to remove lock file: "+lockFile);
+							gcServer.log.exception(e);
+						}
+					}
+				});
+				return true;
+			}
+		} catch (Exception e) {
+			gcServer.log.severe("Unable to create and/or lock file: "+lockFile);
+			gcServer.log.exception(e);
+		}
+		return false;
+	}
+	public static int getPid() {
+		int pid = -1;
+		try {
+			pid = Integer.parseInt( ( new File("/proc/self")).getCanonicalFile().getName() );
+		} catch (NumberFormatException e) {
+			gcServer.log.exception(e);
+		} catch (IOException e) {
+			gcServer.log.exception(e);
+		}
+		return pid;
 	}
 
 

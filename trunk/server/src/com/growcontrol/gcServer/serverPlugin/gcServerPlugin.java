@@ -1,7 +1,6 @@
 package com.growcontrol.gcServer.serverPlugin;
 
 import com.growcontrol.gcServer.gcServer;
-import com.growcontrol.gcServer.commands.gcCommand;
 import com.growcontrol.gcServer.logger.gcLogger;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListener;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListener.ListenerType;
@@ -28,25 +27,18 @@ public abstract class gcServerPlugin {
 	}
 
 
-	// register commands
-	protected gcCommand registerCommand(String name) {
-		if(name == null) throw new NullPointerException();
-		return pluginHolder.commands.addCommand(name);
-	}
-
-
-	// register listeners
-	protected void registerListener(ListenerType type, gcServerListener listener) {
-		gcServer.pluginManager.registerListener(pluginHolder.className, type, listener);
-	}
-
-
 	// plugin logger
 	public gcLogger getLogger() {
 		return gcLogger.getLogger(pluginHolder.pluginName);
 	}
 	public static gcLogger getLogger(String pluginName) {
 		return gcLogger.getLogger(pluginName);
+	}
+
+
+	// register listeners
+	protected void registerListener(ListenerType type, gcServerListener listener) {
+		gcServer.pluginManager.registerListener(pluginHolder.className, type, listener);
 	}
 
 
