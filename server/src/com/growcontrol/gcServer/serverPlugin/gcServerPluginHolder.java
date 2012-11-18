@@ -1,6 +1,5 @@
 package com.growcontrol.gcServer.serverPlugin;
 
-import com.growcontrol.gcServer.commands.gcCommandsHolder;
 
 public class gcServerPluginHolder {
 
@@ -15,14 +14,6 @@ public class gcServerPluginHolder {
 	public String className = null;
 	// plugin data folder
 //	private File dataFolder = null;
-	// commands
-	public final gcCommandsHolder commands = new gcCommandsHolder();
-
-	// outputs
-//@SuppressWarnings("unused")
-//	private List<Integer> registeredOutputs = new ArrayList<Integer>();
-//@SuppressWarnings("unused")
-//	private List<Integer> registeredInputs = new ArrayList<Integer>();
 
 
 	// new plugin instance

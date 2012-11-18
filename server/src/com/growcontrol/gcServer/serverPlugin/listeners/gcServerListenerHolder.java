@@ -67,7 +67,6 @@ gcServer.log.debug("Registered listener");
 		gcServer.log.severe("Unknown listener type!");
 //TODO: throw an exception here
 		throw new NullPointerException();
-		return false;
 	}
 
 

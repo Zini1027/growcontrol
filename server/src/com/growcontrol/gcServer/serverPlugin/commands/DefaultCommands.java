@@ -1,4 +1,4 @@
-package com.growcontrol.gcServer.commands;
+package com.growcontrol.gcServer.serverPlugin.commands;
 
 import com.growcontrol.gcServer.gcServer;
 import com.growcontrol.gcServer.serverPlugin.events.gcServerEvent.EventPriority;
@@ -10,31 +10,39 @@ public class DefaultCommands extends gcServerListenerCommand {
 
 	public DefaultCommands() {
 		setPriority(EventPriority.LOWEST);
-		gcCommandsHolder commands = new gcCommandsHolder();
 		// basic commands
-		commands.addCommand("stop")
+		add("stop")
 			.addAlias("exit")
 			.addAlias("quit")
-			.addAlias("shutdown");
-//		commands.addCommand("kill");
-//		commands.addCommand("start");
-//		commands.addCommand("pause");
-//		commands.addCommand("clear")
-//			.addAlias("cls");
-//		commands.addCommand("help")
-//			.addAlias("?");
-//		commands.addCommand("version");
-//		commands.addCommand("say")
-//		.addAlias("broadcast");
-//		commands.addCommand("list");
+			.addAlias("shutdown")
+			.setUsage("Stops and closes the server.");
+		add("kill")
+			.setUsage("Emergency shutdown, no saves or power-downs. Don't use this unless you need to.");
+//		add("start")
+		add("pause")
+			.setUsage("Pauses or resumes the scheduler and some plugin tasks. Optional argument: [on/off/true/false/1/0]");
+		add("clear")
+			.addAlias("cls")
+			.setUsage("Clears the console screen.");
+//		add("help")
+//			.addAlias("?")
+		add("show")
+			.setUsage("Displays additional information.");
+		add("version")
+			.setUsage("Displays the current running version, and the latest available (if enabled)");
+//		add("say")
+//			.addAlias("broadcast")
+//			.setUsage("");
+//		add("list")
 //		// input / output
-//		commands.addCommand("set");
-//		commands.addCommand("get");
-//		commands.addCommand("watch");
-//		// tools
-//		commands.addCommand("ping");
-//		commands.addCommand("threads");
-		
+//		add("set")
+//		add("get")
+//		add("watch")
+		// tools
+		add("ping")
+			.setUsage("");
+		add("threads")
+			.setUsage("Displays number of loaded threads, and optional details.");
 	}
 
 
@@ -42,8 +50,25 @@ public class DefaultCommands extends gcServerListenerCommand {
 	public boolean onCommand(gcServerEventCommand event) {
 System.out.println("COMMAND: "+event.getCommandStr());
 //TODO: command aliases aren't working with this yet
+//TODO: update: should be working now, I think, untested
+		// basic commands
 		if(event.equals("stop")) {
 			gcServer.Shutdown();
+			return true;
+		} else if(event.equals("kill")) {
+			System.exit(0);
+		} else if(event.equals("pause")) {
+			return true;
+		} else if(event.equals("clear")) {
+			return true;
+		} else if(event.equals("show")) {
+			return true;
+		} else if(event.equals("version")) {
+			return true;
+		// tools
+		} else if(event.equals("ping")) {
+			return true;
+		} else if(event.equals("threads")) {
 			return true;
 		}
 		return false;
@@ -52,26 +77,6 @@ System.out.println("COMMAND: "+event.getCommandStr());
 
 
 
-
-
-
-
-//	public static final gcCommandsHolder commands = getDefaultCommands();
-
-
-//		return commands;
-//	}
-
-
-//	// run commands
-//	public static boolean onCommand(gcCommand command, String[] args) {
-//		if(command == null) throw new NullPointerException();
-//		if(args    == null) throw new NullPointerException();
-//		// stop
-
-//		// kill
-//		if(command.equals("kill"))
-//			System.exit(0);
 //		// start
 //		if(command.equals("start")) {
 //			gcScheduler.pauseAll(false);
@@ -209,20 +214,6 @@ System.out.println("COMMAND: "+event.getCommandStr());
 //	private static void listOutputs() {
 //	}
 //	private static void listInputs() {
-//	}
-
-
-//	@Override
-//	public boolean onEvent(gcServerEvent event) {
-//		// TODO Auto-generated method stub
-//		return false;
-//	}
-
-
-//	@Override
-//	public boolean onCommand(gcCommand command, String[] args) {
-//		// TODO Auto-generated method stub
-//		return false;
 //	}
 
 
