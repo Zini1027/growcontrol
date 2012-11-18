@@ -4,6 +4,7 @@ public class gcServerEventCommand extends gcServerEvent {
 
 	protected final String commandStr;
 	protected final String[] args;
+	protected boolean hasCommand = false;
 
 
 	public gcServerEventCommand(String commandStr, String[] args) {
@@ -23,6 +24,12 @@ public class gcServerEventCommand extends gcServerEvent {
 	public boolean equals(String compare) {
 		if(compare == null) return false;
 		return compare.equals(commandStr);
+	}
+	public void hasCommand(boolean hasCommand) {
+		this.hasCommand = hasCommand;
+	}
+	public boolean hasCommand() {
+		return hasCommand;
 	}
 
 

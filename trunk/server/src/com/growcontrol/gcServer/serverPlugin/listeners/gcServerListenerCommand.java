@@ -14,6 +14,7 @@ public abstract class gcServerListenerCommand extends gcServerListener {
 	public abstract boolean onCommand(gcServerEventCommand event);
 	public boolean doEvent(gcServerEventCommand event) {
 		if(event == null) throw new NullPointerException();
+		event.hasCommand(hasCommand(event.getCommandStr()));
 		return onCommand(event);
 	}
 

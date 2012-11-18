@@ -48,7 +48,9 @@ public class DefaultCommands extends gcServerListenerCommand {
 
 	@Override
 	public boolean onCommand(gcServerEventCommand event) {
-System.out.println("COMMAND: "+event.getCommandStr());
+		if(event.isHandled()) return false;
+		if(!event.hasCommand()) return false;
+//System.out.println("COMMAND: "+event.getCommandStr());
 //TODO: command aliases aren't working with this yet
 //TODO: update: should be working now, I think, untested
 		// basic commands
@@ -73,8 +75,6 @@ System.out.println("COMMAND: "+event.getCommandStr());
 		}
 		return false;
 	}
-
-
 
 
 //		// start

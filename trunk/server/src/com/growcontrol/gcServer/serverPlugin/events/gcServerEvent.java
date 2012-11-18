@@ -1,6 +1,5 @@
 package com.growcontrol.gcServer.serverPlugin.events;
 
-import com.growcontrol.gcServer.gcServer;
 
 public class gcServerEvent {
 
@@ -14,7 +13,6 @@ public class gcServerEvent {
 	}
 	public void setHandled() {
 		handled = true;
-		gcServer.log.debug("Event handled: ???");
 	}
 
 

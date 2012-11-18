@@ -93,6 +93,8 @@ System.exit(0);
 			AnsiConsole.systemInstall();
 			ASCIIHeader();
 		}
+		log.printRaw("");
+		log.printRaw("[[ Starting GC Server ]]");
 		log.info("GrowControl "+version+" Server is starting..");
 		addLibraryPath("lib");
 
@@ -143,13 +145,15 @@ System.exit(0);
 //log.severe("Listing Com Ports:");
 //for(Map.Entry<String, String> entry : Serial.listPorts().entrySet())
 //log.severe(entry.getKey()+" - "+entry.getValue());
+		log.printRaw("[[ GC Server Running! ]]");
 	}
 
 
 	public static void Shutdown() {
 //TODO: make this threaded!
 		stopping = true;
-		System.out.println();
+		log.printRaw("");
+		log.printRaw("[[ Stopping GC Server ]]");
 		log.warning("Stopping GC Server..");
 		// pause scheduler
 		gcSchedulerManager.StopAll();
@@ -213,10 +217,11 @@ System.exit(0);
 			args = new String[0];
 		}
 		// trigger event
-		pluginManager.triggerEventCommand(commandStr, args);
+		if(pluginManager.triggerEventCommand(commandStr, args))
+			return;
 		// command not found
 		for(String arg : args) commandStr += " "+arg;
-		log.warning("Command not processed! "+commandStr);
+		log.warning("Command not processed: "+commandStr);
 	}
 
 
