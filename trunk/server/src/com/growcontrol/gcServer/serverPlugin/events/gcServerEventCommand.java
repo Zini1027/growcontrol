@@ -11,6 +11,9 @@ public class gcServerEventCommand extends gcServerEvent {
 
 
 	public gcServerEventCommand(String commandStr, String[] args) {
+		if(commandStr == null)   throw new NullPointerException("commandStr cannot be null");
+		if(commandStr.isEmpty()) throw new NullPointerException("commandStr cannot be empty");
+		if(args == null)         throw new NullPointerException("args cannot be null");
 		this.commandStr = commandStr;
 		this.args = args;
 	}

@@ -32,12 +32,12 @@ public class gcLoggerFile extends Thread implements gcLoggerHandler {
 
 	@Override
 	public void print(gcLogRecord logRecord) {
-		if(logRecord == null) throw new NullPointerException();
+		if(logRecord == null) throw new NullPointerException("logRecord cannot be null");
 //		fileHandler
 	}
 	@Override
 	public void print(String msg) {
-		if(msg == null) throw new NullPointerException();
+		if(msg == null) throw new NullPointerException("msg cannot be null");
 //		fileHandler
 	}
 

@@ -15,14 +15,14 @@ public class gcServerListenerHolder {
 
 
 	public gcServerListenerHolder(ListenerType listenerType) {
-		if(listenerType == null) throw new NullPointerException();
+		if(listenerType == null) throw new NullPointerException("listenerType cannot be null");
 		this.listenerType = listenerType;
 	}
 
 
 	// register new listener
 	public void registerListener(gcServerListener listener) {
-		if(listener == null) throw new NullPointerException();
+		if(listener == null) throw new NullPointerException("listener cannot be null");
 		TypeMustEqual(listenerType, listener);
 gcServer.log.debug("Registered listener");
 		listeners.add(listener);
@@ -31,8 +31,8 @@ gcServer.log.debug("Registered listener");
 
 	// trigger event
 	public boolean triggerEvent(gcServerEvent event, EventPriority onlyPriority) {
-		if(event == null) throw new NullPointerException();
-		if(onlyPriority == null) throw new NullPointerException();
+		if(event        == null) throw new NullPointerException("event cannot be null");
+		if(onlyPriority == null) throw new NullPointerException("onlyPriority cannot be null");
 		for(gcServerListener listener : listeners)
 			if(listener.priorityEquals(onlyPriority))
 				if(listener.doEvent(event))
@@ -46,7 +46,7 @@ gcServer.log.debug("Registered listener");
 		if(!TypeEquals(listenerType, listener)) {
 			gcServer.log.severe("Invalid listener type!");
 //TODO: throw an exception!
-			throw new NullPointerException();
+throw new NullPointerException("Invalid listener type");
 		}
 	}
 	public static boolean TypeEquals(ListenerType listenerType, gcServerListener listener) {
@@ -59,7 +59,7 @@ gcServer.log.debug("Registered listener");
 //			return listenerType.equals(ListenerType);
 		gcServer.log.severe("Unknown listener type!");
 //TODO: throw an exception here
-		throw new NullPointerException();
+throw new NullPointerException("Unknown listener type");
 	}
 
 

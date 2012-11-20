@@ -35,7 +35,7 @@ public class gcSchedulerManager {
 		return sched;
 	}
 	private gcSchedulerManager(String schedulerName) {
-		if(schedulerName == null) throw new NullPointerException();
+		if(schedulerName == null) throw new NullPointerException("schedulerName cannot be null");
 		this.schedulerName = schedulerName;
 		gcServer.log.debug("New scheduler created: "+schedulerName);
 	}
@@ -43,7 +43,7 @@ public class gcSchedulerManager {
 
 	// new task
 	public void newTask(gcSchedulerTask task) {
-		if(task == null) throw new NullPointerException();
+		if(task == null) throw new NullPointerException("task cannot be null");
 		synchronized(tasks) {
 			this.tasks.add(task);
 			gcServer.log.debug("Created new task: "+task.getTaskName());

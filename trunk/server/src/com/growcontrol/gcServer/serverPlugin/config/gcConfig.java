@@ -22,8 +22,8 @@ public class gcConfig {
 
 	// new instance (file)
 	public static gcConfig loadFile(String filePath, String fileName) {
-		if(fileName == null) throw new NullPointerException();
-		if(fileName.isEmpty()) return null;
+		if(fileName == null)   throw new NullPointerException("fileName cannot be null");
+		if(fileName.isEmpty()) throw new NullPointerException("fileName cannot be empty");
 		return new gcConfig(openFile(filePath, fileName));
 	}
 	public static gcConfig loadFile(String fileName) {
@@ -43,8 +43,9 @@ public class gcConfig {
 
 	// load yml from jar
 	public static gcConfig loadJarResource(File jarFile, String fileName) throws IOException {
-		if(jarFile == null) throw new NullPointerException();
-		if(fileName == null) throw new NullPointerException();
+		if(jarFile  == null)   throw new NullPointerException("jarFile cannot be null");
+		if(fileName == null)   throw new NullPointerException("fileName cannot be null");
+		if(fileName.isEmpty()) throw new NullPointerException("fileName cannot be empty");
 		JarFile jar = new JarFile(jarFile);
 		JarEntry entry = jar.getJarEntry(fileName);
 		if(entry == null) return null;
@@ -55,7 +56,7 @@ public class gcConfig {
 
 	// config instance
 	public gcConfig(InputStream fileInput) {
-		if(fileInput == null) throw new NullPointerException();
+		if(fileInput == null) throw new NullPointerException("fileInput cannot be null");
 		try {
 			Yaml yml = new Yaml();
 			synchronized(data) {
@@ -75,15 +76,15 @@ public class gcConfig {
 
 	// load config file
 	protected static InputStream openFile(String filePath, String fileName) {
-		if(fileName == null) throw new NullPointerException();
-		if(fileName.isEmpty()) return null;
+		if(fileName == null)   throw new NullPointerException("fileName cannot be null");
+		if(fileName.isEmpty()) throw new NullPointerException("fileName cannot be empty");
 		String path = sanFilePath(filePath, fileName);
 		gcServer.log.debug("Loading config file: "+path);
 		return openFile(path);
 	}
 	protected static InputStream openFile(String fileStr) {
-		if(fileStr == null) throw new NullPointerException();
-		if(fileStr.isEmpty()) return null;
+		if(fileStr == null)   throw new NullPointerException("fileStr cannot be null");
+		if(fileStr.isEmpty()) throw new NullPointerException("fileStr cannot be empty");
 		try {
 			File file = new File(fileStr);
 			if(!file.exists()) throw new FileNotFoundException("File not found!");
@@ -97,16 +98,16 @@ public class gcConfig {
 
 	// load resource config
 	protected static InputStream openResource(String filePath, String fileName) {
-		if(fileName == null) throw new NullPointerException();
-		if(fileName.isEmpty()) return null;
+		if(fileName == null)   throw new NullPointerException("fileName cannot be null");
+		if(fileName.isEmpty()) throw new NullPointerException("fileName cannot be empty");
 		return openResource(sanFilePath(filePath, fileName));
 	}
 	protected static InputStream openResource(String fileStr) {
-		if(fileStr == null) throw new NullPointerException();
-		if(fileStr.isEmpty()) return null;
+		if(fileStr == null)   throw new NullPointerException("fileStr cannot be null");
+		if(fileStr.isEmpty()) throw new NullPointerException("fileStr cannot be empty");
 		try {
 			return gcServer.class.getResourceAsStream(fileStr);
-		} catch(Exception ignore2) {
+		} catch(Exception ignore) {
 			gcServer.log.debug("Not found as a resource either!");
 			return null;
 		}
@@ -114,19 +115,15 @@ public class gcConfig {
 
 
 	protected static String sanFilePath(String filePath, String fileName) {
-		if(fileName == null) throw new NullPointerException();
-		if(fileName.isEmpty()) return null;
+		if(fileName == null)   throw new NullPointerException("fileName cannot be null");
+		if(fileName.isEmpty()) throw new NullPointerException("fileName cannot be empty");
 		if(!fileName.endsWith(".yml")) fileName += ".yml";
 		if(filePath == null || filePath.isEmpty())
 			return fileName;
 		if(filePath.endsWith("/") || filePath.endsWith("\\") || fileName.startsWith("/") || fileName.startsWith("\\"))
-		{
-			return filePath + fileName;
-		}
+			return filePath+fileName;
 		else
-		{
-			return filePath + File.separator + fileName;
-		}
+			return filePath+File.separator+fileName;
 	}
 
 

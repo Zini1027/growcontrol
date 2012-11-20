@@ -23,9 +23,10 @@ public class socketServer implements Runnable {
 	public socketServer(int port) {
 		if(port < 1 || port > 65536) {
 			gcServer.log.severe("Invalid port "+Integer.toString(port)+" is not valid! Out of range!");
-			this.port = 0;
-			thread = null;
-			return;
+			throw new IllegalArgumentException("Invalid port "+Integer.toString(port));
+//			this.port = 0;
+//			thread = null;
+//			return;
 		}
 		this.port = port;
 		thread = new Thread(this);

@@ -17,14 +17,14 @@ public class pxnUtils {
 
 	protected static gcLogger log = null;
 	public static void setLogger(gcLogger log) {
-		if(log == null) throw new NullPointerException();
+		if(log == null) throw new NullPointerException("log cannot be null");
 		pxnUtils.log = log;
 	}
 
 
 	// add lib to paths
 	public static void addLibraryPath(String libDir) {
-		if(libDir == null) throw new NullPointerException();
+		if(libDir == null) throw new NullPointerException("libDir cannot be null");
 		// get lib path
 		File file = new File(libDir);
 		if(file==null || !file.exists() || !file.isDirectory()) return;
@@ -135,21 +135,21 @@ public class pxnUtils {
 	}
 	// min/max by object
 	public static boolean MinMax(Integer value, int min, int max) {
-		if(value == null) throw new NullPointerException();
+		if(value == null) throw new NullPointerException("value cannot be null");
 		boolean changed = false;
 		if(value < min) {value = min; changed = true;}
 		if(value > max) {value = max; changed = true;}
 		return changed;
 	}
 	public static boolean MinMax(Long value, long min, long max) {
-		if(value == null) throw new NullPointerException();
+		if(value == null) throw new NullPointerException("value cannot be null");
 		boolean changed = false;
 		if(value < min) {value = min; changed = true;}
 		if(value > max) {value = max; changed = true;}
 		return changed;
 	}
 	public static boolean MinMax(Double value, double min, double max) {
-		if(value == null) throw new NullPointerException();
+		if(value == null) throw new NullPointerException("value cannot be null");
 		boolean changed = false;
 		if(value < min) {value = min; changed = true;}
 		if(value > max) {value = max; changed = true;}
@@ -201,8 +201,8 @@ public class pxnUtils {
 
 	// add strings with delimiter
 	public static String addStringSet(String baseString, String addThis, String delim) {
-		if (addThis.isEmpty())    return baseString;
-		if (baseString.isEmpty()) return addThis;
+		if(addThis.isEmpty())    return baseString;
+		if(baseString.isEmpty()) return addThis;
 		return baseString + delim + addThis;
 	}
 	public static String addStringSet(String baseString, List<String> addThis, String delim) {

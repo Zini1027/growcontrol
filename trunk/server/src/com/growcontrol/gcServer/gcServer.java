@@ -194,8 +194,9 @@ System.exit(0);
 	}
 	// process command
 	public static void processCommand(String line) {
-		if(line == null) throw new NullPointerException();
+		if(line == null) throw new NullPointerException("line cannot be null");
 		line = line.trim();
+		if(line.isEmpty()) return;
 		String commandStr;
 		String[] args;
 		// get args list
