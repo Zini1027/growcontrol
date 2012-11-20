@@ -6,9 +6,9 @@ import java.util.List;
 import com.growcontrol.arduinogc.interfaces.ArduinoInterface;
 import com.growcontrol.arduinogc.interfaces.ArduinoNet;
 import com.growcontrol.arduinogc.interfaces.ArduinoUSB;
-import com.growcontrol.gcServer.config.gcConfig;
 import com.growcontrol.gcServer.logger.gcLogger;
 import com.growcontrol.gcServer.serverPlugin.gcServerPlugin;
+import com.growcontrol.gcServer.serverPlugin.config.gcConfig;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListener.ListenerType;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListenerOutput;
 
@@ -16,6 +16,8 @@ public class ArduinoGC extends gcServerPlugin implements gcServerListenerOutput 
 	private static final String PLUGIN_NAME = "ArduinoGC";
 	// logger
 	public static gcLogger log = getLogger(PLUGIN_NAME);
+
+	protected static CommandsListener commands = new CommandsListener();
 
 	// controllers map
 	protected static HashMap<String, ArduinoInterface> controllersMap = new HashMap<String, ArduinoInterface>();
@@ -25,11 +27,8 @@ public class ArduinoGC extends gcServerPlugin implements gcServerListenerOutput 
 	public void onEnable() {
 		// register plugin name
 		registerPlugin(PLUGIN_NAME);
-		// register commands
-		registerCommand("arduinogc")
-			.addAlias("arduino");
 		// register listeners
-		registerListener(ListenerType.COMMAND, new CommandsListener());
+		registerListener(ListenerType.COMMAND, commands);
 //		registerListenerOutput(this);
 		// load configs
 		LoadConfig();
@@ -110,32 +109,32 @@ log.severe("TYPE:  "+type);
 	}
 
 
-	@Override
-	public boolean onOutput(String[] args) {
-		if(!controllersMap.containsKey(args[0])) return false;
-		ArduinoInterface controller = controllersMap.get(args[0]);
-		int pinNum = -1;
-		try {
-			pinNum = Integer.valueOf(args[1]);
-		} catch(Exception ignore) {}
-		int pinState = -1;
-		try {
-			if(args[2].equalsIgnoreCase("on"))
-				pinState = 1;
-			else if(args[2].equalsIgnoreCase("off"))
-				pinState = 0;
-			else
-				pinState = Integer.valueOf(args[2]);
-		} catch(Exception ignore) {}
-		if(pinNum<0 || pinState<0) {
-			String msg = "";
-			for(String arg : args) msg += " "+arg;
-			log.severe("Invalid command"+msg);
-			return false;
-		}
-		controller.sendPinState(pinNum, pinState);
-		return true;
-	}
+//	@Override
+//	public boolean onOutput(String[] args) {
+//		if(!controllersMap.containsKey(args[0])) return false;
+//		ArduinoInterface controller = controllersMap.get(args[0]);
+//		int pinNum = -1;
+//		try {
+//			pinNum = Integer.valueOf(args[1]);
+//		} catch(Exception ignore) {}
+//		int pinState = -1;
+//		try {
+//			if(args[2].equalsIgnoreCase("on"))
+//				pinState = 1;
+//			else if(args[2].equalsIgnoreCase("off"))
+//				pinState = 0;
+//			else
+//				pinState = Integer.valueOf(args[2]);
+//		} catch(Exception ignore) {}
+//		if(pinNum<0 || pinState<0) {
+//			String msg = "";
+//			for(String arg : args) msg += " "+arg;
+//			log.severe("Invalid command"+msg);
+//			return false;
+//		}
+//		controller.sendPinState(pinNum, pinState);
+//		return true;
+//	}
 
 
 }

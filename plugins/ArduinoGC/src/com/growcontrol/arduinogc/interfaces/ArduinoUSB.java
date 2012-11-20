@@ -14,7 +14,7 @@ import java.io.OutputStream;
 import com.growcontrol.arduinogc.ArduinoGC;
 import com.growcontrol.arduinogc.DataProcessor;
 import com.growcontrol.arduinogc.msgQueue;
-import com.growcontrol.gcServer.gcServer;
+import com.growcontrol.gcServer.pxnUtils;
 
 public class ArduinoUSB extends ArduinoInterface {
 
@@ -61,7 +61,7 @@ public class ArduinoUSB extends ArduinoInterface {
 			// check for incoming data
 //			checkSending();
 			// sleep thread
-			gcServer.Sleep(THREAD_WAIT);
+			pxnUtils.Sleep(THREAD_WAIT);
 		}
 		serial.close();
 		out = null;
@@ -155,7 +155,7 @@ public class ArduinoUSB extends ArduinoInterface {
 		}
 		ArduinoGC.log.debug("Waiting for reply..");
 		// sleep one heartbeat
-		gcServer.Sleep(THREAD_HEARTBEAT);
+		pxnUtils.Sleep(THREAD_HEARTBEAT);
 		int timeout = 2000;
 		while(serial!=null && in!=null &&
 				!stopping && timeout>=0) {
@@ -163,7 +163,7 @@ public class ArduinoUSB extends ArduinoInterface {
 			if(checkAvailable()) timeout = 100;
 			timeout -= THREAD_HEARTBEAT;
 			// sleep one heartbeat
-			gcServer.Sleep(THREAD_HEARTBEAT);
+			pxnUtils.Sleep(THREAD_HEARTBEAT);
 		}
 //		reset();
 		if(bufferIn.isEmpty()) {

@@ -9,7 +9,7 @@ import java.net.UnknownHostException;
 
 import com.growcontrol.arduinogc.ArduinoGC;
 import com.growcontrol.arduinogc.DataProcessor;
-import com.growcontrol.gcServer.gcServer;
+import com.growcontrol.gcServer.pxnUtils;
 
 public class ArduinoNet extends ArduinoInterface {
 
@@ -61,7 +61,7 @@ public class ArduinoNet extends ArduinoInterface {
 			// check for incoming data
 //			checkSending();
 			// sleep thread
-			gcServer.Sleep(THREAD_WAIT);
+			pxnUtils.Sleep(THREAD_WAIT);
 		}
 	}
 
@@ -118,7 +118,7 @@ public class ArduinoNet extends ArduinoInterface {
 		}
 		ArduinoGC.log.debug("Waiting for reply..");
 		// sleep one heartbeat
-		gcServer.Sleep(THREAD_HEARTBEAT);
+		pxnUtils.Sleep(THREAD_HEARTBEAT);
 		int timeout = 2000;
 		while(client!=null && in!=null && client.isConnected()
 				&& !stopping && timeout>=0) {
@@ -126,7 +126,7 @@ public class ArduinoNet extends ArduinoInterface {
 			if(checkAvailable()) timeout = 100;
 			timeout -= THREAD_HEARTBEAT;
 			// sleep one heartbeat
-			gcServer.Sleep(THREAD_HEARTBEAT);
+			pxnUtils.Sleep(THREAD_HEARTBEAT);
 		}
 		reset();
 		if(bufferIn.isEmpty()) {
