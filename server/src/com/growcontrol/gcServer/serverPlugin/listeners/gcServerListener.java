@@ -2,6 +2,7 @@ package com.growcontrol.gcServer.serverPlugin.listeners;
 
 import com.growcontrol.gcServer.gcServer;
 import com.growcontrol.gcServer.serverPlugin.events.gcServerEvent;
+import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
 import com.growcontrol.gcServer.serverPlugin.events.gcServerEvent.EventPriority;
 
 
@@ -24,6 +25,10 @@ public class gcServerListener {
 
 
 	public boolean doEvent(gcServerEvent event) {
+		if(event instanceof gcServerEventCommand)
+			return ((gcServerListenerCommand) this).doEvent( (gcServerEventCommand) event );
+//		else if(event instanceof gcServerEventSomethingelse)
+//			return ((gcServerListenerSomethingelse) this).doEvent( (gcServerEventSomethingelse) event );
 		gcServer.log.severe("Event not handled!");
 		return false;
 	}

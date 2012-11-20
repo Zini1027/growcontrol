@@ -1,10 +1,5 @@
 package com.growcontrol.gcServer;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.lang.reflect.Field;
-import java.nio.channels.FileLock;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +11,6 @@ import com.growcontrol.gcServer.ntp.gcClock;
 import com.growcontrol.gcServer.scheduler.gcSchedulerManager;
 import com.growcontrol.gcServer.scheduler.gcTicker;
 import com.growcontrol.gcServer.serverPlugin.gcServerPluginManager;
-import com.growcontrol.gcServer.serverPlugin.commands.DefaultCommands;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListener.ListenerType;
 import com.growcontrol.gcServer.socketServer.socketServer;
 
@@ -54,6 +48,7 @@ public class gcServer extends Thread {
 
 	public static void main(String[] args) {
 		if(server != null) throw new UnsupportedOperationException("Cannot redefine singleton gcServer; already running");
+		pxnUtils.setLogger(log);
 		// process args
 		for(String arg : args) {
 			// version
@@ -84,7 +79,7 @@ public class gcServer extends Thread {
 	// server instance
 	public gcServer() {
 		// single instance lock
-		lockInstance("gc.lock");
+		pxnUtils.lockInstance("gc.lock");
 		if(noconsole) {
 			System.out.println("Console input is disabled due to noconsole command argument.");
 //TODO: currently no way to stop the server with no console input
@@ -96,7 +91,7 @@ System.exit(0);
 		log.printRaw("");
 		log.printRaw("[[ Starting GC Server ]]");
 		log.info("GrowControl "+version+" Server is starting..");
-		addLibraryPath("lib");
+		pxnUtils.addLibraryPath("lib");
 
 		// load configs
 		config = new ServerConfig(configsPath);
@@ -111,11 +106,13 @@ System.exit(0);
 				log.setLogLevel(logLevel);
 
 		// start jline console
-		pluginManager.registerListener(ListenerType.COMMAND, new DefaultCommands());
+		pluginManager.registerListener(ListenerType.COMMAND, new ServerCommands());
 		if(!noconsole) this.start();
 
 		// query time server
-		gcClock.setUsingNTP(true);
+//TODO: figure out why this is locking up
+//		gcClock.setUsingNTP(true);
+		gcClock.setUsingNTP(false);
 		gcClock.updateNTP_Blocking();
 
 		// rooms
@@ -152,7 +149,6 @@ System.exit(0);
 	public static void Shutdown() {
 //TODO: make this threaded!
 		stopping = true;
-		log.printRaw("");
 		log.printRaw("[[ Stopping GC Server ]]");
 		log.warning("Stopping GC Server..");
 		// pause scheduler
@@ -237,136 +233,6 @@ System.exit(0);
 	// is console input enabled
 	public static boolean isConsoleEnabled() {
 		return !noconsole;
-	}
-
-
-	// add lib to paths
-	private static void addLibraryPath(String libDir) {
-		if(libDir == null) throw new NullPointerException();
-		// get lib path
-		File file = new File(libDir);
-		if(file==null || !file.exists() || !file.isDirectory()) return;
-		String libPath = file.getAbsolutePath();
-		if(libPath == null || libPath.isEmpty()) return;
-		// get current paths
-		String currentPaths = System.getProperty("java.library.path");
-		if(currentPaths == null) return;
-		log.debug("Adding lib path");
-		// set library paths
-		if(currentPaths.isEmpty()) {
-			System.setProperty("java.library.path", libPath);
-		} else {
-			if(currentPaths.contains(libPath)) return;
-			System.setProperty("java.library.path", currentPaths+(currentPaths.contains(";")?";":":")+libPath);
-		}
-		// force library paths to refresh
-		try {
-			Field fieldSysPath;
-			fieldSysPath = ClassLoader.class.getDeclaredField("sys_paths");
-			fieldSysPath.setAccessible(true);
-			fieldSysPath.set(null, null);
-		} catch (SecurityException e) {
-			log.exception(e);
-		} catch (NoSuchFieldException e) {
-			log.exception(e);
-		} catch (IllegalArgumentException e) {
-			log.exception(e);
-		} catch (IllegalAccessException e) {
-			log.exception(e);
-		}
-	}
-
-
-	// sleep thread
-	public static void Sleep(long millis) {
-		try {
-			Thread.sleep(millis);
-		} catch (InterruptedException e) {
-			log.exception(e);
-		}
-	}
-
-
-	// min/max value
-	public static int MinMax(int value, int min, int max) {
-		if(value < min) value = min;
-		if(value > max) value = max;
-		return value;
-	}
-	public static long MinMax(long value, long min, long max) {
-		if(value < min) value = min;
-		if(value > max) value = max;
-		return value;
-	}
-	public static double MinMax(double value, double min, double max) {
-		if(value < min) value = min;
-		if(value > max) value = max;
-		return value;
-	}
-	// min/max by object
-	public static boolean MinMax(Integer value, int min, int max) {
-		if(value == null) throw new NullPointerException();
-		boolean changed = false;
-		if(value < min) {value = min; changed = true;}
-		if(value > max) {value = max; changed = true;}
-		return changed;
-	}
-	public static boolean MinMax(Long value, long min, long max) {
-		if(value == null) throw new NullPointerException();
-		boolean changed = false;
-		if(value < min) {value = min; changed = true;}
-		if(value > max) {value = max; changed = true;}
-		return changed;
-	}
-	public static boolean MinMax(Double value, double min, double max) {
-		if(value == null) throw new NullPointerException();
-		boolean changed = false;
-		if(value < min) {value = min; changed = true;}
-		if(value > max) {value = max; changed = true;}
-		return changed;
-	}
-
-
-	// single instance lock
-	private static boolean lockInstance(final String lockFile) {
-		try {
-			final File file = new File(lockFile);
-			final RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
-			final FileLock fileLock = randomAccessFile.getChannel().tryLock();
-			int pid = getPid();
-			if(pid > 0)
-				randomAccessFile.write(Integer.toString(pid).getBytes());
-			if(fileLock != null) {
-				Runtime.getRuntime().addShutdownHook(new Thread() {
-					public void run() {
-						try {
-							fileLock.release();
-							randomAccessFile.close();
-							file.delete();
-						} catch (Exception e) {
-							gcServer.log.severe("Unable to remove lock file: "+lockFile);
-							gcServer.log.exception(e);
-						}
-					}
-				});
-				return true;
-			}
-		} catch (Exception e) {
-			gcServer.log.severe("Unable to create and/or lock file: "+lockFile);
-			gcServer.log.exception(e);
-		}
-		return false;
-	}
-	public static int getPid() {
-		int pid = -1;
-		try {
-			pid = Integer.parseInt( ( new File("/proc/self")).getCanonicalFile().getName() );
-		} catch (NumberFormatException e) {
-			gcServer.log.exception(e);
-		} catch (IOException e) {
-			gcServer.log.exception(e);
-		}
-		return pid;
 	}
 
 

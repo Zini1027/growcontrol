@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.growcontrol.gcServer.gcServer;
+import com.growcontrol.gcServer.pxnUtils;
 
 public class socketServer implements Runnable {
 
@@ -30,6 +31,7 @@ public class socketServer implements Runnable {
 		thread = new Thread(this);
 //		thread.setDaemon(true);
 		thread.start();
+		pxnUtils.Sleep(10);
 	}
 
 
@@ -37,9 +39,11 @@ public class socketServer implements Runnable {
 	public void run() {
 		try {
 			// start listening
-			listenerSocket = new ServerSocket(port);
+			listenerSocket = new ServerSocket(port, 8);
 		} catch (IOException e) {
+			gcServer.log.severe("Failed to listen on port: "+Integer.toString(port));
 			gcServer.log.exception(e);
+			return;
 		}
 		gcServer.log.info("Listening on port: "+Integer.toString(port));
 		// loop for new connections

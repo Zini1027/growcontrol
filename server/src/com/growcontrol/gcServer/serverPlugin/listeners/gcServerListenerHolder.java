@@ -6,7 +6,6 @@ import java.util.List;
 import com.growcontrol.gcServer.gcServer;
 import com.growcontrol.gcServer.serverPlugin.events.gcServerEvent;
 import com.growcontrol.gcServer.serverPlugin.events.gcServerEvent.EventPriority;
-import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListener.ListenerType;
 
 public class gcServerListenerHolder {
@@ -21,6 +20,7 @@ public class gcServerListenerHolder {
 	}
 
 
+	// register new listener
 	public void registerListener(gcServerListener listener) {
 		if(listener == null) throw new NullPointerException();
 		TypeMustEqual(listenerType, listener);
@@ -29,26 +29,19 @@ gcServer.log.debug("Registered listener");
 	}
 
 
-
+	// trigger event
 	public boolean triggerEvent(gcServerEvent event, EventPriority onlyPriority) {
 		if(event == null) throw new NullPointerException();
 		if(onlyPriority == null) throw new NullPointerException();
 		for(gcServerListener listener : listeners)
 			if(listener.priorityEquals(onlyPriority))
-				if(doEvent(listener, event))
+				if(listener.doEvent(event))
 					event.setHandled();
 		return event.isHandled();
 	}
-	protected boolean doEvent(gcServerListener listener, gcServerEvent event) {
-		// command listener
-		if(listener instanceof gcServerListenerCommand)
-			return ((gcServerListenerCommand) listener).doEvent( (gcServerEventCommand) event );
-//		else if(listener instanceof gcServerListenerSomethingelse)
-//			return ((gcServerListenerSomethingelse) listener).doEvent(event);
-		return false;
-	}
 
 
+	// listener type equals
 	public static void TypeMustEqual(ListenerType listenerType, gcServerListener listener) {
 		if(!TypeEquals(listenerType, listener)) {
 			gcServer.log.severe("Invalid listener type!");

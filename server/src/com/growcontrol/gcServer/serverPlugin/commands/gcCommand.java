@@ -3,6 +3,8 @@ package com.growcontrol.gcServer.serverPlugin.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.growcontrol.gcServer.pxnUtils;
+
 public class gcCommand {
 
 	protected final String name;
@@ -45,6 +47,7 @@ public class gcCommand {
 		// is command name
 		if(this.name.equalsIgnoreCase(name)) return true;
 		// has alias
+System.out.println(this.name+"  [ "+pxnUtils.addStringSet("", aliases, ", ")+" ]");
 		return aliases.contains(name.toLowerCase());
 	}
 	

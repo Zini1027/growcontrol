@@ -1,6 +1,7 @@
 package com.growcontrol.gcServer.serverPlugin.listeners;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import com.growcontrol.gcServer.serverPlugin.commands.gcCommand;
 import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
@@ -14,7 +15,9 @@ public abstract class gcServerListenerCommand extends gcServerListener {
 	public abstract boolean onCommand(gcServerEventCommand event);
 	public boolean doEvent(gcServerEventCommand event) {
 		if(event == null) throw new NullPointerException();
-		event.hasCommand(hasCommand(event.getCommandStr()));
+		setHasCommand(event);
+//		event.hasCommand(hasCommand(event.getCommandStr()));
+//System.out.println("HAS COMMAND: "+Boolean.toString(event.hasCommand()));
 		return onCommand(event);
 	}
 
@@ -35,12 +38,26 @@ public abstract class gcServerListenerCommand extends gcServerListener {
 	}
 
 
-	// has command/alias
-	public boolean hasCommand(String name) {
-		for(gcCommand command : commands.values())
+	// find command/alias
+	protected void setHasCommand(gcServerEventCommand event) {
+		event.setCommand(getCommand(event));
+	}
+//	public boolean hasCommand(String name) {
+//		for(gcCommand command : commands.values())
+//			if(command.hasCommand(name))
+//				return true;
+//		return false;
+//	}
+	public gcCommand getCommand(gcServerEventCommand event) {
+		return getCommand(event.getCommandStr());
+	}
+	public gcCommand getCommand(String name) {
+		for(Entry<String, gcCommand> entry : commands.entrySet()) {
+			gcCommand command = entry.getValue();
 			if(command.hasCommand(name))
-				return true;
-		return false;
+				return entry.getValue();
+		}
+		return null;
 	}
 
 

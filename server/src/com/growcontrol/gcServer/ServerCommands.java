@@ -1,14 +1,14 @@
-package com.growcontrol.gcServer.serverPlugin.commands;
+package com.growcontrol.gcServer;
 
-import com.growcontrol.gcServer.gcServer;
+import com.growcontrol.gcServer.serverPlugin.commands.gcCommand;
 import com.growcontrol.gcServer.serverPlugin.events.gcServerEvent.EventPriority;
 import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListenerCommand;
 
-public class DefaultCommands extends gcServerListenerCommand {
+public class ServerCommands extends gcServerListenerCommand {
 
 
-	public DefaultCommands() {
+	public ServerCommands() {
 		setPriority(EventPriority.LOWEST);
 		// basic commands
 		add("stop")
@@ -17,6 +17,8 @@ public class DefaultCommands extends gcServerListenerCommand {
 			.addAlias("shutdown")
 			.setUsage("Stops and closes the server.");
 		add("kill")
+//TODO: remove this
+.addAlias("k")
 			.setUsage("Emergency shutdown, no saves or power-downs. Don't use this unless you need to.");
 //		add("start")
 		add("pause")
@@ -48,32 +50,81 @@ public class DefaultCommands extends gcServerListenerCommand {
 
 	@Override
 	public boolean onCommand(gcServerEventCommand event) {
-		if(event.isHandled()) return false;
+		if(event.isHandled())   return false;
 		if(!event.hasCommand()) return false;
-//System.out.println("COMMAND: "+event.getCommandStr());
-//TODO: command aliases aren't working with this yet
-//TODO: update: should be working now, I think, untested
+		gcCommand command = event.getCommand();
 		// basic commands
-		if(event.equals("stop")) {
-			gcServer.Shutdown();
-			return true;
-		} else if(event.equals("kill")) {
-			System.exit(0);
-		} else if(event.equals("pause")) {
-			return true;
-		} else if(event.equals("clear")) {
-			return true;
-		} else if(event.equals("show")) {
-			return true;
-		} else if(event.equals("version")) {
-			return true;
+		if(command.hasCommand("stop"))
+			return commandStop();
+		else if(command.hasCommand("kill")) {
+			commandKill();
+			return false;
+		} else if(command.hasCommand("pause"))
+			return commandPause();
+		else if(command.hasCommand("clear"))
+			return commandClear();
+		else if(command.hasCommand("show"))
+			return commandShow(event.getArgs());
+		else if(command.hasCommand("version"))
+			return commandVersion();
 		// tools
-		} else if(event.equals("ping")) {
-			return true;
-		} else if(event.equals("threads")) {
-			return true;
-		}
+		else if(command.hasCommand("ping"))
+			return commandPing(event.getArgs());
+		else if(command.hasCommand("threads"))
+			return commandThreads();
 		return false;
+	}
+
+
+	// stop command
+	private static boolean commandStop() {
+		gcServer.Shutdown();
+		return true;
+	}
+
+
+	// kill command
+	private static void commandKill() {
+		try {
+			gcServer.log.warning("Killing server! (Triggered by console command)");
+		} catch(Exception ignore) {}
+		System.exit(0);
+	}
+
+
+	// pause command
+	private static boolean commandPause() {
+		return true;
+	}
+
+
+	// clear command
+	private static boolean commandClear() {
+		return true;
+	}
+
+
+	// show command
+	private static boolean commandShow(String[] args) {
+		return true;
+	}
+
+
+	// version command
+	private static boolean commandVersion() {
+		return true;
+	}
+
+
+	// ping command
+	private static boolean commandPing(String[] args) {
+		return true;
+	}
+
+
+	// threads command
+	private static boolean commandThreads() {
+		return true;
 	}
 
 
