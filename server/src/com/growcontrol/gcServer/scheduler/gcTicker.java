@@ -64,7 +64,7 @@ gcServer.log.debug("Time since last tick: "+Long.toString(timeSinceLast));
 
 
 	public void newTickerTask(gcTickerTask task) {
-		if(task == null) throw new NullPointerException();
+		if(task == null) throw new NullPointerException("task cannot be null");
 		synchronized(tasks) {
 			tasks.add(task);
 		}

@@ -17,11 +17,11 @@ public abstract class gcServerPlugin {
 		return pluginHolder.isEnabled();
 	}
 	public void setHolder(gcServerPluginHolder pluginHolder) {
-		if(pluginHolder == null) throw new NullPointerException();
+		if(pluginHolder == null) throw new NullPointerException("pluginHolder cannot be null");
 		this.pluginHolder = pluginHolder;
 	}
 	protected void registerPlugin(String pluginName) {
-		if(pluginName == null) throw new NullPointerException();
+		if(pluginName == null) throw new NullPointerException("pluginName cannot be null");
 		pluginHolder.pluginName = pluginName;
 		gcServer.log.info("Starting server plugin: "+pluginName);
 	}

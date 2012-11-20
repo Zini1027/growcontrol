@@ -149,14 +149,14 @@ public class gcServerPluginManager {
 
 	// run event listeners
 	public boolean triggerEventCommand(String commandStr, String[] args) {
-		if(commandStr == null) throw new NullPointerException();
-		if(args       == null) throw new NullPointerException();
+		if(commandStr == null) throw new NullPointerException("commandStr cannot be null");
+		if(args       == null) throw new NullPointerException("args cannot be null");
 		gcServerEventCommand event = new gcServerEventCommand(commandStr, args);
 		if(triggerEvent(event)) event.setHandled();
 		return event.isHandled();
 	}
 	public boolean triggerEvent(gcServerEvent event) {
-		if(event == null) throw new NullPointerException();
+		if(event == null) throw new NullPointerException("event cannot be null");
 		// highest
 		if(triggerEventPriority(event, EventPriority.HIGHEST)) event.setHandled();
 		// high
@@ -170,7 +170,7 @@ public class gcServerPluginManager {
 		return event.isHandled();
 	}
 	private boolean triggerEventPriority(gcServerEvent event, EventPriority priority) {
-		if(event == null) throw new NullPointerException();
+		if(event == null) throw new NullPointerException("event cannot be null");
 		// command listeners
 		if(event instanceof gcServerEventCommand)
 			if(listenersCommand.triggerEvent(event, priority))
@@ -237,7 +237,7 @@ public class gcServerPluginManager {
 
 	// list class names
 	public static List<String> getClassNames(String jarName) throws IOException {
-		if(jarName == null) throw new NullPointerException();
+		if(jarName == null) throw new NullPointerException("jarName cannot be null");
 		ArrayList<String> classes = new ArrayList<String>(10);
 		JarInputStream jarFile = new JarInputStream(new FileInputStream(jarName));
 		JarEntry jarEntry;
@@ -251,8 +251,8 @@ public class gcServerPluginManager {
 	}
 	// get class by name
 	public static Class<?> getClass(File file, String className) throws Exception {
-		if(file == null) throw new NullPointerException();
-		if(className == null) throw new NullPointerException();
+		if(file      == null) throw new NullPointerException("file cannot be null");
+		if(className == null) throw new NullPointerException("className cannot be null");
 		addURL(file.toURI().toURL());
 		URL url = new File("jar:file://"+file.getAbsolutePath()+"!/").toURI().toURL();
 		URLClassLoader classLoader = new URLClassLoader(new URL[]{url});
@@ -266,19 +266,19 @@ public class gcServerPluginManager {
 		return null;
 	}
 	private static final Class<?>[] parameters = new Class[]{URL.class};
-	private static void addURL(URL u) throws IOException {
-		if(u == null) throw new NullPointerException();
+	private static void addURL(URL url) throws IOException {
+		if(url == null) throw new NullPointerException("url cannot be null");
 		URLClassLoader sysLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
 		URL urls[] = sysLoader.getURLs();
 		// skip if already loaded
 		for (int i = 0; i < urls.length; i++)
-			if (urls[i].toString().equalsIgnoreCase(u.toString())) return;
+			if (urls[i].toString().equalsIgnoreCase(url.toString())) return;
 		// add classpath
 		try {
 			Class<?> sysclass = URLClassLoader.class;
 			Method method = sysclass.getDeclaredMethod("addURL", parameters);
 			method.setAccessible(true);
-			method.invoke(sysLoader, new Object[]{u});
+			method.invoke(sysLoader, new Object[]{url});
 		} catch (Throwable e) {
 			gcServer.log.exception(e);
 			throw new IOException("Error, could not add URL to system classloader");
@@ -301,7 +301,7 @@ public class gcServerPluginManager {
 
 	// plugins path
 	public void setPath(String path) {
-		if(path == null) throw new NullPointerException();
+		if(path == null) throw new NullPointerException("path cannot be null");
 		pluginsPath = path;
 	}
 	public String getPath() {
@@ -311,8 +311,8 @@ public class gcServerPluginManager {
 
 	// get plugin by class name
 	public static gcServerPluginHolder getPluginByClassName(String className) {
-		if(className == null) throw new NullPointerException();
-		if(className.isEmpty()) return null;
+		if(className == null)   throw new NullPointerException("className cannot be null");
+		if(className.isEmpty()) throw new NullPointerException("className cannot be empty");
 		if(!plugins.containsKey(className)) return null;
 		gcServerPluginHolder plugin = plugins.get(className);
 		return plugin;

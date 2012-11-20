@@ -8,7 +8,7 @@ public abstract class gcServerListenerTick extends gcServerListener {
 	// do event
 	public abstract boolean onTick(gcServerEventTick event);
 	public boolean doEvent(gcServerEventTick event) {
-		if(event == null) throw new NullPointerException();
+		if(event == null) throw new NullPointerException("event cannot be null");
 		return onTick(event);
 	}
 

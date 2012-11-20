@@ -26,24 +26,21 @@ public class ServerConfig {
 
 	// version
 	public String getVersion() {
-		if(config == null)
-			return null;
+		if(config == null) return null;
 		return config.getString("Version");
 	}
 
 
 	// log level
 	public String getLogLevel() {
-		if(config == null)
-			return null;
+		if(config == null) return null;
 		return config.getString("Log Level");
 	}
 
 
 	// tick interval
 	public long getTickInterval() {
-		if(config == null)
-			return 1000;
+		if(config == null) return 1000;
 		return pxnUtils.MinMax(
 			config.getLong("Tick Interval"),
 			1,
@@ -53,8 +50,7 @@ public class ServerConfig {
 
 	// listen port
 	public int getListenPort() {
-		if(config == null)
-			return 1142;
+		if(config == null) return 1142;
 		return pxnUtils.MinMax(
 			config.getInt("Listen Port"),
 			1,
@@ -64,8 +60,7 @@ public class ServerConfig {
 
 	// zones (rooms)
 	public List<String> getZones() {
-		if(config == null)
-			return null;
+		if(config == null) return null;
 		try {
 			@SuppressWarnings("unchecked")
 			List<String> zones = (List<String>) config.get("zones");

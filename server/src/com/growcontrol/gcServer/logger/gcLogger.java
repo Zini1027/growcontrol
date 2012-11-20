@@ -98,37 +98,34 @@ public class gcLogger {
 
 	// log levels
 	public static String levelToString(LEVEL level) {
-		if(level != null) {
-			if(level.equals(LEVEL.FATAL))	return "FATAL";
-			if(level.equals(LEVEL.SEVERE))	return "SEVERE";
-			if(level.equals(LEVEL.WARNING))	return "WARNING";
-			if(level.equals(LEVEL.INFO))	return "info";
-		}
+		if(level == null) throw new NullPointerException("level cannot be null");
+		if(level.equals(LEVEL.FATAL))   return "FATAL";
+		if(level.equals(LEVEL.SEVERE))  return "SEVERE";
+		if(level.equals(LEVEL.WARNING)) return "WARNING";
+		if(level.equals(LEVEL.INFO))    return "info";
 		return "debug";
 	}
 	public static LEVEL levelFromString(String level) {
-		if(level != null) {
-			if(level.equalsIgnoreCase("fatal"))		return LEVEL.FATAL;
-			if(level.equalsIgnoreCase("severe"))	return LEVEL.SEVERE;
-			if(level.equalsIgnoreCase("warning"))	return LEVEL.WARNING;
-			if(level.equalsIgnoreCase("info"))		return LEVEL.INFO;
-		}
+		if(level == null) throw new NullPointerException("level cannot be null");
+		if(level.equalsIgnoreCase("fatal"))   return LEVEL.FATAL;
+		if(level.equalsIgnoreCase("severe"))  return LEVEL.SEVERE;
+		if(level.equalsIgnoreCase("warning")) return LEVEL.WARNING;
+		if(level.equalsIgnoreCase("info"))    return LEVEL.INFO;
 		return LEVEL.DEBUG;
 	}
 	public static int levelToInt(LEVEL level) {
-		if(level != null) {
-			if(level.equals(LEVEL.FATAL))	return LEVEL_FATAL;
-			if(level.equals(LEVEL.SEVERE))	return LEVEL_SEVERE;
-			if(level.equals(LEVEL.WARNING))	return LEVEL_WARNING;
-			if(level.equals(LEVEL.INFO))	return LEVEL_INFO;
-		}
+		if(level == null) throw new NullPointerException("level cannot be null");
+		if(level.equals(LEVEL.FATAL))   return LEVEL_FATAL;
+		if(level.equals(LEVEL.SEVERE))  return LEVEL_SEVERE;
+		if(level.equals(LEVEL.WARNING)) return LEVEL_WARNING;
+		if(level.equals(LEVEL.INFO))    return LEVEL_INFO;
 		return LEVEL_DEBUG;
 	}
 
 
 	// set log level
 	public void setLogLevel(LEVEL level) {
-		if(level == null) throw new NullPointerException();
+		if(level == null) throw new NullPointerException("level cannot be null");
 		logLevel = level;
 		for(gcLoggerHandler handler : logHandlers)
 			handler.setLogLevel(level);
@@ -192,17 +189,17 @@ public class gcLogger {
 		print(msg, LEVEL.INFO);
 	}
 	public synchronized void print(String msg, LEVEL level) {
-		if(msg == null) throw new NullPointerException();
-		if(level == null) throw new NullPointerException();
+		if(msg   == null) throw new NullPointerException("msg cannot be null");
+		if(level == null) throw new NullPointerException("level cannot be null");
 		printRaw( new gcLogRecord(msg, level, loggerName) );
 	}
 	public synchronized void printRaw(gcLogRecord logRecord) {
-		if(logRecord == null) throw new NullPointerException();
+		if(logRecord == null) throw new NullPointerException("logRecord cannot be null");
 		for(gcLoggerHandler handler : logHandlers)
 			handler.print(logRecord);
 	}
 	public synchronized void printRaw(String msg) {
-		if(msg == null) throw new NullPointerException();
+		if(msg == null) throw new NullPointerException("msg cannot be null");
 		for(gcLoggerHandler handler : logHandlers)
 			handler.print(msg);
 	}

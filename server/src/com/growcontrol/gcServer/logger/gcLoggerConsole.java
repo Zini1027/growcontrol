@@ -13,8 +13,8 @@ public class gcLoggerConsole implements gcLoggerHandler {
 
 
 	public gcLoggerConsole(jline.ConsoleReader reader, LEVEL level) {
-		if(reader == null) throw new NullPointerException();
-		if(level  == null) throw new NullPointerException();
+		if(reader == null) throw new NullPointerException("reader cannot be null");
+		if(level  == null) throw new NullPointerException("level cannot be null");
 		this.reader = reader;
 		this.level  = level;
 	}
@@ -22,13 +22,13 @@ public class gcLoggerConsole implements gcLoggerHandler {
 
 	@Override
 	public void print(gcLogRecord logRecord) {
-		if(logRecord == null) throw new NullPointerException();
+		if(logRecord == null) throw new NullPointerException("logRecord cannot be null");
 		if(!gcLogger.isLoggable(level, logRecord.level)) return;
 		print(logRecord.toString());
 	}
 	@Override
 	public void print(String msg) {
-		if(msg == null) throw new NullPointerException();
+		if(msg == null) throw new NullPointerException("msg cannot be null");
 		// no console handler
 		if(reader == null) {
 			System.out.print(msg);

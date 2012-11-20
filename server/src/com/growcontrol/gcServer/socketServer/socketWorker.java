@@ -25,7 +25,7 @@ public class socketWorker implements Runnable {
 
 
 	public socketWorker(Socket socket) {
-		if(socket == null) throw new NullPointerException();
+		if(socket == null) throw new NullPointerException("socket cannot be null");
 		this.socket = socket;
 		try {
 			in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));

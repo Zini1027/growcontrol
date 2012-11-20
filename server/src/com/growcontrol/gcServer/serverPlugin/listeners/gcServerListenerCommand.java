@@ -14,7 +14,7 @@ public abstract class gcServerListenerCommand extends gcServerListener {
 	// do event
 	public abstract boolean onCommand(gcServerEventCommand event);
 	public boolean doEvent(gcServerEventCommand event) {
-		if(event == null) throw new NullPointerException();
+		if(event == null) throw new NullPointerException("event cannot be null");
 		setHasCommand(event);
 //		event.hasCommand(hasCommand(event.getCommandStr()));
 //System.out.println("HAS COMMAND: "+Boolean.toString(event.hasCommand()));
@@ -27,7 +27,7 @@ public abstract class gcServerListenerCommand extends gcServerListener {
 		return addCommand(name);
 	}
 	public gcCommand addCommand(String name) {
-		if(name == null) throw new NullPointerException();
+		if(name == null) throw new NullPointerException("name cannot be null");
 		if(commands.containsKey(name)) {
 			return commands.get(name);
 		} else {
@@ -40,6 +40,7 @@ public abstract class gcServerListenerCommand extends gcServerListener {
 
 	// find command/alias
 	protected void setHasCommand(gcServerEventCommand event) {
+		if(event == null) throw new NullPointerException("event cannot be null");
 		event.setCommand(getCommand(event));
 	}
 //	public boolean hasCommand(String name) {
@@ -49,9 +50,11 @@ public abstract class gcServerListenerCommand extends gcServerListener {
 //		return false;
 //	}
 	public gcCommand getCommand(gcServerEventCommand event) {
+		if(event == null) throw new NullPointerException("event cannot be null");
 		return getCommand(event.getCommandStr());
 	}
 	public gcCommand getCommand(String name) {
+		if(name == null) throw new NullPointerException("name cannot be null");
 		for(Entry<String, gcCommand> entry : commands.entrySet()) {
 			gcCommand command = entry.getValue();
 			if(command.hasCommand(name))
