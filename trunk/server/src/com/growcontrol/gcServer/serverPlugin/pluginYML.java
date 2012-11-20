@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.growcontrol.gcServer.gcServer;
-import com.growcontrol.gcServer.config.gcConfig;
+import com.growcontrol.gcServer.serverPlugin.config.gcConfig;
 
 public class pluginYML {
 

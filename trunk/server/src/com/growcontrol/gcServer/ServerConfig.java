@@ -2,7 +2,7 @@ package com.growcontrol.gcServer;
 
 import java.util.List;
 
-import com.growcontrol.gcServer.config.gcConfig;
+import com.growcontrol.gcServer.serverPlugin.config.gcConfig;
 
 public class ServerConfig {
 
@@ -44,7 +44,7 @@ public class ServerConfig {
 	public long getTickInterval() {
 		if(config == null)
 			return 1000;
-		return gcServer.MinMax(
+		return pxnUtils.MinMax(
 			config.getLong("Tick Interval"),
 			1,
 			60000);
@@ -55,7 +55,7 @@ public class ServerConfig {
 	public int getListenPort() {
 		if(config == null)
 			return 1142;
-		return gcServer.MinMax(
+		return pxnUtils.MinMax(
 			config.getInt("Listen Port"),
 			1,
 			65536);

@@ -9,8 +9,11 @@ import com.growcontrol.gcServer.gcServer;
 
 public class gcSchedulerManager {
 
+//	protected Timer timerSingleThread = new Timer();
+
 	// schedulers by name
 	protected static HashMap<String, gcSchedulerManager> schedulers = new HashMap<String, gcSchedulerManager>();
+
 	// scheduler instances
 	protected final String schedulerName;
 	protected final List<gcSchedulerTask> tasks = new ArrayList<gcSchedulerTask>();
@@ -34,7 +37,7 @@ public class gcSchedulerManager {
 	private gcSchedulerManager(String schedulerName) {
 		if(schedulerName == null) throw new NullPointerException();
 		this.schedulerName = schedulerName;
-		gcServer.log.info("New scheduler created: "+schedulerName);
+		gcServer.log.debug("New scheduler created: "+schedulerName);
 	}
 
 
@@ -43,7 +46,7 @@ public class gcSchedulerManager {
 		if(task == null) throw new NullPointerException();
 		synchronized(tasks) {
 			this.tasks.add(task);
-			gcServer.log.info("Created new task: "+task.getTaskName());
+			gcServer.log.debug("Created new task: "+task.getTaskName());
 		}
 	}
 

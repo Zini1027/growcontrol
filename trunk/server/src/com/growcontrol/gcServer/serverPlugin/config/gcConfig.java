@@ -1,4 +1,4 @@
-package com.growcontrol.gcServer.config;
+package com.growcontrol.gcServer.serverPlugin.config;
 
 import java.io.File;
 import java.io.FileInputStream;
