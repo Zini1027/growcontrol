@@ -1,5 +1,6 @@
 package com.growcontrol.arduinogc;
 
+import com.growcontrol.gcServer.serverPlugin.commands.gcCommand;
 import com.growcontrol.gcServer.serverPlugin.events.gcServerEvent.EventPriority;
 import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListenerCommand;
@@ -9,13 +10,20 @@ public class CommandsListener extends gcServerListenerCommand {
 
 	public CommandsListener() {
 		setPriority(EventPriority.NORMAL);
+		// register commands
+		add("arduinogc")
+			.addAlias("arduino")
+			.setUsage("");
 	}
 
 
 	@Override
 	public boolean onCommand(gcServerEventCommand event) {
-		ArduinoGC.log.severe("Command: "+event.getCommandStr());
-		return false;
+		if(event.isHandled())   return false;
+		if(!event.hasCommand()) return false;
+		gcCommand command = event.getCommand();
+ArduinoGC.log.severe("Command: "+command.toString());
+		return true;
 	}
 
 
