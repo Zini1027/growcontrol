@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 
 import com.growcontrol.gcClient.frames.frameLogin;
 import com.growcontrol.gcClient.socketClient.connection;
+import com.growcontrol.gcClient.socketClient.packets.clientPacket;
 
 public class gcClient {
 	public static final String version = "3.0.1";
@@ -15,6 +16,9 @@ public class gcClient {
 frameLogin login;
 
 	public static void main(String[] args) {
+new frameLogin();
+boolean b = true;
+if(b) return;
 		if(client != null) throw new UnsupportedOperationException("Cannot redefine singleton gcClient; already running");
 		for(String arg : args) {
 			// version
@@ -32,8 +36,8 @@ frameLogin login;
 //login = new frameLogin();
 //return;
 		// connect to server
-		conn = new connection("192.168.3.174", 1142);
-		conn.sendPacket(new clientPacketHello(version, "lorenzo", "pass"));
+		conn = new connection("192.168.3.3", 1142);
+		conn.sendPacket(clientPacket.sendHELLO(version, "lorenzo", "pass"));
 	}
 
 
