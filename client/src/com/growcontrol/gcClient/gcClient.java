@@ -4,21 +4,17 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import com.growcontrol.gcClient.frames.frameLogin;
+import com.growcontrol.gcClient.frames.loginHandler;
 import com.growcontrol.gcClient.socketClient.connection;
-import com.growcontrol.gcClient.socketClient.packets.clientPacket;
 
 public class gcClient {
 	public static final String version = "3.0.1";
 	private static gcClient client = null;
 	public static connection conn = null;
 
-frameLogin login;
+	loginHandler loginWindow;
 
 	public static void main(String[] args) {
-new frameLogin();
-boolean b = true;
-if(b) return;
 		if(client != null) throw new UnsupportedOperationException("Cannot redefine singleton gcClient; already running");
 		for(String arg : args) {
 			// version
@@ -33,11 +29,14 @@ if(b) return;
 
 
 	public gcClient() {
+		// display login/connect window
+		loginWindow = new loginHandler();
+
 //login = new frameLogin();
 //return;
-		// connect to server
-		conn = new connection("192.168.3.3", 1142);
-		conn.sendPacket(clientPacket.sendHELLO(version, "lorenzo", "pass"));
+//		// connect to server
+//		conn = new connection("192.168.3.3", 1142);
+//		conn.sendPacket(clientPacket.sendHELLO(version, "lorenzo", "pass"));
 	}
 
 
