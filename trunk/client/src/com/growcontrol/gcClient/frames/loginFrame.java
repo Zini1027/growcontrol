@@ -4,8 +4,6 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -19,17 +17,20 @@ import javax.swing.JTextField;
 
 import net.miginfocom.swing.MigLayout;
 
-public class frameLogin extends JFrame implements ActionListener {
+public class loginFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 
+	public static final String LOGIN_WINDOW_NAME = "login";
+	public static final String CONNECTING_WINDOW_NAME = "connecting";
 	CardLayout cardLayout = new CardLayout();
 
 	JPanel panelLogin = new JPanel();
 	JPanel panelConnecting = new JPanel();
 
 
-	public frameLogin() {
+	public loginFrame(loginHandler handler) {
 		super();
+		if(handler == null) throw new NullPointerException("login class is null!");
 		this.setTitle("Connect to server..");
 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setResizable(false);
@@ -95,38 +96,39 @@ setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// connect button
 		JButton buttonConnect = new JButton("Connect");
 		panelLogin.add(buttonConnect, "span 2, center");
-		buttonConnect.addActionListener(this);
+		buttonConnect.addActionListener(handler);
 
 		// connecting..
 		panelConnecting.setLayout(new FlowLayout(FlowLayout.CENTER));
 		panelConnecting.setBackground(Color.DARK_GRAY);
 		ImageIcon loading = new ImageIcon("icon-loading-animated.gif");
-		JLabel label = new JLabel();
-		label.setIcon(loading);
-		panelConnecting.add(label);
+		JLabel labelAnimation = new JLabel();
+		labelAnimation.setIcon(loading);
+		panelConnecting.add(labelAnimation);
 		// cancel button
 		JButton buttonCancel = new JButton("Cancel");
 		panelConnecting.add(buttonCancel);
-		buttonCancel.addActionListener(this);
+		buttonCancel.addActionListener(handler);
+//		// progress bar
+//		JProgressBar progress = new JProgressBar();
+//		label.add(progress);
 
 		// create cards
-		this.add(panelLogin, "Login");
+		this.add(panelLogin, LOGIN_WINDOW_NAME);
 		pack();
-		this.add(panelConnecting, "Connecting");
+		this.add(panelConnecting, CONNECTING_WINDOW_NAME);
 		// display window
 		this.setLocationRelativeTo(null);
 		setVisible(true);
 	}
 
 
-	// button click event
-	@Override
-	public void actionPerformed(ActionEvent event) {
-		String command = ((JButton) event.getSource()).getActionCommand();
-		if(command.equals("Connect"))
-			cardLayout.show(panelConnecting.getParent(), "Connecting");
-		else if(command.equals("Cancel"))
-			cardLayout.show(panelLogin.getParent(), "Login");
+	public void DisplayCard(String cardName) {
+		if(cardName == null) throw new NullPointerException("cardName can't be null");
+		if(cardName.isEmpty()) throw new NullPointerException("cardName can't be empty");
+		try {
+			cardLayout.show(panelConnecting.getParent(), cardName);
+		} catch(Exception ignore) {}
 	}
 
 
