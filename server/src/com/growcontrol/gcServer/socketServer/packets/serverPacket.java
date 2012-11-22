@@ -7,9 +7,13 @@ public class serverPacket {
 
 
 	public serverPacket() {
+		this(null);
 	}
 	public serverPacket(String packetString) {
-		this.packetString = packetString;
+		if(packetString == null || packetString.isEmpty())
+			this.packetString = null;
+		else
+			this.packetString = packetString;
 	}
 
 
@@ -22,8 +26,8 @@ public class serverPacket {
 	// HEY <server version>
 	public static serverPacket sendHEY(String version) {
 		if(version == null) throw new NullPointerException("version cannot be null");
-		String hey = "HEY "+version;
-		serverPacket packet = new serverPacket(hey+EOL);
+		String packetStr = "HEY "+version;
+		serverPacket packet = new serverPacket(packetStr+EOL);
 		return packet;
 	}
 

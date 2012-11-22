@@ -241,7 +241,8 @@ System.exit(0);
 	private static void ASCIIHeader() {
 		AnsiConsole.out.println();
 		// line 1
-		AnsiConsole.out.println(Ansi.ansi().bg(Ansi.Color.BLACK)
+		AnsiConsole.out.println(Ansi.ansi()
+			.a(" ").bg(Ansi.Color.BLACK)
 			.bold().a("      ")
 			.fg(Ansi.Color.GREEN).a("P")
 			.fg(Ansi.Color.WHITE).a("oi")
@@ -250,7 +251,8 @@ System.exit(0);
 			.a("                                                    ")
 			.reset() );
 		// line 2
-		AnsiConsole.out.println(Ansi.ansi().bg(Ansi.Color.BLACK)
+		AnsiConsole.out.println(Ansi.ansi()
+			.a(" ").bg(Ansi.Color.BLACK)
 			.bold().a("    ")
 			.fg(Ansi.Color.GREEN).a("GROW")
 			.fg(Ansi.Color.WHITE).a("CONTROL")
@@ -258,7 +260,8 @@ System.exit(0);
 			.a("                                            ")
 			.reset() );
 		// line 3
-		AnsiConsole.out.println(Ansi.ansi().bg(Ansi.Color.BLACK)
+		AnsiConsole.out.println(Ansi.ansi()
+			.a(" ").bg(Ansi.Color.BLACK)
 			.a("                  ")
 			.fg(Ansi.Color.YELLOW).bold().a("_(_)_                          ").boldOff()
 			.fg(Ansi.Color.MAGENTA).a("wWWWw   ")
@@ -266,7 +269,8 @@ System.exit(0);
 			.a("       ")
 			.reset() );
 		// line 4
-		AnsiConsole.out.println(Ansi.ansi().bg(Ansi.Color.BLACK)
+		AnsiConsole.out.println(Ansi.ansi()
+			.a(" ").bg(Ansi.Color.BLACK)
 			.a("      ")
 			.fg(Ansi.Color.RED).a("@@@@").a("       ")
 			.fg(Ansi.Color.YELLOW).bold().a("(_)@(_)   ").boldOff()
@@ -278,7 +282,8 @@ System.exit(0);
 			.a("     ")
 			.reset() );
 		// line 5
-		AnsiConsole.out.println(Ansi.ansi().bg(Ansi.Color.BLACK)
+		AnsiConsole.out.println(Ansi.ansi()
+			.a(" ").bg(Ansi.Color.BLACK)
 			.a("     ")
 			.fg(Ansi.Color.RED).a("@@()@@ ")
 			.fg(Ansi.Color.MAGENTA).bold().a("wWWWw  ")
@@ -292,7 +297,8 @@ System.exit(0);
 			.a("    ")
 			.reset() );
 		// line 6
-		AnsiConsole.out.println(Ansi.ansi().bg(Ansi.Color.BLACK)
+		AnsiConsole.out.println(Ansi.ansi()
+			.a(" ").bg(Ansi.Color.BLACK)
 			.a("      ")
 			.fg(Ansi.Color.RED).a("@@@@  ")
 			.fg(Ansi.Color.MAGENTA).bold().a("(___)     ").boldOff()
@@ -306,7 +312,8 @@ System.exit(0);
 			.a("     ")
 			.reset() );
 		// line 7
-		AnsiConsole.out.println(Ansi.ansi().bg(Ansi.Color.BLACK)
+		AnsiConsole.out.println(Ansi.ansi()
+			.a(" ").bg(Ansi.Color.BLACK)
 			.fg(Ansi.Color.GREEN).a("       /      ")
 			.fg(Ansi.Color.MAGENTA).a("Y       ")
 			.fg(Ansi.Color.GREEN).a("\\|    \\|/    /")
@@ -314,23 +321,31 @@ System.exit(0);
 			.fg(Ansi.Color.GREEN).a("\\|      |/      |     ")
 			.reset() );
 		// line 8
-		AnsiConsole.out.println(Ansi.ansi().bg(Ansi.Color.BLACK)
+		AnsiConsole.out.println(Ansi.ansi()
+			.a(" ").bg(Ansi.Color.BLACK)
 			.fg(Ansi.Color.GREEN).a("    \\ |     \\ |/       | / \\ | /  \\|/       |/    \\|      \\|/    ")
 			.reset() );
 		// line 9
-		AnsiConsole.out.println(Ansi.ansi().bg(Ansi.Color.BLACK)
+		AnsiConsole.out.println(Ansi.ansi()
+			.a(" ").bg(Ansi.Color.BLACK)
 			.fg(Ansi.Color.GREEN).a("    \\\\|//   \\\\|///  \\\\\\|//\\\\\\|/// \\|///  \\\\\\|//  \\\\|//  \\\\\\|//   ")
 			.reset() );
 		// line 10
-		AnsiConsole.out.println(Ansi.ansi().bg(Ansi.Color.BLACK)
-			.fg(Ansi.Color.GREEN).a("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+		AnsiConsole.out.println(Ansi.ansi()
+			.a(" ").bg(Ansi.Color.BLACK)
+			.fg(Ansi.Color.GREEN).a("^/^/^/^/^/^/^/^/^/^/^/^/^/^/^/^/^/^/^/^/^/^/^/^/^/^/^/^/^/^/^/^/^")
+			.reset() );
+		// line 11
+		AnsiConsole.out.println(Ansi.ansi()
+			.a(" ").bg(Ansi.Color.BLACK)
+			.fg(Ansi.Color.GREEN).a("/////////////////////////////////////////////////////////////////")
 			.reset() );
 		AnsiConsole.out.println();
 
-		AnsiConsole.out.println("Copyright (C) 2007-2013 PoiXson, Mattsoft");
-		AnsiConsole.out.println("This program comes with absolutely no warranty.");
-		AnsiConsole.out.println("This is free software, and you are welcome to redistribute it under certain conditions.");
-		AnsiConsole.out.println("for details type 'show w' for warranty, or 'show c' for conditions");
+		AnsiConsole.out.println(" Copyright (C) 2007-2013 PoiXson, Mattsoft");
+		AnsiConsole.out.println(" This program comes with absolutely no warranty.");
+		AnsiConsole.out.println(" This is free software, and you are welcome to redistribute it under certain conditions.");
+		AnsiConsole.out.println(" for details type 'show w' for warranty, or 'show c' for conditions");
 		AnsiConsole.out.println();
 
 // 1 |      PoiXson
