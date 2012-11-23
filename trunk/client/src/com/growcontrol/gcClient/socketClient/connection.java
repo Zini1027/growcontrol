@@ -6,6 +6,10 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import javax.swing.JOptionPane;
+
+import com.growcontrol.gcClient.gcClient;
+import com.growcontrol.gcClient.gcClient.ConnectState;
 import com.growcontrol.gcClient.socketClient.packets.clientPacket;
 
 public class connection {
@@ -31,8 +35,24 @@ public class connection {
 			return;
 		} catch(IOException e) {
 			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Connection failed!", JOptionPane.ERROR_MESSAGE);
+			gcClient.setConnectState(ConnectState.CLOSED);
 			return;
 		}
+	}
+	// close socket
+	public void finalize() {
+		try {
+			close();
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
+	public void close() throws IOException {
+		if(socket == null) return;
+		if(socket.isConnected() || !socket.isClosed())
+			socket.close();
+		socket = null;
 	}
 
 
