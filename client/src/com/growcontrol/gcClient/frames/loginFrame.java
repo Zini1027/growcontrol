@@ -4,6 +4,7 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.KeyboardFocusManager;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -15,6 +16,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 
+import com.growcontrol.gcClient.gcClient;
+
 import net.miginfocom.swing.MigLayout;
 
 public class loginFrame extends JFrame {
@@ -22,10 +25,18 @@ public class loginFrame extends JFrame {
 
 	public static final String LOGIN_WINDOW_NAME = "login";
 	public static final String CONNECTING_WINDOW_NAME = "connecting";
-	CardLayout cardLayout = new CardLayout();
+	protected CardLayout cardLayout = new CardLayout();
+//	protected KeyStroke stroke = KeyStroke.getKeyStroke("ESCAPE");
+//	protected InputMap inputMap;
 
-	JPanel panelLogin = new JPanel();
-	JPanel panelConnecting = new JPanel();
+	protected JPanel panelLogin = new JPanel();
+	protected JPanel panelConnecting = new JPanel();
+
+	// input fields
+	protected JTextField textHost;
+	protected JTextField textPort;
+	protected JTextField textUsername;
+	protected JPasswordField textPassword;
 
 
 	public loginFrame(loginHandler handler) {
@@ -35,6 +46,9 @@ public class loginFrame extends JFrame {
 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setResizable(false);
 		this.setLayout(cardLayout);
+		// key listener
+		KeyboardFocusManager keyboard = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+		keyboard.addKeyEventDispatcher(handler);
 
 		// login form
 		MigLayout migLayout = new MigLayout();
@@ -44,10 +58,19 @@ setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		panelLogin.setLayout(migLayout);
 
 		// saved servers
+		JLabel labelServersList = new JLabel("Saved Servers");
+		labelServersList.setToolTipText("<html>" +
+				"</html>");
+		panelLogin.add(labelServersList, "split 2, span");
+		JSeparator separatorServersList = new JSeparator();
+		separatorServersList.setPreferredSize(new Dimension(200, 2));
+		panelLogin.add(separatorServersList, "growx, wrap");
+		// servers list
 		JComboBox comboSavedServers = new JComboBox();
 		comboSavedServers.addItem("[ unsaved ]");
-		comboSavedServers.addItem("[ Local Computer]");
+		comboSavedServers.addItem("[ Local Computer ]");
 		comboSavedServers.addItem("home:1142");
+		comboSavedServers.setEnabled(false);
 		panelLogin.add(comboSavedServers, "growx, span 2, gapleft 10, gapright 10, center, wrap");
 
 		// separator - Server Address
@@ -66,12 +89,12 @@ setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// hostname / ip
 		JLabel labelHost = new JLabel("Hostname/IP:");
 		panelLogin.add(labelHost, "");
-		JTextField textHost = new JTextField();
+		textHost = new JTextField();
 		panelLogin.add(textHost, "growx, wrap");
 		// port
 		JLabel labelPort = new JLabel("Port:");
 		panelLogin.add(labelPort, "");
-		JTextField textPort = new JTextField();
+		textPort = new JTextField();
 		panelLogin.add(textPort, "growx, wrap");
 
 		// separator - Username / Password
@@ -85,12 +108,12 @@ setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// username
 		JLabel labelUsername = new JLabel("Username:");
 		panelLogin.add(labelUsername, "");
-		JTextField textUsername = new JTextField();
+		textUsername = new JTextField();
 		panelLogin.add(textUsername, "growx, wrap");
 		// password
 		JLabel labelPassword = new JLabel("Password:");
 		panelLogin.add(labelPassword, "");
-		JPasswordField textPassword = new JPasswordField();
+		textPassword = new JPasswordField();
 		panelLogin.add(textPassword, "growx, wrap");
 
 		// connect button
@@ -101,7 +124,7 @@ setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// connecting..
 		panelConnecting.setLayout(new FlowLayout(FlowLayout.CENTER));
 		panelConnecting.setBackground(Color.DARK_GRAY);
-		ImageIcon loading = new ImageIcon("icon-loading-animated.gif");
+		ImageIcon loading = gcClient.loadImageResource("resources/icon-loading-animated.gif");
 		JLabel labelAnimation = new JLabel();
 		labelAnimation.setIcon(loading);
 		panelConnecting.add(labelAnimation);
@@ -115,8 +138,10 @@ setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// create cards
 		this.add(panelLogin, LOGIN_WINDOW_NAME);
-		pack();
 		this.add(panelConnecting, CONNECTING_WINDOW_NAME);
+		pack();
+		// set window width
+		this.setSize(280, this.getHeight());
 		// display window
 		this.setLocationRelativeTo(null);
 		setVisible(true);

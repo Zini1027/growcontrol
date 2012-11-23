@@ -1,25 +1,35 @@
 package com.growcontrol.gcClient;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.io.File;
+import java.io.IOException;
 
+import javax.swing.ImageIcon;
+
+import com.growcontrol.gcClient.frames.loginFrame;
 import com.growcontrol.gcClient.frames.loginHandler;
 import com.growcontrol.gcClient.socketClient.connection;
 
 public class gcClient {
 	public static final String version = "3.0.1";
-	private static gcClient client = null;
-	public static connection conn = null;
+	public static gcClient client = null;
+	private static boolean stopping = false;
+	private static connection conn = null;
 
-	loginHandler loginWindow;
+	// socket connection state
+	public enum ConnectState {CLOSED, CONNECTING, CONNECTED, AUTHORIZED};
+	private static ConnectState connectState = ConnectState.CLOSED;
+	private static ConnectState lastConnectState = null;
+
+	// frame handlers (windows)
+	loginHandler loginWindow = null;;
+
 
 	public static void main(String[] args) {
 		if(client != null) throw new UnsupportedOperationException("Cannot redefine singleton gcClient; already running");
 		for(String arg : args) {
 			// version
 			if(arg.equalsIgnoreCase("version")) {
-				System.out.println("GrowControl "+version+" Server");
+				System.out.println("GrowControl "+version+" Client");
 				System.exit(0);
 			}
 		}
@@ -29,9 +39,47 @@ public class gcClient {
 
 
 	public gcClient() {
+
+
+		while(!stopping) {
+			if(connectState.equals(lastConnectState)) {
+				pxnUtils.Sleep(50);
+				continue;
+			}
+			lastConnectState = connectState;
+			switch(connectState) {
+			case CLOSED:
+				// load login window
+				if(loginWindow == null) loginWindow = new loginHandler();
+				// display login card
+				if(loginWindow != null) loginWindow.setDisplay(loginFrame.LOGIN_WINDOW_NAME);
+				// close socket
+				if(conn != null) {
+					try {
+						conn.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					conn = null;
+				}
+				break;
+			case CONNECTING:
+				// load login window
+				if(loginWindow == null) loginWindow = new loginHandler();
+				// display connecting card
+				if(loginWindow != null) loginWindow.setDisplay(loginFrame.CONNECTING_WINDOW_NAME);
+				break;
+			case CONNECTED:
+				break;
+			case AUTHORIZED:
+				break;
+			}
+		}
+
+
+
 		// display login/connect window
 		loginWindow = new loginHandler();
-
 //login = new frameLogin();
 //return;
 //		// connect to server
@@ -40,35 +88,38 @@ public class gcClient {
 	}
 
 
-	// md5
-	public static String md5(String text) throws NoSuchAlgorithmException, UnsupportedEncodingException { 
-		if(text == null) throw new NullPointerException();
-		MessageDigest md = MessageDigest.getInstance("MD5");
-		byte[] md5hash = new byte[32];
-		md.update(text.getBytes("iso-8859-1"), 0, text.length());
-		md5hash = md.digest();
-		return md5_convertToHex(md5hash);
+	public static boolean isStopping() {
+		return stopping;
 	}
-	private static String md5_convertToHex(byte[] data) { 
-		if(data == null) throw new NullPointerException();
-		StringBuffer buf = new StringBuffer();
-		for(int i=0; i<data.length; i++) {
-			int halfbyte = (data[i] >>> 4) & 0x0F;
-			int two_halfs = 0;
-			do {
-				if( (0 <= halfbyte) && (halfbyte <= 9) ) 
-					buf.append((char)( '0'+halfbyte) );
-				else
-					buf.append((char)( 'a'+(halfbyte-10)) );
-				halfbyte = data[i] & 0x0F;
-			} while(two_halfs++ < 1);
-		} 
-		return buf.toString();
+
+
+	public static connection getConnectionClass() {
+		return conn;
 	}
- 
+	public static void setConnectionClass(connection conn) {
+		if(conn == null) throw new NullPointerException("conn can't be null");
+		gcClient.conn = conn;
+	}
 
 
+	public static ConnectState getConnectState() {
+		return connectState;
+	}
+	public static void setConnectState(ConnectState connectState) {
+		gcClient.connectState = connectState;
+	}
 
+
+	// load image file/resource
+	public static ImageIcon loadImageResource(String path) {
+		ImageIcon image = null;
+		File file = new File(path);
+		if(file.exists())
+			image = new ImageIcon(path);
+		if(image == null)
+			image = new ImageIcon(client.getClass().getResource(path));
+		return image;
+	}
 
 
 }
