@@ -15,10 +15,11 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
-
-import com.growcontrol.gcClient.gcClient;
+import javax.swing.SwingConstants;
 
 import net.miginfocom.swing.MigLayout;
+
+import com.growcontrol.gcClient.gcClient;
 
 public class loginFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -29,6 +30,7 @@ public class loginFrame extends JFrame {
 //	protected KeyStroke stroke = KeyStroke.getKeyStroke("ESCAPE");
 //	protected InputMap inputMap;
 
+	protected loginHandler handler;
 	protected JPanel panelLogin = new JPanel();
 	protected JPanel panelConnecting = new JPanel();
 
@@ -42,6 +44,7 @@ public class loginFrame extends JFrame {
 	public loginFrame(loginHandler handler) {
 		super();
 		if(handler == null) throw new NullPointerException("login class is null!");
+		this.handler = handler;
 		this.setTitle("Connect to server..");
 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setResizable(false);
@@ -49,22 +52,37 @@ setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// key listener
 		KeyboardFocusManager keyboard = KeyboardFocusManager.getCurrentKeyboardFocusManager();
 		keyboard.addKeyEventDispatcher(handler);
+		// create panels
+		createLoginPanel();
+		createConnectingPanel();
+		// create cards
+		this.add(panelLogin, LOGIN_WINDOW_NAME);
+		this.add(panelConnecting, CONNECTING_WINDOW_NAME);
+		pack();
+		// set window width
+		this.setSize(280, this.getHeight());
+		// display window
+		this.setLocationRelativeTo(null);
+		setVisible(true);
+	}
 
-		// login form
+
+	// login panel
+	private void createLoginPanel() {
 		MigLayout migLayout = new MigLayout();
 		migLayout.setLayoutConstraints("");
 		migLayout.setColumnConstraints("[]10[]");
 		migLayout.setRowConstraints   ("[]20[]");
 		panelLogin.setLayout(migLayout);
 
-		// saved servers
-		JLabel labelServersList = new JLabel("Saved Servers");
-		labelServersList.setToolTipText("<html>" +
-				"</html>");
-		panelLogin.add(labelServersList, "split 2, span");
-		JSeparator separatorServersList = new JSeparator();
-		separatorServersList.setPreferredSize(new Dimension(200, 2));
-		panelLogin.add(separatorServersList, "growx, wrap");
+//		// separator - saved servers
+//		JLabel labelServersList = new JLabel("Saved Servers");
+//		labelServersList.setToolTipText("<html>" +
+//				"</html>");
+//		panelLogin.add(labelServersList, "split 2, span");
+//		JSeparator separatorServersList = new JSeparator();
+//		separatorServersList.setPreferredSize(new Dimension(200, 2));
+//		panelLogin.add(separatorServersList, "growx, wrap");
 		// servers list
 		JComboBox comboSavedServers = new JComboBox();
 		comboSavedServers.addItem("[ unsaved ]");
@@ -120,8 +138,11 @@ setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		JButton buttonConnect = new JButton("Connect");
 		panelLogin.add(buttonConnect, "span 2, center");
 		buttonConnect.addActionListener(handler);
+	}
 
-		// connecting..
+
+	// connecting.. panel
+	private void createConnectingPanel() {
 		panelConnecting.setLayout(new FlowLayout(FlowLayout.CENTER));
 		panelConnecting.setBackground(Color.DARK_GRAY);
 		ImageIcon loading = gcClient.loadImageResource("resources/icon-loading-animated.gif");
@@ -132,24 +153,20 @@ setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		JButton buttonCancel = new JButton("Cancel");
 		panelConnecting.add(buttonCancel);
 		buttonCancel.addActionListener(handler);
+		// status
+		JLabel labelStatus = new JLabel("Connecting..");
+		labelStatus.setHorizontalAlignment(SwingConstants.CENTER);
+		labelStatus.setPreferredSize(new Dimension(180, 35));
+		labelStatus.setForeground(Color.WHITE);
+		panelConnecting.add(labelStatus);
 //		// progress bar
 //		JProgressBar progress = new JProgressBar();
 //		label.add(progress);
-
-		// create cards
-		this.add(panelLogin, LOGIN_WINDOW_NAME);
-		this.add(panelConnecting, CONNECTING_WINDOW_NAME);
-		pack();
-		// set window width
-		this.setSize(280, this.getHeight());
-		// display window
-		this.setLocationRelativeTo(null);
-		setVisible(true);
 	}
 
 
 	public void DisplayCard(String cardName) {
-		if(cardName == null) throw new NullPointerException("cardName can't be null");
+		if(cardName == null)   throw new NullPointerException("cardName can't be null");
 		if(cardName.isEmpty()) throw new NullPointerException("cardName can't be empty");
 		try {
 			cardLayout.show(panelConnecting.getParent(), cardName);
