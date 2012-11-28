@@ -1,4 +1,4 @@
-package com.growcontrol.gcServer.serverPlugin;
+package com.poixson.pxnPlugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,12 +6,12 @@ import java.io.IOException;
 import com.growcontrol.gcServer.gcServer;
 import com.growcontrol.gcServer.serverPlugin.config.gcConfig;
 
-public class pluginYML {
+public class pxnPluginYML {
 
 	public gcConfig config = null;;
 
 
-	public pluginYML(File file, String fileName) {
+	public pxnPluginYML(File file, String fileName) {
 		if(file     == null) throw new NullPointerException("file cannot be null");
 		if(fileName == null) throw new NullPointerException("fileName cannot be null");
 		try {

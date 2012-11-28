@@ -6,19 +6,21 @@ import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MessageFormatter;
 
 import com.growcontrol.gcServer.logger.gcLogger;
+import com.poixson.pxnLogger.pxnLevel;
+import com.poixson.pxnLogger.pxnLogger;
 
 public final class slf4jCustomAdapter implements Logger {
 
 	private static boolean logDebug = false;
 
 	// level mapping
-	public static final int LEVEL_FINEST	= gcLogger.levelToInt(gcLogger.LEVEL.DEBUG);
-	public static final int LEVEL_FINE		= gcLogger.levelToInt(gcLogger.LEVEL.DEBUG);
-	public static final int LEVEL_INFO		= gcLogger.levelToInt(gcLogger.LEVEL.INFO);
-	public static final int LEVEL_WARNING	= gcLogger.levelToInt(gcLogger.LEVEL.WARNING);
-	public static final int LEVEL_SEVERE	= gcLogger.levelToInt(gcLogger.LEVEL.SEVERE);
+	public static final int LEVEL_FINEST	= pxnLevel.levelToInt(pxnLevel.LEVEL.DEBUG);
+	public static final int LEVEL_FINE		= pxnLevel.levelToInt(pxnLevel.LEVEL.DEBUG);
+	public static final int LEVEL_INFO		= pxnLevel.levelToInt(pxnLevel.LEVEL.INFO);
+	public static final int LEVEL_WARNING	= pxnLevel.levelToInt(pxnLevel.LEVEL.WARNING);
+	public static final int LEVEL_SEVERE	= pxnLevel.levelToInt(pxnLevel.LEVEL.SEVERE);
 
-	private gcLogger log;
+	private pxnLogger log;
 
 	slf4jCustomAdapter() {
 		this.log = gcLogger.getLogger("quartz");
@@ -62,7 +64,7 @@ public final class slf4jCustomAdapter implements Logger {
 	// trace log
 	@Override
 	public boolean isTraceEnabled() {
-		return log.isDebug();
+		return pxnLogger.getLevel("console").isDebug();
 	}
 	@Override
 	public boolean isTraceEnabled(Marker marker) {
@@ -128,7 +130,7 @@ public final class slf4jCustomAdapter implements Logger {
 	// debug log
 	@Override
 	public boolean isDebugEnabled() {
-		return log.isDebug();
+		return pxnLogger.getLevel("console").isDebug();
 	}
 	@Override
 	public boolean isDebugEnabled(Marker marker) {
