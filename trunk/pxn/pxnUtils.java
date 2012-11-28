@@ -16,13 +16,6 @@ import com.poixson.pxnLogger.pxnLogger;
 public class pxnUtils {
 
 
-	protected static pxnLogger log = null;
-	public static void setLogger(pxnLogger log) {
-		if(log == null) throw new NullPointerException("log cannot be null");
-		pxnUtils.log = log;
-	}
-
-
 	// add lib to paths
 	public static void addLibraryPath(String libDir) {
 		if(libDir == null) throw new NullPointerException("libDir cannot be null");
@@ -34,7 +27,7 @@ public class pxnUtils {
 		// get current paths
 		String currentPaths = System.getProperty("java.library.path");
 		if(currentPaths == null) return;
-		logDebug("Adding lib path: "+libDir);
+		pxnLogger.log().debug("Adding lib path: "+libDir);
 		// set library paths
 		if(currentPaths.isEmpty()) {
 			System.setProperty("java.library.path", libPath);
@@ -49,13 +42,13 @@ public class pxnUtils {
 			fieldSysPath.setAccessible(true);
 			fieldSysPath.set(null, null);
 		} catch (SecurityException e) {
-			logException(e);
+			pxnLogger.log().exception(e);
 		} catch (NoSuchFieldException e) {
-			logException(e);
+			pxnLogger.log().exception(e);
 		} catch (IllegalArgumentException e) {
-			logException(e);
+			pxnLogger.log().exception(e);
 		} catch (IllegalAccessException e) {
-			logException(e);
+			pxnLogger.log().exception(e);
 		}
 	}
 
@@ -77,16 +70,16 @@ public class pxnUtils {
 							randomAccessFile.close();
 							file.delete();
 						} catch (Exception e) {
-							logSevere("Unable to remove lock file: "+lockFile);
-							logException(e);
+							pxnLogger.log().severe("Unable to remove lock file: "+lockFile);
+							pxnLogger.log().exception(e);
 						}
 					}
 				});
 				return true;
 			}
 		} catch (Exception e) {
-			logSevere("Unable to create and/or lock file: "+lockFile);
-			logException(e);
+			pxnLogger.log().severe("Unable to create and/or lock file: "+lockFile);
+			pxnLogger.log().exception(e);
 		}
 		return false;
 	}
@@ -96,9 +89,9 @@ public class pxnUtils {
 		try {
 			pid = Integer.parseInt( ( new File("/proc/self")).getCanonicalFile().getName() );
 		} catch (NumberFormatException e) {
-			logException(e);
+			pxnLogger.log().exception(e);
 		} catch (IOException e) {
-			logException(e);
+			pxnLogger.log().exception(e);
 		}
 		return pid;
 	}
@@ -109,7 +102,7 @@ public class pxnUtils {
 		try {
 			Thread.sleep(millis);
 		} catch (InterruptedException e) {
-			logException(e);
+			pxnLogger.log().exception(e);
 		}
 	}
 	// current time ms
@@ -215,16 +208,5 @@ public class pxnUtils {
 		return baseString;
 	}
 
-
-	// logger access layer
-	public static void logDebug(String msg) {
-		log.debug(msg);
-	}
-	public static void logSevere(String msg) {
-		log.severe(msg);
-	}
-	public static void logException(Exception e) {
-		log.exception(e);
-	}
 
 }
