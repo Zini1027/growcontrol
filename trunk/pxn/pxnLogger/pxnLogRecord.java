@@ -1,4 +1,4 @@
-package com.growcontrol.gcServer.logger;
+package com.poixson.pxnLogger;
 
 import java.text.SimpleDateFormat;
 
@@ -6,40 +6,43 @@ import org.fusesource.jansi.Ansi;
 
 import com.growcontrol.gcServer.ntp.gcClock;
 
-public final class gcLogRecord {
+
+public final class pxnLogRecord {
 
 //	private java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\x1B\\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]");
 //	private boolean strip = false;
 
-	protected final String msg;
-	protected final gcLogger.LEVEL level;
-	protected final String postfix;
-	protected final long millis;
+	public final String msg;
+	public final pxnLevel.LEVEL level;
+	public final String loggerName;
+	public final long millis;
 
 
-	gcLogRecord(String msg, gcLogger.LEVEL level, String postfix) {
+	pxnLogRecord(String msg, pxnLevel.LEVEL level, String loggerName) {
 		if(level == null) throw new NullPointerException("level cannot be null");
 		if(msg == null)
 			this.msg = "null";
 		else
 			this.msg = Ansi.ansi().render(msg).toString();
 		this.level = level;
-		this.postfix = postfix;
+		this.loggerName = loggerName;
 		this.millis = gcClock.getTimeMillis();
 	}
 
 
+	// build log line
 	public String toString() {
 		String line = formatDate(millis)+" "+
-			"["+gcLogger.levelToString(level)+"] ";
-		if(postfix != null)
-			if(!postfix.isEmpty())
-				line += "["+postfix+"] ";
+			"["+pxnLevel.levelToString(level)+"] ";
+		if(loggerName != null)
+			if(!loggerName.isEmpty())
+				line += "["+loggerName+"] ";
 		line += msg;
 		return line;
 	}
 
 
+	// format date
 	public static String formatDate(long millis) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("D yyyy-MM-dd HH:mm:ss");
 		return dateFormat.format(millis);

@@ -1,4 +1,4 @@
-package com.growcontrol.gcServer;
+package com.poixson;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,13 +10,14 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Random;
 
-import com.growcontrol.gcServer.logger.gcLogger;
+import com.poixson.pxnLogger.pxnLogger;
+
 
 public class pxnUtils {
 
 
-	protected static gcLogger log = null;
-	public static void setLogger(gcLogger log) {
+	protected static pxnLogger log = null;
+	public static void setLogger(pxnLogger log) {
 		if(log == null) throw new NullPointerException("log cannot be null");
 		pxnUtils.log = log;
 	}
