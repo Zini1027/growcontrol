@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import com.growcontrol.gcServer.serverPlugin.commands.gcCommand;
 import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
 
+
 public abstract class gcServerListenerCommand extends gcServerListener {
 
 	protected HashMap<String, gcCommand> commands = new HashMap<String, gcCommand>();
