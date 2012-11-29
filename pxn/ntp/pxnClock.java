@@ -1,4 +1,4 @@
-package com.growcontrol.gcServer.ntp;
+package com.poixson.ntp;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -10,14 +10,15 @@ import java.util.Date;
 
 import com.growcontrol.gcServer.gcServer;
 
-public class gcClock extends Thread {
+
+public class pxnClock extends Thread {
 
 	private static boolean usingNTP = false;
 	protected static double localOffset = 0.0;
 	protected static double lastChecked = 0.0;
 
 	// instance thread
-	protected static final gcClock instance = new gcClock();
+	protected static final pxnClock instance = new pxnClock();
 
 
 	public static void updateNTP_Blocking() {
@@ -56,8 +57,8 @@ public class gcClock extends Thread {
 			double time = System.currentTimeMillis();
 			localOffset = ((msg.receiveTimestamp - msg.originateTimestamp) + (msg.transmitTimestamp - fromUnixTimestamp(time))) / 2.0;
 			gcServer.log.info("Internal time adjusted by "+ (localOffset>0?"+":"") + new DecimalFormat("0.000").format(localOffset) +" seconds");
-			gcServer.log.debug("System time:   "+gcClock.timestampToString(time/1000.0));
-			gcServer.log.debug("Adjusted time: "+gcClock.getTimeString());
+			gcServer.log.debug("System time:   "+pxnClock.timestampToString(time/1000.0));
+			gcServer.log.debug("Adjusted time: "+pxnClock.getTimeString());
 			// clean up
 			socket.close();
 			msg = null;
