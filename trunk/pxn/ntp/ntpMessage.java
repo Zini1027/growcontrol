@@ -1,4 +1,4 @@
-package com.growcontrol.gcServer.ntp;
+package com.poixson.ntp;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;

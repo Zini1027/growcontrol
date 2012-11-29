@@ -1,11 +1,12 @@
-package com.growcontrol.gcServer.rxtx;
+package com.poixson.rxtx;
 
 import gnu.io.CommPortIdentifier;
 
 import java.util.Enumeration;
 import java.util.HashMap;
 
-public class Serial {
+
+public class pxnSerial {
 
 
 	public static synchronized HashMap<String, String> listPorts() {
