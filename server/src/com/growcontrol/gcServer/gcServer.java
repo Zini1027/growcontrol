@@ -60,9 +60,9 @@ public class gcServer extends Thread {
 			new pxnLoggerConsole(pxnLogger.getReader(),
 				new pxnLevel(pxnLevel.LEVEL.DEBUG)) );
 //		pxnLogger.addLogHandler(
-			"file",
-			new pxnLoggerFile(
-				new pxnLevel(pxnLevel.LEVEL.DEBUG)) );
+//			"file",
+//			new pxnLoggerFile(
+//				new pxnLevel(pxnLevel.LEVEL.DEBUG)) );
 		// process args
 		for(String arg : args) {
 			// version

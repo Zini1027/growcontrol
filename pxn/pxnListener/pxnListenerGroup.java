@@ -13,10 +13,6 @@ public class pxnListenerGroup {
 	protected List<pxnListener> listeners = new ArrayList<pxnListener>();
 
 
-//	public pxnListenerGroup() {
-//	}
-
-
 	// register listener
 	public void register(pxnListener listener) {
 		if(listener == null) throw new NullPointerException("listener cannot be null!");

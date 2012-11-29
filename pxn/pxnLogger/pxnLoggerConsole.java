@@ -47,6 +47,7 @@ public class pxnLoggerConsole implements pxnLoggerHandlerInterface {
 				reader.flushConsole();
 			} catch (IOException e) {
 				e.printStackTrace();
+				System.out.print(msg);
 			}
 		}
 	}
