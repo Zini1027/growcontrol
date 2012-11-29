@@ -1,19 +1,17 @@
-package com.growcontrol.gcServer.serverPlugin.commands;
+package com.poixson.pxnCommand;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.poixson.pxnUtils;
 
-
-public class gcCommand {
+public class pxnCommand {
 
 	protected final String name;
 	protected List<String> aliases = new ArrayList<String>();
 	protected String usageMsg = null;
 
 
-	public gcCommand(String name) {
+	public pxnCommand(String name) {
 		if(name == null) throw new NullPointerException("name cannot be null");
 		this.name = name;
 	}
@@ -29,12 +27,12 @@ public class gcCommand {
 
 
 	// aliases
-	public gcCommand addAlias(String alias) {
+	public pxnCommand addAlias(String alias) {
 		if(alias == null) throw new NullPointerException("alias cannot be null");
 		aliases.add(alias.toLowerCase());
 		return this;
 	}
-	public gcCommand addAliases(List<String> aliases) {
+	public pxnCommand addAliases(List<String> aliases) {
 		if(aliases == null) throw new NullPointerException("aliases cannot be null");
 		for(String alias : aliases)
 			aliases.add(alias);
@@ -48,7 +46,7 @@ public class gcCommand {
 		// is command name
 		if(this.name.equalsIgnoreCase(name)) return true;
 		// has alias
-System.out.println(this.name+"  [ "+pxnUtils.addStringSet("", aliases, ", ")+" ]");
+//System.out.println(this.name+"  [ "+pxnUtils.addStringSet("", aliases, ", ")+" ]");
 		return aliases.contains(name.toLowerCase());
 	}
 	

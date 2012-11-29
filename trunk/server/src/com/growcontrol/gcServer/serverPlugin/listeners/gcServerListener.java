@@ -12,12 +12,20 @@ public class gcServerListener extends pxnListener {
 	@Override
 	public boolean doEvent(pxnEvent event) {
 		if(event instanceof gcServerEvent) {
+
 			// command event
-			if(event instanceof gcServerEventCommand)
+			if(event instanceof gcServerEventCommand) {
+				// set event command if found
+				if(this instanceof gcServerListenerCommand)
+					((gcServerListenerCommand) this).setHasCommand((gcServerEventCommand) event);
+				// trigger command event
 				return ((gcServerListenerCommand) this).onCommand( (gcServerEventCommand) event );
+
 //			// somethingelse event
-//			if(event instanceof gcServerEventSomethingelse)
+//			} else if(event instanceof gcServerEventSomethingelse)
 //				return ((gcServerListenerSomethingelse) this).onSomethingelse( (gcServerEventSomethingelse) event );
+
+			}
 		}
 		return false;
 	}

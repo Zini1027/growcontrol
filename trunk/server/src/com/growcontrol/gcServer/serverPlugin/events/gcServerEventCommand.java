@@ -1,11 +1,11 @@
 package com.growcontrol.gcServer.serverPlugin.events;
 
-import com.growcontrol.gcServer.serverPlugin.commands.gcCommand;
+import com.poixson.pxnCommand.pxnCommand;
 
 
 public class gcServerEventCommand extends gcServerEvent {
 
-	protected gcCommand command = null;
+	protected pxnCommand command = null;
 	protected final String commandStr;
 	protected final String[] args;
 
@@ -20,10 +20,10 @@ public class gcServerEventCommand extends gcServerEvent {
 
 
 	// command object
-	public gcCommand getCommand() {
+	public pxnCommand getCommand() {
 		return command;
 	}
-	public void setCommand(gcCommand command) {
+	public void setCommand(pxnCommand command) {
 		this.command = command;
 	}
 	public boolean hasCommand() {

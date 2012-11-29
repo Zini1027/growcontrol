@@ -1,9 +1,10 @@
 package com.growcontrol.gcServer;
 
-import com.growcontrol.gcServer.serverPlugin.commands.gcCommand;
 import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListenerCommand;
+import com.poixson.pxnCommand.pxnCommand;
 import com.poixson.pxnEvent.pxnEvent.EventPriority;
+
 
 public class ServerCommands extends gcServerListenerCommand {
 
@@ -52,39 +53,39 @@ public class ServerCommands extends gcServerListenerCommand {
 	public boolean onCommand(gcServerEventCommand event) {
 		if(event.isHandled())   return false;
 		if(!event.hasCommand()) return false;
-		gcCommand command = event.getCommand();
+		pxnCommand command = event.getCommand();
 		// basic commands
 		if(command.hasCommand("stop"))
-			return commandStop();
+			return _commandStop();
 		else if(command.hasCommand("kill")) {
-			commandKill();
+			_commandKill();
 			return false;
 		} else if(command.hasCommand("pause"))
-			return commandPause();
+			return _commandPause();
 		else if(command.hasCommand("clear"))
-			return commandClear();
+			return _commandClear();
 		else if(command.hasCommand("show"))
-			return commandShow(event.getArgs());
+			return _commandShow(event.getArgs());
 		else if(command.hasCommand("version"))
-			return commandVersion();
+			return _commandVersion();
 		// tools
 		else if(command.hasCommand("ping"))
-			return commandPing(event.getArgs());
+			return _commandPing(event.getArgs());
 		else if(command.hasCommand("threads"))
-			return commandThreads();
+			return _commandThreads();
 		return false;
 	}
 
 
 	// stop command
-	private static boolean commandStop() {
+	private static boolean _commandStop() {
 		gcServer.Shutdown();
 		return true;
 	}
 
 
 	// kill command
-	private static void commandKill() {
+	private static void _commandKill() {
 		try {
 			gcServer.log.warning("Killing server! (Triggered by console command)");
 		} catch(Exception ignore) {}
@@ -93,37 +94,37 @@ public class ServerCommands extends gcServerListenerCommand {
 
 
 	// pause command
-	private static boolean commandPause() {
+	private static boolean _commandPause() {
 		return true;
 	}
 
 
 	// clear command
-	private static boolean commandClear() {
+	private static boolean _commandClear() {
 		return true;
 	}
 
 
 	// show command
-	private static boolean commandShow(String[] args) {
+	private static boolean _commandShow(String[] args) {
 		return true;
 	}
 
 
 	// version command
-	private static boolean commandVersion() {
+	private static boolean _commandVersion() {
 		return true;
 	}
 
 
 	// ping command
-	private static boolean commandPing(String[] args) {
+	private static boolean _commandPing(String[] args) {
 		return true;
 	}
 
 
 	// threads command
-	private static boolean commandThreads() {
+	private static boolean _commandThreads() {
 		return true;
 	}
 
