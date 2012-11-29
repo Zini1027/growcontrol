@@ -7,12 +7,17 @@ import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
 import com.growcontrol.gcServer.logger.gcLogger;
-import com.growcontrol.gcServer.ntp.gcClock;
 import com.growcontrol.gcServer.scheduler.gcSchedulerManager;
 import com.growcontrol.gcServer.scheduler.gcTicker;
 import com.growcontrol.gcServer.serverPlugin.gcServerPluginManager;
-import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListener.ListenerType;
+import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
 import com.growcontrol.gcServer.socketServer.socketServer;
+import com.poixson.pxnUtils;
+import com.poixson.ntp.pxnClock;
+import com.poixson.pxnLogger.pxnLevel;
+import com.poixson.pxnLogger.pxnLogger;
+import com.poixson.pxnLogger.pxnLoggerConsole;
+
 
 public class gcServer extends Thread {
 	public static final String version = "3.0.2";
@@ -25,7 +30,9 @@ public class gcServer extends Thread {
 	public static final gcLogger log = gcLogger.getLogger(null);
 
 	// server modules
-	public static final gcServerPluginManager pluginManager = new gcServerPluginManager();
+	public static final gcServerPluginManager pluginManager =
+		new gcServerPluginManager(
+			gcLogger.getLogger("ServerPlugin") );
 //	public static final gcServerDeviceLoader deviceLoader = new gcServerDeviceLoader();
 
 	// config files
@@ -48,7 +55,14 @@ public class gcServer extends Thread {
 
 	public static void main(String[] args) {
 		if(server != null) throw new UnsupportedOperationException("Cannot redefine singleton gcServer; already running");
-		pxnUtils.setLogger(log);
+		pxnLogger.addLogHandler(
+			"console",
+			new pxnLoggerConsole(pxnLogger.getReader(),
+				new pxnLevel(pxnLevel.LEVEL.DEBUG)) );
+//		pxnLogger.addLogHandler(
+			"file",
+			new pxnLoggerFile(
+				new pxnLevel(pxnLevel.LEVEL.DEBUG)) );
 		// process args
 		for(String arg : args) {
 			// version
@@ -60,7 +74,8 @@ public class gcServer extends Thread {
 				noconsole = true;
 			// debug mode
 			} else if(arg.equalsIgnoreCase("debug")) {
-				log.setLogLevel(gcLogger.LEVEL.DEBUG);
+				gcLogger.setLevel("console", pxnLevel.LEVEL.DEBUG);
+				gcLogger.setLevel("file",    pxnLevel.LEVEL.DEBUG);
 			// configs path
 			} else if(arg.startsWith("configspath=")) {
 				configsPath = arg.substring(12);
@@ -101,19 +116,21 @@ System.exit(0);
 		}
 		// set log level
 		String logLevel = config.getLogLevel();
-		if(logLevel != null && !logLevel.isEmpty())
-			if(!log.getLogLevel().equals(gcLogger.LEVEL.DEBUG))
-				log.setLogLevel(logLevel);
+		if(logLevel != null && !logLevel.isEmpty()) {
+//			pxnLevel level = gcLogger.getLevel("console");
+			gcLogger.setLevel("console", logLevel);
+//			gcLogger.setLevel("file",    logLevel);
+		}
 
 		// start jline console
-		pluginManager.registerListener(ListenerType.COMMAND, new ServerCommands());
+		pluginManager.registerCommandListener(new ServerCommands());
 		if(!noconsole) this.start();
 
 		// query time server
 //TODO: figure out why this is locking up
 //		gcClock.setUsingNTP(true);
-		gcClock.setUsingNTP(false);
-		gcClock.updateNTP_Blocking();
+		pxnClock.setUsingNTP(false);
+		pxnClock.updateNTP_Blocking();
 
 		// rooms
 		zones = config.getZones();
@@ -126,7 +143,13 @@ System.exit(0);
 		ticker = new gcTicker();
 
 		// load plugins
-		pluginManager.LoadPlugins();
+		try {
+			pluginManager.LoadPlugins();
+		} catch (Exception e) {
+			log.exception(e);
+			Shutdown();
+			return;
+		}
 
 //		// load devices
 //		deviceLoader.LoadDevices(Arrays.asList(new String[] {"Lamp"}));
@@ -147,6 +170,7 @@ System.exit(0);
 
 
 	public static void Shutdown() {
+//TODO: display total time running
 //TODO: make this threaded!
 		stopping = true;
 		log.printRaw("[[ Stopping GC Server ]]");
@@ -214,7 +238,7 @@ System.exit(0);
 			args = new String[0];
 		}
 		// trigger event
-		if(pluginManager.triggerEventCommand(commandStr, args))
+		if(pluginManager.triggerEvent(new gcServerEventCommand(commandStr, args)))
 			return;
 		// command not found
 		for(String arg : args) commandStr += " "+arg;
