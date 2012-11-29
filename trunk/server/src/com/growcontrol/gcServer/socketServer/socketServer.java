@@ -9,7 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.growcontrol.gcServer.gcServer;
-import com.growcontrol.gcServer.pxnUtils;
+import com.poixson.pxnUtils;
+
 
 public class socketServer implements Runnable {
 
@@ -94,5 +95,6 @@ public class socketServer implements Runnable {
 				it.remove();
 		gcServer.log.debug("Sockets loaded: "+Integer.toString(socketPool.size()));
 	}
+
 
 }

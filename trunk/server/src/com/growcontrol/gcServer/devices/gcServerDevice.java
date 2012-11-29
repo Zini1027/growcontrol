@@ -3,6 +3,7 @@ package com.growcontrol.gcServer.devices;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class gcServerDevice {
 
 	public final String deviceName;

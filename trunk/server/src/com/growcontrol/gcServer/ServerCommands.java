@@ -1,9 +1,9 @@
 package com.growcontrol.gcServer;
 
 import com.growcontrol.gcServer.serverPlugin.commands.gcCommand;
-import com.growcontrol.gcServer.serverPlugin.events.gcServerEvent.EventPriority;
 import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListenerCommand;
+import com.poixson.pxnEvent.pxnEvent.EventPriority;
 
 public class ServerCommands extends gcServerListenerCommand {
 
