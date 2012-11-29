@@ -15,6 +15,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import com.growcontrol.gcServer.gcServer;
 
+
 public class gcConfig {
 
 	protected HashMap<String, Object> data = new HashMap<String, Object>();
@@ -22,41 +23,42 @@ public class gcConfig {
 
 	// new instance (file)
 	public static gcConfig loadFile(String filePath, String fileName) {
-		if(fileName == null)   throw new NullPointerException("fileName cannot be null");
-		if(fileName.isEmpty()) throw new NullPointerException("fileName cannot be empty");
-		return new gcConfig(openFile(filePath, fileName));
+		if(fileName == null)   throw new NullPointerException("fileName cannot be null!");
+		if(fileName.isEmpty()) throw new NullPointerException("fileName cannot be empty!");
+		InputStream fileStream = openFile(filePath, fileName);
+		if(fileStream == null) return null;
+		return new gcConfig(fileStream);
 	}
 	public static gcConfig loadFile(String fileName) {
 		return loadFile(null, fileName);
 	}
-
-
 	// load yml path / filename
 	public static gcConfig loadResource(String filePath, String fileName) {
-		return new gcConfig(openResource(filePath, fileName));
+		InputStream fileStream = openResource(filePath, fileName);
+		if(fileStream == null) return null;
+		return new gcConfig(fileStream);
 	}
 	// load yml filename
 	public static gcConfig loadResource(String fileName) {
 		return loadResource(null, fileName);
 	}
-
-
 	// load yml from jar
 	public static gcConfig loadJarResource(File jarFile, String fileName) throws IOException {
-		if(jarFile  == null)   throw new NullPointerException("jarFile cannot be null");
-		if(fileName == null)   throw new NullPointerException("fileName cannot be null");
-		if(fileName.isEmpty()) throw new NullPointerException("fileName cannot be empty");
+		if(jarFile  == null)   throw new NullPointerException("jarFile cannot be null!");
+		if(fileName == null)   throw new NullPointerException("fileName cannot be null!");
+		if(fileName.isEmpty()) throw new NullPointerException("fileName cannot be empty!");
 		JarFile jar = new JarFile(jarFile);
 		JarEntry entry = jar.getJarEntry(fileName);
 		if(entry == null) return null;
 		InputStream fileStream = jar.getInputStream(entry);
+		if(fileStream == null) return null;
 		return new gcConfig(fileStream);
 	}
 
 
 	// config instance
 	public gcConfig(InputStream fileInput) {
-		if(fileInput == null) throw new NullPointerException("fileInput cannot be null");
+		if(fileInput == null) throw new NullPointerException("fileInput cannot be null!");
 		try {
 			Yaml yml = new Yaml();
 			synchronized(data) {
@@ -76,15 +78,15 @@ public class gcConfig {
 
 	// load config file
 	protected static InputStream openFile(String filePath, String fileName) {
-		if(fileName == null)   throw new NullPointerException("fileName cannot be null");
-		if(fileName.isEmpty()) throw new NullPointerException("fileName cannot be empty");
+		if(fileName == null)   throw new NullPointerException("fileName cannot be null!");
+		if(fileName.isEmpty()) throw new NullPointerException("fileName cannot be empty!");
 		String path = sanFilePath(filePath, fileName);
 		gcServer.log.debug("Loading config file: "+path);
 		return openFile(path);
 	}
 	protected static InputStream openFile(String fileStr) {
-		if(fileStr == null)   throw new NullPointerException("fileStr cannot be null");
-		if(fileStr.isEmpty()) throw new NullPointerException("fileStr cannot be empty");
+		if(fileStr == null)   throw new NullPointerException("fileStr cannot be null!");
+		if(fileStr.isEmpty()) throw new NullPointerException("fileStr cannot be empty!");
 		try {
 			File file = new File(fileStr);
 			if(!file.exists()) throw new FileNotFoundException("File not found!");
@@ -98,13 +100,13 @@ public class gcConfig {
 
 	// load resource config
 	protected static InputStream openResource(String filePath, String fileName) {
-		if(fileName == null)   throw new NullPointerException("fileName cannot be null");
-		if(fileName.isEmpty()) throw new NullPointerException("fileName cannot be empty");
+		if(fileName == null)   throw new NullPointerException("fileName cannot be null!");
+		if(fileName.isEmpty()) throw new NullPointerException("fileName cannot be empty!");
 		return openResource(sanFilePath(filePath, fileName));
 	}
 	protected static InputStream openResource(String fileStr) {
-		if(fileStr == null)   throw new NullPointerException("fileStr cannot be null");
-		if(fileStr.isEmpty()) throw new NullPointerException("fileStr cannot be empty");
+		if(fileStr == null)   throw new NullPointerException("fileStr cannot be null!");
+		if(fileStr.isEmpty()) throw new NullPointerException("fileStr cannot be empty!");
 		try {
 			return gcServer.class.getResourceAsStream(fileStr);
 		} catch(Exception ignore) {
@@ -115,8 +117,8 @@ public class gcConfig {
 
 
 	protected static String sanFilePath(String filePath, String fileName) {
-		if(fileName == null)   throw new NullPointerException("fileName cannot be null");
-		if(fileName.isEmpty()) throw new NullPointerException("fileName cannot be empty");
+		if(fileName == null)   throw new NullPointerException("fileName cannot be null!");
+		if(fileName.isEmpty()) throw new NullPointerException("fileName cannot be empty!");
 		if(!fileName.endsWith(".yml")) fileName += ".yml";
 		if(filePath == null || filePath.isEmpty())
 			return fileName;
