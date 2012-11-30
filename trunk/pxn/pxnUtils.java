@@ -10,10 +10,25 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Random;
 
+import com.poixson.ntp.pxnClock;
 import com.poixson.pxnLogger.pxnLogger;
 
 
 public class pxnUtils {
+
+
+	// static clock
+	protected static pxnClock clock = null;
+	public static pxnClock getClock() {
+		if(clock == null) {
+			clock = new pxnClock();
+			clock.update(false);
+		}
+		return clock;
+	}
+	public static void setClock(pxnClock clock) {
+		pxnUtils.clock = clock;
+	}
 
 
 	// add lib to paths

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.growcontrol.gcServer.gcServer;
-import com.poixson.ntp.pxnClock;
+import com.poixson.pxnUtils;
 
 
 public class gcTicker extends gcSchedulerTask {
@@ -33,7 +33,7 @@ public class gcTicker extends gcSchedulerTask {
 
 	@Override
 	public void trigger() {
-		long time = pxnClock.getTimeMillis();
+		long time = pxnUtils.getClock().getTimeMillis();
 		long timeSinceLast = 0;
 		if(timeLast != 0) {
 			timeSinceLast = time - timeLast;
