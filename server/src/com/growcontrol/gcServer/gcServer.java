@@ -2,6 +2,7 @@ package com.growcontrol.gcServer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
@@ -42,6 +43,8 @@ public class gcServer extends Thread {
 	// server scheduler
 	private static gcSchedulerManager scheduler = null;
 	private static gcTicker ticker = null;
+	// clock
+	private static pxnClock clock = null;
 
 	// socket pool
 	public static socketServer socket = null;
@@ -114,6 +117,7 @@ System.exit(0);
 			log.severe("Failed to load config.yml");
 			System.exit(1);
 		}
+
 		// set log level
 		String logLevel = config.getLogLevel();
 		if(logLevel != null && !logLevel.isEmpty()) {
@@ -127,10 +131,10 @@ System.exit(0);
 		if(!noconsole) this.start();
 
 		// query time server
+		if(clock == null)
+			clock = pxnUtils.getClock();
 //TODO: figure out why this is locking up
 //		gcClock.setUsingNTP(true);
-		pxnClock.setUsingNTP(false);
-		pxnClock.updateNTP_Blocking();
 
 		// rooms
 		zones = config.getZones();
@@ -185,6 +189,14 @@ System.exit(0);
 		gcSchedulerManager.ShutdownAll();
 		// loggers
 		AnsiConsole.systemUninstall();
+// display threads still running
+log.severe("Threads still running:");
+Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+//Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
+for(Thread t : threadSet) {
+	log.printRaw(t.getName());
+}
+
 	}
 	public static void Reload() {
 	}
@@ -252,6 +264,9 @@ System.exit(0);
 	}
 	public static gcTicker getTicker() {
 		return ticker;
+	}
+	public static pxnClock getClock() {
+		return clock;
 	}
 
 
@@ -367,9 +382,9 @@ System.exit(0);
 		AnsiConsole.out.println();
 
 		AnsiConsole.out.println(" Copyright (C) 2007-2013 PoiXson, Mattsoft");
-		AnsiConsole.out.println(" This program comes with absolutely no warranty.");
-		AnsiConsole.out.println(" This is free software, and you are welcome to redistribute it under certain conditions.");
-		AnsiConsole.out.println(" for details type 'show w' for warranty, or 'show c' for conditions");
+		AnsiConsole.out.println(" This program comes with absolutely no warranty. This is free software,");
+		AnsiConsole.out.println(" and you are welcome to redistribute it under certain conditions.");
+		AnsiConsole.out.println(" For details type 'show w' for warranty, or 'show c' for conditions.");
 		AnsiConsole.out.println();
 
 // 1 |      PoiXson

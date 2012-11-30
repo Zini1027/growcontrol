@@ -20,7 +20,17 @@ public class pxnClock extends Thread {
 	protected double lastChecked = 0.0;
 
 	// instance lock
-	protected final Object threadLock = null;
+	protected final Object threadLock = new Object();
+
+
+	// logger
+	protected pxnLogger log;
+	public pxnClock(pxnLogger log) {
+		this.log = log;
+	}
+	public pxnClock() {
+		log = pxnLogger.getLogger();
+	}
 
 
 	// static update
@@ -79,9 +89,9 @@ public class pxnClock extends Thread {
 				// calculate local offset
 				double time = System.currentTimeMillis();
 				localOffset = ((msg.receiveTimestamp - msg.originateTimestamp) + (msg.transmitTimestamp - fromUnixTimestamp(time))) / 2.0;
-				pxnLogger.log().info("Internal time adjusted by "+ (localOffset>0?"+":"") + new DecimalFormat("0.000").format(localOffset) +" seconds");
-				pxnLogger.log().debug("System time:   "+timestampToString(time/1000.0));
-				pxnLogger.log().debug("Adjusted time: "+getTimeString());
+				log.info("Internal time adjusted by "+ (localOffset>0?"+":"") + new DecimalFormat("0.000").format(localOffset) +" seconds");
+				log.debug("System time:   "+timestampToString(time/1000.0));
+				log.debug("Adjusted time: "+getTimeString());
 				// clean up
 				socket.close();
 				msg = null;
@@ -97,15 +107,20 @@ public class pxnClock extends Thread {
 //System.out.println("Round-trip delay: " + new DecimalFormat("0.00").format(roundTripDelay*1000) + " ms");
 //System.out.println("Local clock offset: " + new DecimalFormat("0.00").format(localClockOffset*1000) + " ms");
 			} catch (UnknownHostException e) {
-			pxnLogger.log().exception(e);
+				log.exception(e);
 //			} catch (SocketException e) {
 //				GrowControl.log.exception(e);
 //			} catch (IOException e) {
 //				GrowControl.log.exception(e);
 			} catch (Exception e) {
-				pxnLogger.log().exception(e);
+				log.exception(e);
 			}
 		}
+	}
+	// has update run?
+	public boolean hasUpdated() {
+		if(!enabled) return true;
+		return (localOffset != 0.0) && (lastChecked != 0.0);
 	}
 
 
@@ -126,7 +141,7 @@ public class pxnClock extends Thread {
 	}
 
 
-	// get fixed time
+	// get corrected time
 	public double getLocalOffset() {
 		return localOffset;
 	}
@@ -154,6 +169,7 @@ public class pxnClock extends Thread {
 	}
 
 
+	// set time server host
 	public void setTimeServer(String timeServer) {
 		if(timeServer == null || timeServer.isEmpty()) throw new NullPointerException("timeServer host can't be null!");
 		this.timeServer = timeServer;

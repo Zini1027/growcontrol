@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 
 import org.fusesource.jansi.Ansi;
 
-import com.poixson.ntp.pxnClock;
+import com.poixson.pxnUtils;
 
 
 public final class pxnLogRecord {
@@ -26,7 +26,7 @@ public final class pxnLogRecord {
 			this.msg = Ansi.ansi().render(msg).toString();
 		this.level = level;
 		this.loggerName = loggerName;
-		this.millis = pxnClock.getTimeMillis();
+		this.millis = pxnUtils.getClock().getTimeMillis();
 	}
 
 
