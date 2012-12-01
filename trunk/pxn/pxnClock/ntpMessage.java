@@ -1,4 +1,4 @@
-package com.poixson.ntp;
+package com.poixson.pxnClock;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
