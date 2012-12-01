@@ -10,7 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Random;
 
-import com.poixson.ntp.pxnClock;
+import com.poixson.pxnClock.pxnClock;
 import com.poixson.pxnLogger.pxnLogger;
 
 

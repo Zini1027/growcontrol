@@ -1,4 +1,4 @@
-package com.poixson.ntp;
+package com.poixson.pxnClock;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;

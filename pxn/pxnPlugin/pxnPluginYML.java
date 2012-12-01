@@ -3,22 +3,22 @@ package com.poixson.pxnPlugin;
 import java.io.File;
 import java.io.IOException;
 
-import com.growcontrol.gcServer.gcServer;
-import com.growcontrol.gcServer.serverPlugin.config.gcConfig;
+import com.poixson.pxnConfig.pxnConfig;
+import com.poixson.pxnLogger.pxnLogger;
 
 
 public class pxnPluginYML {
 
-	public gcConfig config = null;;
+	public pxnConfig config = null;;
 
 
 	public pxnPluginYML(File file, String fileName) {
 		if(file     == null) throw new NullPointerException("file cannot be null!");
 		if(fileName == null) throw new NullPointerException("fileName cannot be null!");
 		try {
-			config = gcConfig.loadJarResource(file, fileName);
+			config = pxnConfig.loadJarResource(file, fileName);
 		} catch (IOException e) {
-			gcServer.log.exception(e);
+			pxnLogger.log().exception(e);
 		}
 	}
 

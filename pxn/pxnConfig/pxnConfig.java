@@ -1,4 +1,4 @@
-package com.growcontrol.gcServer.serverPlugin.config;
+package com.poixson.pxnConfig;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,37 +13,37 @@ import java.util.jar.JarFile;
 
 import org.yaml.snakeyaml.Yaml;
 
-import com.growcontrol.gcServer.gcServer;
+import com.poixson.pxnLogger.pxnLogger;
 
 
-public class gcConfig {
+public class pxnConfig {
 
 	protected HashMap<String, Object> data = new HashMap<String, Object>();
 
 
 	// new instance (file)
-	public static gcConfig loadFile(String filePath, String fileName) {
+	public static pxnConfig loadFile(String filePath, String fileName) {
 		if(fileName == null)   throw new NullPointerException("fileName cannot be null!");
 		if(fileName.isEmpty()) throw new NullPointerException("fileName cannot be empty!");
 		InputStream fileStream = openFile(filePath, fileName);
 		if(fileStream == null) return null;
-		return new gcConfig(fileStream);
+		return new pxnConfig(fileStream);
 	}
-	public static gcConfig loadFile(String fileName) {
+	public static pxnConfig loadFile(String fileName) {
 		return loadFile(null, fileName);
 	}
 	// load yml path / filename
-	public static gcConfig loadResource(String filePath, String fileName) {
+	public static pxnConfig loadResource(String filePath, String fileName) {
 		InputStream fileStream = openResource(filePath, fileName);
 		if(fileStream == null) return null;
-		return new gcConfig(fileStream);
+		return new pxnConfig(fileStream);
 	}
 	// load yml filename
-	public static gcConfig loadResource(String fileName) {
+	public static pxnConfig loadResource(String fileName) {
 		return loadResource(null, fileName);
 	}
 	// load yml from jar
-	public static gcConfig loadJarResource(File jarFile, String fileName) throws IOException {
+	public static pxnConfig loadJarResource(File jarFile, String fileName) throws IOException {
 		if(jarFile  == null)   throw new NullPointerException("jarFile cannot be null!");
 		if(fileName == null)   throw new NullPointerException("fileName cannot be null!");
 		if(fileName.isEmpty()) throw new NullPointerException("fileName cannot be empty!");
@@ -52,12 +52,12 @@ public class gcConfig {
 		if(entry == null) return null;
 		InputStream fileStream = jar.getInputStream(entry);
 		if(fileStream == null) return null;
-		return new gcConfig(fileStream);
+		return new pxnConfig(fileStream);
 	}
 
 
 	// config instance
-	public gcConfig(InputStream fileInput) {
+	public pxnConfig(InputStream fileInput) {
 		if(fileInput == null) throw new NullPointerException("fileInput cannot be null!");
 		try {
 			Yaml yml = new Yaml();
@@ -71,7 +71,7 @@ public class gcConfig {
 			}
 		} catch(Exception e) {
 			this.data = null;
-			gcServer.log.exception(e);
+			pxnLogger.log().exception(e);
 		}
 	}
 
@@ -81,7 +81,7 @@ public class gcConfig {
 		if(fileName == null)   throw new NullPointerException("fileName cannot be null!");
 		if(fileName.isEmpty()) throw new NullPointerException("fileName cannot be empty!");
 		String path = sanFilePath(filePath, fileName);
-		gcServer.log.debug("Loading config file: "+path);
+		pxnLogger.log().debug("Loading config file: "+path);
 		return openFile(path);
 	}
 	protected static InputStream openFile(String fileStr) {
@@ -92,7 +92,7 @@ public class gcConfig {
 			if(!file.exists()) throw new FileNotFoundException("File not found!");
 			return new FileInputStream(file);
 		} catch (FileNotFoundException ignore) {
-			gcServer.log.debug("Failed to load config file: "+fileStr);
+			pxnLogger.log().debug("Failed to load config file: "+fileStr);
 			return openResource(fileStr);
 		}
 	}
@@ -108,9 +108,9 @@ public class gcConfig {
 		if(fileStr == null)   throw new NullPointerException("fileStr cannot be null!");
 		if(fileStr.isEmpty()) throw new NullPointerException("fileStr cannot be empty!");
 		try {
-			return gcServer.class.getResourceAsStream(fileStr);
+			return pxnConfig.class.getResourceAsStream(fileStr);
 		} catch(Exception ignore) {
-			gcServer.log.debug("Not found as a resource either!");
+			pxnLogger.log().debug("Not found as a resource either!");
 			return null;
 		}
 	}
@@ -211,23 +211,23 @@ public class gcConfig {
 	// set value
 	public void set(String path, String value) {
 //TODO:
-gcServer.log.severe("CONFIG FUNCTION NOT FINISHED!");
+pxnLogger.log().severe("CONFIG FUNCTION NOT FINISHED!");
 	}
 	public void set(String path, boolean value) {
 //TODO:
-gcServer.log.severe("CONFIG FUNCTION NOT FINISHED!");
+pxnLogger.log().severe("CONFIG FUNCTION NOT FINISHED!");
 	}
 	public void set(String path, int value) {
 //TODO:
-gcServer.log.severe("CONFIG FUNCTION NOT FINISHED!");
+pxnLogger.log().severe("CONFIG FUNCTION NOT FINISHED!");
 	}
 	public void set(String path, long value) {
 //TODO:
-gcServer.log.severe("CONFIG FUNCTION NOT FINISHED!");
+pxnLogger.log().severe("CONFIG FUNCTION NOT FINISHED!");
 	}
 	public void set(String path, double value) {
 //TODO:
-gcServer.log.severe("CONFIG FUNCTION NOT FINISHED!");
+pxnLogger.log().severe("CONFIG FUNCTION NOT FINISHED!");
 	}
 
 
