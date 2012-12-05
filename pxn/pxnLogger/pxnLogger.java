@@ -1,8 +1,11 @@
 package com.poixson.pxnLogger;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
+
+import jline.History;
 
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
@@ -71,6 +74,9 @@ public class pxnLogger implements pxnLoggerInterface {
 				reader.setBellEnabled(false);
 				reader.setUseHistory(true);
 				reader.setDefaultPrompt(defaultPrompt);
+				History history = reader.getHistory();
+				history.setHistoryFile(new File("history.txt"));
+				history.setMaxSize(100);
 				//reader.setDebug(new PrintWriter(new FileWriter("writer.debug", true)));
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -121,9 +127,7 @@ public class pxnLogger implements pxnLoggerInterface {
 	// read console input
 	public static String readLine() throws IOException {
 		if(reader == null) throw new NullPointerException("reader can't be null!");
-		String line = null;
-		line = reader.readLine();
-		return line;
+		return reader.readLine();
 	}
 	// clear console
 	public static void clear() {
