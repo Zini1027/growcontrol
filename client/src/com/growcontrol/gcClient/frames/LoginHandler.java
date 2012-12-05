@@ -9,18 +9,23 @@ import javax.swing.JButton;
 
 import com.growcontrol.gcClient.gcClient;
 import com.growcontrol.gcClient.gcClient.ConnectState;
-import com.growcontrol.gcClient.pxnUtils;
 import com.growcontrol.gcClient.socketClient.connection;
 import com.growcontrol.gcClient.socketClient.packets.clientPacket;
-
-public class loginHandler implements ActionListener, KeyEventDispatcher {
-
-	protected loginFrame frame;
-	protected String cardName = loginFrame.LOGIN_WINDOW_NAME;
+import com.poixson.pxnUtils;
 
 
-	public loginHandler() {
-		frame = new loginFrame(this);
+public class LoginHandler implements ActionListener, KeyEventDispatcher {
+
+	protected LoginFrame frame;
+	protected String cardName = LoginFrame.LOGIN_WINDOW_NAME;
+
+
+	public LoginHandler() {
+		frame = new LoginFrame(this);
+	}
+	public void close() {
+		frame.dispose();
+		frame = null;
 	}
 
 

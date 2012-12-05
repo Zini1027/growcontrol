@@ -17,21 +17,18 @@ import javax.swing.JSplitPane;
 import javax.swing.JToggleButton;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import com.growcontrol.gcClient.gcClient;
+
 
 public class DashboardFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 
-	//private JPanel contentPane;
-
-	static DashboardFrame frame;
-	public static void main(String[] args) {
-		frame = new DashboardFrame();
-	}
+//	private JPanel contentPane;
 
 
 	public DashboardFrame() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setTitle("Grow Control 3.0.2");
+		this.setTitle("Grow Control "+gcClient.version);
 		setBounds(100, 100, 600, 600);
 //		contentPane = new JPanel();
 //		setContentPane(contentPane);

@@ -21,7 +21,8 @@ import net.miginfocom.swing.MigLayout;
 
 import com.growcontrol.gcClient.gcClient;
 
-public class loginFrame extends JFrame {
+
+public class LoginFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	public static final String LOGIN_WINDOW_NAME = "login";
@@ -30,7 +31,7 @@ public class loginFrame extends JFrame {
 //	protected KeyStroke stroke = KeyStroke.getKeyStroke("ESCAPE");
 //	protected InputMap inputMap;
 
-	protected loginHandler handler;
+	protected LoginHandler handler;
 	protected JPanel panelLogin = new JPanel();
 	protected JPanel panelConnecting = new JPanel();
 
@@ -41,7 +42,7 @@ public class loginFrame extends JFrame {
 	protected JPasswordField textPassword;
 
 
-	public loginFrame(loginHandler handler) {
+	public LoginFrame(LoginHandler handler) {
 		super();
 		if(handler == null) throw new NullPointerException("login class is null!");
 		this.handler = handler;

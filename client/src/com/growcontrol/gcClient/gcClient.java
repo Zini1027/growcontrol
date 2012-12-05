@@ -5,23 +5,27 @@ import java.io.IOException;
 
 import javax.swing.ImageIcon;
 
-import com.growcontrol.gcClient.frames.loginFrame;
-import com.growcontrol.gcClient.frames.loginHandler;
+import com.growcontrol.gcClient.frames.DashboardHandler;
+import com.growcontrol.gcClient.frames.LoginFrame;
+import com.growcontrol.gcClient.frames.LoginHandler;
 import com.growcontrol.gcClient.socketClient.connection;
+import com.poixson.pxnUtils;
+
 
 public class gcClient {
-	public static final String version = "3.0.1";
+	public static final String version = "3.0.3";
 	public static gcClient client = null;
 	private static boolean stopping = false;
 	private static connection conn = null;
 
 	// socket connection state
-	public enum ConnectState {CLOSED, CONNECTING, CONNECTED, AUTHORIZED};
+	public enum ConnectState {CLOSED, CONNECTING, READY};
 	private static ConnectState connectState = ConnectState.CLOSED;
 	private static ConnectState lastConnectState = null;
 
 	// frame handlers (windows)
-	loginHandler loginWindow = null;;
+	protected LoginHandler loginWindow = null;
+	protected DashboardHandler dashboardWindow = null;
 
 
 	public static void main(String[] args) {
@@ -38,21 +42,20 @@ public class gcClient {
 	}
 
 
+	// wait for connection state change
 	public gcClient() {
-
-
 		while(!stopping) {
 			if(connectState.equals(lastConnectState)) {
-				pxnUtils.Sleep(50);
+				pxnUtils.Sleep(100);
 				continue;
 			}
 			lastConnectState = connectState;
 			switch(connectState) {
 			case CLOSED:
 				// load login window
-				if(loginWindow == null) loginWindow = new loginHandler();
+				if(loginWindow == null) loginWindow = new LoginHandler();
 				// display login card
-				if(loginWindow != null) loginWindow.setDisplay(loginFrame.LOGIN_WINDOW_NAME);
+				if(loginWindow != null) loginWindow.setDisplay(LoginFrame.LOGIN_WINDOW_NAME);
 				// close socket
 				if(conn != null) {
 					try {
@@ -65,23 +68,20 @@ public class gcClient {
 				break;
 			case CONNECTING:
 				// load login window
-				if(loginWindow == null) loginWindow = new loginHandler();
+				if(loginWindow == null) loginWindow = new LoginHandler();
 				// display connecting card
-				if(loginWindow != null) loginWindow.setDisplay(loginFrame.CONNECTING_WINDOW_NAME);
+				if(loginWindow != null) loginWindow.setDisplay(LoginFrame.CONNECTING_WINDOW_NAME);
 				break;
-			case CONNECTED:
-				break;
-			case AUTHORIZED:
+			case READY:
+				if(loginWindow != null) {
+					loginWindow.close();
+					loginWindow = null;
+				}
+				// load dashboard window
+				if(dashboardWindow == null) dashboardWindow = new DashboardHandler();
 				break;
 			}
 		}
-
-
-
-		// display login/connect window
-		loginWindow = new loginHandler();
-//login = new frameLogin();
-//return;
 //		// connect to server
 //		conn = new connection("192.168.3.3", 1142);
 //		conn.sendPacket(clientPacket.sendHELLO(version, "lorenzo", "pass"));
@@ -114,10 +114,18 @@ public class gcClient {
 	public static ImageIcon loadImageResource(String path) {
 		ImageIcon image = null;
 		File file = new File(path);
-		if(file.exists())
-			image = new ImageIcon(path);
-		if(image == null)
-			image = new ImageIcon(client.getClass().getResource(path));
+		// open file
+		if(file.exists()) {
+			try {
+				image = new ImageIcon(path);
+			} catch(Exception ignore) {}
+		}
+		// open resource
+		if(image == null) {
+			try {
+				image = new ImageIcon(client.getClass().getResource(path));
+			} catch(Exception ignore) {}
+		}
 		return image;
 	}
 
