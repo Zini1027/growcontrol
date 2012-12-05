@@ -3,7 +3,9 @@ package com.growcontrol.gcClient.socketClient;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.ConnectException;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 import javax.swing.JOptionPane;
@@ -11,6 +13,8 @@ import javax.swing.JOptionPane;
 import com.growcontrol.gcClient.gcClient;
 import com.growcontrol.gcClient.gcClient.ConnectState;
 import com.growcontrol.gcClient.socketClient.packets.clientPacket;
+import com.poixson.pxnLogger.pxnLogger;
+
 
 public class connection {
 
@@ -28,13 +32,26 @@ public class connection {
 		this.port = port;
 		try {
 			socket = new Socket(host, port);
+socket.setSoTimeout(1000);
 			in = new InputStreamReader(socket.getInputStream());
 			out = new PrintWriter(socket.getOutputStream(), false);
+gcClient.setConnectState(ConnectState.READY);
 		} catch(UnknownHostException e) {
+			// unknown host
+			pxnLogger.log().exception(e);
 			e.printStackTrace();
+			gcClient.setConnectState(ConnectState.CLOSED);
+			return;
+		} catch (SocketTimeoutException e) {
+			// connect timeout
+			e.printStackTrace();
+		} catch(ConnectException e) {
+			// connection refused
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Connection failed!", JOptionPane.ERROR_MESSAGE);
+			gcClient.setConnectState(ConnectState.CLOSED);
 			return;
 		} catch(IOException e) {
-			e.printStackTrace();
+			pxnLogger.log().exception(e);
 			JOptionPane.showMessageDialog(null, e.getMessage(), "Connection failed!", JOptionPane.ERROR_MESSAGE);
 			gcClient.setConnectState(ConnectState.CLOSED);
 			return;
