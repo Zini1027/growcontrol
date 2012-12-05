@@ -3,6 +3,7 @@ package com.poixson.pxnClock;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -14,7 +15,7 @@ import com.poixson.pxnLogger.pxnLogger;
 public class pxnClock extends Thread {
 
 	protected boolean enabled  = true;
-	protected String timeServer = "ntp.cais.rnp.br";
+	protected String timeServer = "pool.ntp.org";
 
 	protected double localOffset = 0.0;
 	protected double lastChecked = 0.0;
@@ -79,6 +80,7 @@ public class pxnClock extends Thread {
 			try {
 				DatagramSocket socket;
 				socket = new DatagramSocket();
+socket.setSoTimeout(1000);
 				InetAddress address = InetAddress.getByName(timeServer);
 				byte[] buf = new ntpMessage().toByteArray();
 				DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 123);
@@ -107,6 +109,8 @@ public class pxnClock extends Thread {
 //System.out.println("Round-trip delay: " + new DecimalFormat("0.00").format(roundTripDelay*1000) + " ms");
 //System.out.println("Local clock offset: " + new DecimalFormat("0.00").format(localClockOffset*1000) + " ms");
 			} catch (UnknownHostException e) {
+				log.exception(e);
+			} catch (SocketTimeoutException e) {
 				log.exception(e);
 //			} catch (SocketException e) {
 //				GrowControl.log.exception(e);
