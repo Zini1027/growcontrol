@@ -7,22 +7,25 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.BlockingQueue;
 
 import com.growcontrol.gcServer.gcServer;
 
 
-public class socketWorker implements Runnable {
+public class socketWorker {
 
 	protected Socket socket;
-	protected Thread thread;
+	protected Thread threadIn;
+	protected Thread threadOut;
 	protected boolean closed = false;
 
+	// buffers
 	protected BufferedReader in  = null;
 	protected PrintWriter    out = null;
-	protected Queue<String> inQueue  = new ConcurrentLinkedQueue<String>();
-//	protected Queue<String> outQueue = new ConcurrentLinkedQueue<String>();
+
+	// packet processor
+	protected Processor processor;
+	protected BlockingQueue<String> queueOut;
 
 
 	public socketWorker(Socket socket) {
@@ -34,14 +37,35 @@ public class socketWorker implements Runnable {
 		} catch (IOException e) {
 			gcServer.log.exception(e);
 		}
-		thread = new Thread(this);
-		thread.start();
+		// packet processor
+		processor = new Processor();
+		queueOut = processor.getQueueOut();
+
+		// reader thread
+		threadIn = new Thread() {
+			@Override
+			public void run() {
+				readerThread();
+			}
+		};
+
+		// sender thread
+		threadOut = new Thread() {
+			@Override
+			public void run() {
+				senderThread();
+			}
+		};
+
+		// start threads
+		threadIn.start();
+		threadOut.start();
 	}
 
 
+	// threads
 	// listen for incomming data
-	@Override
-	public void run() {
+	protected void readerThread() {
 		gcServer.log.info("Connected: "+getIPString());
 		String line = "";
 		while(!closed) {
@@ -57,7 +81,7 @@ public class socketWorker implements Runnable {
 			}
 			line = line.trim();
 			if(line.isEmpty()) continue;
-			inQueue.add(line);
+			processor.add(line);
 		}
 		close();
 		gcServer.log.info("Disconnected: "+getIPString());
@@ -65,6 +89,16 @@ public class socketWorker implements Runnable {
 		socket = null;
 		in  = null;
 		out = null;
+	}
+	// send outgoing data
+	protected void senderThread() {
+		while(!closed) {
+			try {
+				out.println(queueOut.take());
+			} catch (InterruptedException e) {
+				gcServer.log.exception(e);
+			}
+		}
 	}
 
 
