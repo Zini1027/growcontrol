@@ -40,8 +40,8 @@ public class pxnCommand {
 	}
 
 
-	// has command/alias
-	public boolean hasCommand(String name) {
+	// is/has command/alias
+	public boolean equalsCommand(String name) {
 		if(name == null) throw new NullPointerException("name cannot be null");
 		// is command name
 		if(this.name.equalsIgnoreCase(name)) return true;

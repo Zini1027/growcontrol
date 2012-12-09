@@ -12,16 +12,17 @@ import com.growcontrol.gcServer.scheduler.gcSchedulerManager;
 import com.growcontrol.gcServer.scheduler.gcTicker;
 import com.growcontrol.gcServer.serverPlugin.gcServerPluginManager;
 import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
-import com.growcontrol.gcServer.socketServer.socketServer;
+import com.growcontrol.gcServer.socketServer.gcSocketProcessorFactory;
 import com.poixson.pxnUtils;
-import com.poixson.ntp.pxnClock;
+import com.poixson.pxnClock.pxnClock;
 import com.poixson.pxnLogger.pxnLevel;
 import com.poixson.pxnLogger.pxnLogger;
 import com.poixson.pxnLogger.pxnLoggerConsole;
+import com.poixson.pxnSocket.pxnSocketServer;
 
 
 public class gcServer extends Thread {
-	public static final String version = "3.0.2";
+	public static final String version = "3.0.3";
 	public static final String prompt = ">";
 
 	private static gcServer server = null;
@@ -47,7 +48,7 @@ public class gcServer extends Thread {
 	private static pxnClock clock = null;
 
 	// socket pool
-	public static socketServer socket = null;
+	public static pxnSocketServer socket = null;
 
 	// zones
 	List<String> zones = null;
@@ -62,6 +63,13 @@ public class gcServer extends Thread {
 			"console",
 			new pxnLoggerConsole(pxnLogger.getReader(),
 				new pxnLevel(pxnLevel.LEVEL.DEBUG)) );
+//doesn't log anything
+//try {
+//	pxnLogger.getReader().setDebug(new PrintWriter(new FileWriter("log.txt", true)));
+//} catch (IOException e) {
+//	// TODO Auto-generated catch block
+//	e.printStackTrace();
+//}
 //		pxnLogger.addLogHandler(
 //			"file",
 //			new pxnLoggerFile(
@@ -96,6 +104,8 @@ public class gcServer extends Thread {
 
 	// server instance
 	public gcServer() {
+//		if(noconsole)
+//			gcLogger.setLevel("console", pxnLevel.LEVEL.WARNING);
 		// single instance lock
 		pxnUtils.lockInstance("gc.lock");
 		if(noconsole) {
@@ -121,22 +131,25 @@ System.exit(0);
 		// set log level
 		String logLevel = config.getLogLevel();
 		if(logLevel != null && !logLevel.isEmpty()) {
-//			pxnLevel level = gcLogger.getLevel("console");
-			gcLogger.setLevel("console", logLevel);
+			if(!noconsole)
+				gcLogger.setLevel("console", logLevel);
 //			gcLogger.setLevel("file",    logLevel);
 		}
 
 		// start jline console
 		pluginManager.registerCommandListener(new ServerCommands());
 		if(!noconsole) this.start();
-
+		// finish loading server
+		Startup();
+	}
+	private void Startup() {
 		// query time server
 		if(clock == null)
 			clock = pxnUtils.getClock();
 //TODO: figure out why this is locking up
 //		gcClock.setUsingNTP(true);
 
-		// rooms
+		// zones
 		zones = config.getZones();
 		if(zones == null) zones = new ArrayList<String>();
 		log.info("Loaded "+Integer.toString(zones.size())+" zones");
@@ -159,7 +172,7 @@ System.exit(0);
 //		deviceLoader.LoadDevices(Arrays.asList(new String[] {"Lamp"}));
 
 		// start socket listener
-		socket = new socketServer(config.getListenPort());
+		socket = new pxnSocketServer(config.getListenPort(), new gcSocketProcessorFactory() );
 
 		// start schedulers
 		log.info("Starting schedulers..");
@@ -207,6 +220,10 @@ for(Thread t : threadSet) {
 
 	// console input loop
 	public void run() {
+		if(noconsole) return;
+		StartConsole();
+	}
+	private void StartConsole() {
 		if(noconsole) return;
 		//TODO: password login
 		// If we input the special word then we will mask
@@ -386,6 +403,14 @@ for(Thread t : threadSet) {
 		AnsiConsole.out.println(" and you are welcome to redistribute it under certain conditions.");
 		AnsiConsole.out.println(" For details type 'show w' for warranty, or 'show c' for conditions.");
 		AnsiConsole.out.println();
+
+		AnsiConsole.out.println("Grow Control Server "+gcServer.version);
+		AnsiConsole.out.println("Running as: "+System.getProperty("user.name"));
+		AnsiConsole.out.println("Current dir: "+System.getProperty("user.dir"));
+		AnsiConsole.out.println("java home: "+System.getProperty("java.home"));
+		AnsiConsole.out.println();
+
+
 
 // 1 |      PoiXson
 // 2 |    ©GROWCONTROL    _
