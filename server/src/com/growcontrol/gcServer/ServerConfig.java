@@ -2,12 +2,13 @@ package com.growcontrol.gcServer;
 
 import java.util.List;
 
-import com.growcontrol.gcServer.serverPlugin.config.gcConfig;
 import com.poixson.pxnUtils;
+import com.poixson.pxnConfig.pxnConfig;
+
 
 public class ServerConfig {
 
-	protected gcConfig config = null;
+	protected pxnConfig config = null;
 	protected String configsPath = "";
 
 
@@ -18,7 +19,7 @@ public class ServerConfig {
 	public ServerConfig(String path) {
 		if(path != null) configsPath = path;
 		try {
-			config = gcConfig.loadFile(configsPath, "config.yml");
+			config = pxnConfig.loadFile(configsPath, "config.yml");
 		} catch (Exception e) {
 			gcServer.log.exception(e);
 		}

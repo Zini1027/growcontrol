@@ -3,6 +3,7 @@ package com.poixson.pxnLogger;
 import java.io.IOException;
 
 
+
 public class pxnLoggerConsole implements pxnLoggerHandlerInterface {
 
 	protected final jline.ConsoleReader reader;
@@ -37,8 +38,8 @@ public class pxnLoggerConsole implements pxnLoggerHandlerInterface {
 				reader.printString(msg);
 				reader.printNewline();
 				reader.flushConsole();
-				reader.drawLine();
-				reader.redrawLine();
+//				reader.drawLine();
+//				reader.redrawLine();
 				try {
 					reader.drawLine();
 				} catch (Throwable e) {

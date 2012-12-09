@@ -58,7 +58,7 @@ public abstract class gcServerListenerCommand extends gcServerListener {
 		if(name == null) throw new NullPointerException("name cannot be null");
 		for(Entry<String, pxnCommand> entry : commands.entrySet()) {
 			pxnCommand command = entry.getValue();
-			if(command.hasCommand(name))
+			if(command.equalsCommand(name))
 				return entry.getValue();
 		}
 		return null;
