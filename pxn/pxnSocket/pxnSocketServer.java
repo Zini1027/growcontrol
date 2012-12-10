@@ -5,6 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.poixson.pxnUtils;
@@ -13,23 +14,31 @@ import com.poixson.pxnLogger.pxnLogger;
 
 public class pxnSocketServer implements pxnSocket {
 
+//	protected final String bindHost;
 	protected final int port;
-//	protected final String bind;
 
 	// socket listener
 	protected ServerSocket listenerSocket = null;
 	protected Thread threadListener = null;
 
 	// processor
-	protected pxnSocketProcessorFactory processorFactory = null;
+	protected final pxnSocketProcessorFactory processorFactory;
 
 	// socket pool
-	protected final List<pxnSocketWorker> socketPool = new ArrayList<pxnSocketWorker>();
+	protected final List<pxnSocketWorker> socketWorkers = new ArrayList<pxnSocketWorker>();
 //	protected boolean stopping = false;
 
 
 	// new socket server
 	public pxnSocketServer(int port, pxnSocketProcessorFactory processorFactory) {
+		this(null, port, processorFactory);
+	}
+	public pxnSocketServer(String bindHost, int port, pxnSocketProcessorFactory processorFactory) {
+		this.processorFactory = processorFactory;
+		// bind to host
+		if(bindHost != null && !bindHost.isEmpty()) {
+//TODO:
+		}
 		// port
 		if(port < 1 || port > 65536) {
 			pxnLogger.log().severe("Invalid port "+Integer.toString(port)+" is not valid! Out of range!");
@@ -52,7 +61,6 @@ public class pxnSocketServer implements pxnSocket {
 				doListenerThread();
 			}
 		};
-		this.processorFactory = processorFactory;
 		threadListener.setName("SocketListener");
 		threadListener.start();
 		pxnUtils.Sleep(10);
@@ -81,21 +89,29 @@ pxnLogger.log().exception(ignore);
 //			}
 			// add socket to pool
 			if(socket != null)
-				socketPool.add(new pxnSocketWorker(socket, processorFactory.newProcessor() ));
+				socketWorkers.add(new pxnSocketWorker(socket, processorFactory.newProcessor() ));
 		}
 	}
 
 
 	// flush closed sockets from pool
-	@Override
+//	@Override
 	public void flushClosed() {
-//		for(Iterator<socketWorker> it = socketPool.iterator(); it.hasNext();)
-//			if(it.next().isClosed())
-//				it.remove();
-//		gcServer.log.debug("Sockets loaded: "+Integer.toString(socketPool.size()));
+		for(Iterator<pxnSocketWorker> it = socketWorkers.iterator(); it.hasNext();)
+			if(it.next().isClosed())
+				it.remove();
+		pxnLogger.log().debug("Sockets loaded: "+Integer.toString(socketWorkers.size()));
 	}
 
 
+	// close socket
+	@Override
+	public void close() {
+	}
+//	public void close(int socketId) {
+//	}
+//	public void closeAll() {
+//	}
 	@Override
 	public void stop() {
 //		stopping = true;
