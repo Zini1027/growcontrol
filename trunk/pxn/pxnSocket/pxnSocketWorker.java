@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.concurrent.BlockingQueue;
@@ -15,7 +16,7 @@ public class pxnSocketWorker {
 
 	protected final Socket socket;
 	protected final pxnSocketProcessor processor;
-//	protected boolean closed = false;
+	protected boolean closed = false;
 
 	// input/output threads
 	protected final Thread threadIn;
@@ -35,8 +36,10 @@ System.out.println("CONNECTED!!!!!!!!!!!!");
 		this.socket = socket;
 		this.processor = processor;
 		try {
+			socket.setKeepAlive(true);
 			in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out = new PrintWriter(socket.getOutputStream());
+			out.flush();
 		} catch (IOException e) {
 			pxnLogger.log().exception(e);
 		}
@@ -64,10 +67,9 @@ System.out.println("CONNECTED!!!!!!!!!!!!");
 
 	// reader thread
 	private void doReaderThread() {
-//		pxnLogger.log().info("Connected: "+getIPString());
+		pxnLogger.log().info("Connected: "+getIPString());
 		String line = "";
-//		while(!closed) {
-		while(true) {
+		while(!closed) {
 System.out.println("READER THREAD RUNNING");
 			try {
 				line = in.readLine();
@@ -82,10 +84,28 @@ System.out.println("READER THREAD RUNNING");
 			if(!line.isEmpty())
 				processor.process(line);
 		}
-//		close();
-//		pxnLogger.log().info("Disconnected: "+getIPString());
-//		outQueue.clear();
-		if(socket != null && !socket.isClosed()) {
+		close();
+	}
+	// sender thread
+	private void doSenderThread() {
+		while(!closed) {
+System.out.println("SENDER THREAD RUNNING");
+			try {
+				out.println(queueOut.take());
+			} catch (InterruptedException e) {
+				pxnLogger.log().exception(e);
+			}
+		}
+	}
+
+
+	// close socket
+	public void close() {
+		if(closed) return;
+		closed = true;
+		queueOut.clear();
+		pxnLogger.log().info("Disconnected: "+getIPString());
+		if(socket != null) {
 			try {
 				socket.close();
 			} catch (IOException e) {
@@ -93,53 +113,27 @@ System.out.println("READER THREAD RUNNING");
 			}
 		}
 	}
-	// sender thread
-	private void doSenderThread() {
-System.out.println("SENDER THREAD RUNNING");
-//		while(!closed) {
-//			try {
-//out.println(queueOut.take());
-//			} catch (InterruptedException e) {
-//				gcServer.log.exception(e);
-//			}
-//		}
+	// is connected / closed
+	public boolean isClosed() {
+		if(socket == null || in == null || out == null)
+			closed = true;
+		else if(socket.isClosed() || out.checkError())
+			closed = true;
+		return closed;
 	}
 
 
-//		// packet processor
-//		processor = new Processor();
-//		queueOut = processor.getQueueOut();
-
-
-//	// close socket
-//	public void close() {
-//		if(socket == null) return;
-//		try {
-//			socket.close();
-//		} catch (IOException e) {
-//			gcServer.log.exception(e);
-//		}
-//	}
-//	// is connected/closed
-//	public boolean isClosed() {
-//		if(socket == null || in == null || out == null)
-//			closed = true;
-//		else if(socket.isClosed() || out.checkError())
-//			closed = true;
-//		return closed;
-//	}
-//
-//
-//	// get remote ip address
-//	public InetAddress getIP() {
-//		if(socket == null) return null;
-//		return socket.getInetAddress();
-//	}
-//	public String getIPString() {
-//		InetAddress ip = getIP();
-//		if(ip == null) return null;
-//		return ip.toString().replace("/", "");
-//	}
+	// get ip address
+	public InetAddress getIP() {
+		if(socket == null) return null;
+		return socket.getInetAddress();
+	}
+	public String getIPString() {
+		if(socket == null) return null;
+		InetAddress ip = getIP();
+		if(ip == null) return null;
+		return ip.toString().replace("/", "");
+	}
 
 
 }

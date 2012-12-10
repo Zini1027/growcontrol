@@ -3,8 +3,7 @@ package com.poixson.pxnSocket;
 
 public interface pxnSocket {
 
-//TODO: not here?
-	public void flushClosed();
+	public void close();
 	public abstract void stop();
 
 }

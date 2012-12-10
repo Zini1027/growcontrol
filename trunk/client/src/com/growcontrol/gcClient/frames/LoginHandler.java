@@ -9,9 +9,9 @@ import javax.swing.JButton;
 
 import com.growcontrol.gcClient.gcClient;
 import com.growcontrol.gcClient.gcClient.ConnectState;
-import com.growcontrol.gcClient.socketClient.connection;
-import com.growcontrol.gcClient.socketClient.packets.clientPacket;
+import com.growcontrol.gcClient.socketClient.gcSocketProcessor;
 import com.poixson.pxnUtils;
+import com.poixson.pxnSocket.pxnSocketClient;
 
 
 public class LoginHandler implements ActionListener, KeyEventDispatcher {
@@ -44,8 +44,9 @@ public class LoginHandler implements ActionListener, KeyEventDispatcher {
 
 
 		// connect to server
-		gcClient.setConnectionClass(new connection(getHost(), getPort()));
-		gcClient.getConnectionClass().sendPacket(clientPacket.sendHELLO(gcClient.version, "lorenzo", "pass"));
+		gcClient.socket = new pxnSocketClient(getHost(), getPort(), new gcSocketProcessor());
+		gcClient.socket.sendData("HELLO "+gcClient.version+"lorenzo pass");
+//		gcClient.socket.sendPacket(clientPacket.sendHELLO(gcClient.version, "lorenzo", "pass"));
 
 
 

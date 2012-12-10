@@ -1,22 +1,21 @@
 package com.growcontrol.gcClient;
 
 import java.io.File;
-import java.io.IOException;
 
 import javax.swing.ImageIcon;
 
 import com.growcontrol.gcClient.frames.DashboardHandler;
 import com.growcontrol.gcClient.frames.LoginFrame;
 import com.growcontrol.gcClient.frames.LoginHandler;
-import com.growcontrol.gcClient.socketClient.connection;
 import com.poixson.pxnUtils;
+import com.poixson.pxnSocket.pxnSocketClient;
 
 
 public class gcClient {
 	public static final String version = "3.0.3";
 	public static gcClient client = null;
 	private static boolean stopping = false;
-	private static connection conn = null;
+	public static pxnSocketClient socket = null;
 
 	// socket connection state
 	public enum ConnectState {CLOSED, CONNECTING, READY};
@@ -57,13 +56,9 @@ public class gcClient {
 				// display login card
 				if(loginWindow != null) loginWindow.setDisplay(LoginFrame.LOGIN_WINDOW_NAME);
 				// close socket
-				if(conn != null) {
-					try {
-						conn.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					conn = null;
+				if(socket != null) {
+					socket.close();
+					socket = null;
 				}
 				break;
 			case CONNECTING:
@@ -90,15 +85,6 @@ public class gcClient {
 
 	public static boolean isStopping() {
 		return stopping;
-	}
-
-
-	public static connection getConnectionClass() {
-		return conn;
-	}
-	public static void setConnectionClass(connection conn) {
-		if(conn == null) throw new NullPointerException("conn can't be null");
-		gcClient.conn = conn;
 	}
 
 
