@@ -5,10 +5,11 @@ import java.util.concurrent.BlockingQueue;
 
 public interface pxnSocketProcessor {
 
-	// add to queue
-	public void process(String line);
-	// process now
-	public void processLine(String line);
+	// in queue
+	public void processData(String line);
+	public void processNow(String line);
+	// out queue
+	public void sendData(String line);
 
 	// queues
 	public BlockingQueue<String> getInputQueue();
