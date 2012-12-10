@@ -8,6 +8,7 @@ import com.poixson.pxnLogger.pxnLogger;
 
 public abstract class pxnSocketProcessorThreaded implements pxnSocketProcessor {
 
+//TODO: queues should be moved to worker
 	// input/output queues
 	protected BlockingQueue<String> queueIn;
 	protected BlockingQueue<String> queueOut;
@@ -18,7 +19,7 @@ public abstract class pxnSocketProcessorThreaded implements pxnSocketProcessor {
 
 	public pxnSocketProcessorThreaded() {
 		// default size queues
-		this(1, 1);
+		this(100, 100);
 	}
 	public pxnSocketProcessorThreaded(int sizeIn, int sizeOut) {
 		// create queues
@@ -51,7 +52,7 @@ public abstract class pxnSocketProcessorThreaded implements pxnSocketProcessor {
 			// consume queue
 			try {
 				// submit packet for processing
-				processLine( queueIn.take() );
+				processNow( queueIn.take() );
 			} catch (InterruptedException e) {
 				pxnLogger.log().exception(e);
 			}
@@ -68,14 +69,19 @@ public abstract class pxnSocketProcessorThreaded implements pxnSocketProcessor {
 	}
 
 
-	// add packet to queue
+	// add to queue
 	@Override
-	public void process(String line) {
+	public void processData(String line) {
 		if(line == null) return;
-		line = line.trim();
-//		queueIn.offer(line);
-//offer waits, add throws an exception - if full
-//		queueIn.add(line);
+		queueIn.offer(line.trim());
+//if full:
+// .offer waits
+// .add throws an exception
+	}
+	@Override
+	public void sendData(String line) {
+		if(line == null) return;
+		queueOut.offer(line.trim());
 	}
 
 
@@ -89,8 +95,6 @@ public abstract class pxnSocketProcessorThreaded implements pxnSocketProcessor {
 	public BlockingQueue<String> getOutputQueue() {
 		return queueOut;
 	}
-
-
 
 
 }

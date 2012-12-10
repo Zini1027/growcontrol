@@ -3,6 +3,8 @@ package com.poixson.pxnSocket;
 import java.io.IOException;
 import java.net.Socket;
 
+import javax.swing.JOptionPane;
+
 import com.growcontrol.gcClient.gcClient;
 import com.growcontrol.gcClient.gcClient.ConnectState;
 import com.poixson.pxnLogger.pxnLogger;
@@ -15,7 +17,7 @@ public class pxnSocketClient implements pxnSocket {
 
 	// socket
 	protected Socket socket = null;
-//	protected pxnSocketWorker socket = null;
+	protected pxnSocketWorker worker = null;
 
 	// processor
 	protected final pxnSocketProcessor processor;
@@ -41,6 +43,7 @@ public class pxnSocketClient implements pxnSocket {
 		try {
 			pxnLogger.log().info("Connecting to: "+host+":"+Integer.toString(port));
 			socket = new Socket(host, port);
+			worker = new pxnSocketWorker(socket, processor);
 //		} catch(UnknownHostException e) {
 //			// unknown host
 //			pxnLogger.log().exception(e);
@@ -58,13 +61,14 @@ public class pxnSocketClient implements pxnSocket {
 		} catch (IOException e) {
 			pxnLogger.log().severe("Failed to connect to: "+host+":"+Integer.toString(port));
 			pxnLogger.log().exception(e);
-			JOptionPane.showMessageDialog(null, e.getMessage(), "Connection failed!", JOptionPane.ERROR_MESSAGE);
+JOptionPane.showMessageDialog(null, e.getMessage(), "Connection failed!", JOptionPane.ERROR_MESSAGE);
 gcClient.setConnectState(ConnectState.CLOSED);
 			return;
+		} finally {
+gcClient.setConnectState(ConnectState.READY);
 		}
 //socket.setSoTimeout(1000);
 //TODO: remove this
-gcClient.setConnectState(ConnectState.READY);
 	}
 
 
@@ -84,17 +88,19 @@ gcClient.setConnectState(ConnectState.READY);
 
 
 	public void sendData(String line) {
-		processor.process(line);
+		processor.sendData(line);
 	}
 
 
-//	public void finalize() {
+	public void finalize() {
 //		try {
 //			close();
 //		} catch(IOException e) {
 //			e.printStackTrace();
 //		}
-//	}
+//TODO: when does this run?
+System.out.println("END");
+	}
 //	public void close() throws IOException {
 //		if(socket == null) return;
 //		if(socket.isConnected() || !socket.isClosed())

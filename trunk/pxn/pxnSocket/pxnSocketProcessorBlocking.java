@@ -12,7 +12,7 @@ public abstract class pxnSocketProcessorBlocking implements pxnSocketProcessor {
 
 	public pxnSocketProcessorBlocking() {
 		// default size queue
-		this(1);
+		this(100);
 	}
 	public pxnSocketProcessorBlocking(int sizeOut) {
 		// create queue
@@ -28,8 +28,13 @@ public abstract class pxnSocketProcessorBlocking implements pxnSocketProcessor {
 
 	// submit packet for processing
 	@Override
-	public void process(String line) {
-		processLine(line);
+	public void processData(String line) {
+		processNow(line);
+	}
+	@Override
+	public void sendData(String line) {
+		if(line == null) return;
+		queueOut.offer(line.trim());
 	}
 
 

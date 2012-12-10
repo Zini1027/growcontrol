@@ -43,6 +43,11 @@ System.out.println("CONNECTED!!!!!!!!!!!!");
 		} catch (IOException e) {
 			pxnLogger.log().exception(e);
 		}
+		// get queues
+		queueIn  = processor.getInputQueue();
+		queueOut = processor.getOutputQueue();
+queueOut.offer("FIRST PACKET");
+queueOut.offer("SECOND PACKET");
 		// reader thread
 		threadIn = new Thread() {
 			@Override
@@ -70,32 +75,35 @@ System.out.println("CONNECTED!!!!!!!!!!!!");
 		pxnLogger.log().info("Connected: "+getIPString());
 		String line = "";
 		while(!closed) {
-System.out.println("READER THREAD RUNNING");
 			try {
 				line = in.readLine();
-				if(line == null) break;
 			} catch (SocketException ignore) {
+pxnLogger.log().exception(ignore);
 				break;
 			} catch (IOException e) {
 				e.printStackTrace();
 				pxnLogger.log().exception(e);
 				break;
 			}
-			if(!line.isEmpty())
-				processor.process(line);
+			if(line == null) break;
+			if(line.isEmpty()) continue;
+			processor.processData(line);
 		}
 		close();
 	}
 	// sender thread
 	private void doSenderThread() {
 		while(!closed) {
-System.out.println("SENDER THREAD RUNNING");
 			try {
 				out.println(queueOut.take());
+				out.flush();
 			} catch (InterruptedException e) {
 				pxnLogger.log().exception(e);
 			}
 		}
+	}
+	public void sendData(String line) {
+		processor.sendData(line);
 	}
 
 
@@ -132,7 +140,7 @@ System.out.println("SENDER THREAD RUNNING");
 		if(socket == null) return null;
 		InetAddress ip = getIP();
 		if(ip == null) return null;
-		return ip.toString().replace("/", "");
+		return ip.getHostAddress().toString();
 	}
 
 
