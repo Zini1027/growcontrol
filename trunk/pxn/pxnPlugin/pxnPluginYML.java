@@ -33,15 +33,13 @@ public class pxnPluginYML {
 		if(config == null) return null;
 		return config.getString("Plugin Version");
 	}
-	// server main class
-	public String getServerMain() {
-		if(config == null) return null;
-		return config.getString("Server Main");
+	// main class name
+	public String getMainClassValue() {
+		return getMainClassValue("main");
 	}
-	// client main class
-	public String getClientMain() {
+	public String getMainClassValue(String mainClassName) {
 		if(config == null) return null;
-		return config.getString("Client Main");
+		return config.getString(mainClassName);
 	}
 	// author
 	public String getAuthor() {

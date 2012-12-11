@@ -3,6 +3,8 @@ package com.poixson.pxnSocket;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import com.poixson.pxnParser.pxnParser;
+
 
 public abstract class pxnSocketProcessorBlocking implements pxnSocketProcessor {
 
@@ -29,7 +31,7 @@ public abstract class pxnSocketProcessorBlocking implements pxnSocketProcessor {
 	// submit packet for processing
 	@Override
 	public void processData(String line) {
-		processNow(line);
+		processNow(new pxnParser(line));
 	}
 	@Override
 	public void sendData(String line) {

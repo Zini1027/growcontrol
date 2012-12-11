@@ -1,7 +1,6 @@
 package com.growcontrol.gcServer.serverPlugin;
 
 import com.growcontrol.gcServer.gcServer;
-import com.growcontrol.gcServer.logger.gcLogger;
 import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListenerCommand;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListenerGroup;
@@ -22,14 +21,17 @@ public class gcServerPluginManager extends pxnPluginManager {
 
 
 	public gcServerPluginManager() {
-		this(gcLogger.getLogger("gcServerPlugin"));
+		super();
 	}
-	public gcServerPluginManager(gcLogger log) {
-		this.log = log;
+	public gcServerPluginManager(String pluginsPath) {
+		super(pluginsPath);
+	}
+	public gcServerPluginManager(String pluginsPath, String pluginYmlFileName, String mainClassYmlName) {
+		super(pluginsPath, pluginYmlFileName, mainClassYmlName);
 	}
 	
 
-	// listeners
+	// register listeners
 	public void registerCommandListener(gcServerListenerCommand listener) {
 		commandListenerGroup.register(listener);
 	}
@@ -37,7 +39,7 @@ public class gcServerPluginManager extends pxnPluginManager {
 //		return commandListenerGroup;
 //	}
 	public boolean triggerEvent(gcServerEventCommand event) {
-		gcServer.log.debug("Triggering event: "+event.getCommandStr());
+		gcServer.log.debug("Triggering event: "+event.getLine().getFirst());
 		for(EventPriority priority : EventPriority.values()) {
 			if(commandListenerGroup.triggerEvent(event, priority))
 				event.setHandled();

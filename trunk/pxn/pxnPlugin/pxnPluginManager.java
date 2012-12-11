@@ -4,30 +4,42 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map.Entry;
+import java.util.List;
 
 import com.poixson.pxnLogger.pxnLogger;
 
 
-public abstract class pxnPluginManager {
-
-	protected pxnLogger log;
+public class pxnPluginManager {
 
 	// plugin instances
-	protected static HashMap<String, pxnPlugin> plugins = new HashMap<String, pxnPlugin>();
-	protected String pluginsPath = "plugins";
+	protected HashMap<String, pxnPlugin> plugins = new HashMap<String, pxnPlugin>();
+	protected String pluginsPath       = "plugins/";
+	protected String pluginYmlFileName = "plugin.yml";
+	protected String mainClassYmlName  = "main";
 
 
 	public pxnPluginManager() {
-		this(pxnLogger.getLogger("pxnPluginManager"));
 	}
-	public pxnPluginManager(pxnLogger log) {
-		this.log = log;
+	public pxnPluginManager(String pluginsPath) {
+		this.setPath(pluginsPath);
+	}
+	public pxnPluginManager(String pluginsPath, String pluginYmlFileName, String mainClassYmlName) {
+		if(pluginsPath != null && !pluginsPath.isEmpty())
+			setPath(pluginsPath);
+		if(pluginYmlFileName != null && !pluginYmlFileName.isEmpty())
+			this.setYmlFileName(pluginYmlFileName);
+		if(mainClassYmlName != null && !mainClassYmlName.isEmpty())
+			this.setMainClassYmlName(mainClassYmlName);
 	}
 
 
-	// load plugins
+	// load plugins dir
 	public void LoadPlugins() throws Exception {
 		File dir = new File(pluginsPath);
 		if(!dir.isDirectory())
@@ -38,47 +50,14 @@ public abstract class pxnPluginManager {
 			throw new IOException(pluginsPath+" (Failed to get plugins list!)");
 		// loop .jar files
 		for(File f : files) {
-			String mainClassName = "";
 			try {
-				// get server main class
-				mainClassName = getMainClassName(f);
-				if(mainClassName == null || mainClassName.isEmpty()) {
-					// non-interrupted exception
-					log.exception(new FileNotFoundException(f.toString()+":plugin.yml (File not found in jar!)"));
-					continue;
-				}
-				// trim .class from end
-				if(mainClassName.endsWith(".class"))
-					mainClassName = mainClassName.substring(0, mainClassName.length()-6);
-				// find classes
-//TODO: move this to its own static function
-//				boolean onEnable = false;
-//				boolean onDisable = false;
-//				Class<?> clss = getClass(f, serverMain);
-//				for(Method m : getClass(f, serverMain).getMethods()) {
-//					String methodName = m.getName();
-//					if(methodName.equals("onEnable"))       onEnable  = true;
-//					else if(methodName.equals("onDisable")) onDisable = true;
-//					if(onEnable && onDisable) break;
-//				}
-//				// onEnable() or onDisable() is missing
-//				if(!onEnable) {
-//					gcServer.log.severe("onEnable() function not found in plugin: "+f.toString());
-//					continue;
-//				}
-//				if(!onDisable) {
-//					gcServer.log.severe("onDisable() function not found in plugin: "+f.toString());
-//					continue;
-//				}
-
+				LoadPlugin(f);
 			} catch(Exception e) {
 				// non-interrupted exception
-				log.exception(mainClassName+" (Failed to load server plugin)", e);
-				continue;
+				pxnLogger.log().exception(f.toString()+" (Failed to load plugin)", e);
 			}
 		}
-
-
+		pxnLogger.log().info("Loaded [ "+Integer.toString(plugins.size())+" ] plugins.");
 	}
 	// file filter .jar
 	protected final class fileFilterJar implements FileFilter {
@@ -87,10 +66,60 @@ public abstract class pxnPluginManager {
 			return pathname.toString().endsWith(".jar");
 		}
 	}
-//TODO:
-//	// found plugin
-//	gcServer.log.debug("Loading server plugin: "+serverMain);
-//	plugins.put(serverMain, new gcServerPluginHolder(serverMain, clss));
+
+
+	// load plugin jar
+	public void LoadPlugin(File f) throws Exception {
+		LoadPlugin(f, this.mainClassYmlName);
+	}
+	public void LoadPlugin(File f, String mainClassYmlName) throws Exception {
+		String mainClassValue = "";
+
+		// load plugin.yml from jar
+		pxnPluginYML yml = new pxnPluginYML(f, this.pluginYmlFileName);
+		// get server main class
+		mainClassValue = yml.getMainClassValue(this.mainClassYmlName);
+		if(mainClassValue == null || mainClassValue.isEmpty()) {
+			// non-interrupted exception
+			pxnLogger.log().exception(new FileNotFoundException(f.toString()+" : plugin.yml (File not found in jar!)"));
+			return;
+		}
+		// trim .class from end
+		if(mainClassValue.endsWith(".class"))
+			mainClassValue = mainClassValue.substring(0, mainClassValue.length()-6);
+
+		// find classes
+		Class<pxnPlugin> clss = getClassWithMethods(f, mainClassValue,
+			Arrays.asList("onEnable", "onDisable") );
+		if(clss == null) {
+			pxnLogger.log().severe(f.toString()+" : "+mainClassValue+" (Plugin main class not found with required methods!)");
+			return;
+		}
+
+		// found plugin
+		pxnLogger.log().debug("Loading plugin: "+mainClassValue);
+		pxnPlugin plugin = clss.newInstance();
+		plugin.setPluginManager(this);
+		plugins.put(mainClassValue, plugin);
+
+	}
+
+
+	// enable plugins
+	public void EnablePlugins() {
+		for(pxnPlugin plugin : plugins.values())
+			if(!plugin.isEnabled())
+				EnablePlugin(plugin);
+	}
+	public void EnablePlugin(String pluginName) {
+		if(plugins.contains(pluginName))
+			EnablePlugin(plugins.get(pluginName));
+	}
+	public void EnablePlugin(pxnPlugin plugin) {
+		plugin.getLogger().info("Starting plugin..");
+		plugin.onEnable();
+		plugin.enabled = true;
+	}
 
 
 //		// enable plugins
@@ -116,42 +145,79 @@ public abstract class pxnPluginManager {
 
 	// unload plugins
 	public void UnloadPlugins() {
-		for(Entry<String, pxnPlugin> entry : plugins.entrySet()) {
-			pxnPlugin plugin = entry.getValue();
-			plugin.getLogger().info("Stopping plugin..");
-			plugin.enabled = false;
-			plugin.onDisable();
-		}
+		DisablePlugins();
 		plugins.clear();
 	}
+	public void DisablePlugins() {
+		for(pxnPlugin plugin : plugins.values())
+			DisablePlugin(plugin);
+	}
+	public void DisablePlugin(String pluginName) {
+		if(plugins.contains(pluginName))
+			DisablePlugin(plugins.get(pluginName));
+	}
+	public void DisablePlugin(pxnPlugin plugin) {
 //TODO: add UnloadPlugin(String className) to unregister listeners
-	public void UnloadPlugin(String pluginName) {
+		plugin.getLogger().info("Stopping plugin..");
+		plugin.enabled = false;
+		plugin.onDisable();
+	}
+
+
+	// load class (with required methods)
+	public static Class<pxnPlugin> getClassWithMethods(File f, String mainClass, List<String> methodsRequired) throws Exception {
+		if(f == null) throw new NullPointerException("file can't be null!");
+		if(mainClass == null) throw new NullPointerException("mainClass can't be null!");
+		if(methodsRequired == null) throw new NullPointerException("methodsRequired can't be null!");
+		Class<?> clss = getClass(f, mainClass);
+		if(methodsRequired.isEmpty())
+			return castPluginClass(clss);
+		List<String> methodsTmp = new ArrayList<String>(methodsRequired);
+		for(Method m : getClass(f, mainClass).getMethods() ) {
+			String methodName = m.getName();
+			if(methodsTmp.contains(methodName))
+				methodsTmp.remove(methodName);
+			if(methodsTmp.isEmpty())
+				break;
+		}
+		if(methodsTmp.isEmpty())
+			return castPluginClass(clss);
+		// required methods not all found
+		return null;
+	}
+	@SuppressWarnings("unchecked")
+	protected static Class<pxnPlugin> castPluginClass(Class<?> clss) {
+		return (Class<pxnPlugin>) clss;
 	}
 
 
 	// plugins path
 	public void setPath(String path) {
-		if(path == null) throw new NullPointerException("path cannot be null");
+		if(path == null)   throw new NullPointerException("path can't be null");
+		if(path.isEmpty()) throw new IllegalArgumentException("path can't be empty!");
 		pluginsPath = path;
 	}
 	public String getPath() {
 		return pluginsPath;
 	}
-
-
-	// load plugin.yml from jar
-	protected static String getYmlFileName() {
-		return "plugin.yml";
+	// plugin.yml or alternate file name
+	public void setYmlFileName(String fileName) {
+		if(fileName == null)   throw new NullPointerException("fileName can't be null");
+		if(fileName.isEmpty()) throw new IllegalArgumentException("fileName can't be empty!");
+		this.pluginYmlFileName = fileName;
 	}
-	protected static String getMainClassName(File jarFile) {
-		return getMainClassName(jarFile, getYmlFileName());
+//	public String getYmlFileName() {
+//		return pluginYmlFileName;
+//	}
+	// main class variable in yml
+	public void setMainClassYmlName(String mainClassYmlName) {
+		if(mainClassYmlName == null)   throw new NullPointerException("mainClassYmlName can't be null");
+		if(mainClassYmlName.isEmpty()) throw new IllegalArgumentException("mainClassYmlName can't be empty!");
+		this.mainClassYmlName = mainClassYmlName;
 	}
-	protected static String getMainClassName(File jarFile, String fileName) {
-		// load plugin.yml from jar
-		pxnPluginYML yml = new pxnPluginYML(jarFile, fileName);
-		// get server main class
-		return yml.getServerMain();
-	}
+//	public String getMainClassYmlName() {
+//		return mainClassYmlName;
+//	}
 
 
 //TODO:
@@ -224,41 +290,41 @@ public abstract class pxnPluginManager {
 //		}
 //		return classes;
 //	}
-//	// get class by name
-//	public static Class<?> getClass(File file, String className) throws Exception {
-//		if(file      == null) throw new NullPointerException("file cannot be null");
-//		if(className == null) throw new NullPointerException("className cannot be null");
-//		addURL(file.toURI().toURL());
-//		URL url = new File("jar:file://"+file.getAbsolutePath()+"!/").toURI().toURL();
-//		URLClassLoader classLoader = new URLClassLoader(new URL[]{url});
-//		try {
-//			Class<?> clss = classLoader.loadClass(className);
-//			return clss;
-//		} catch (Exception e) {
-//			gcServer.log.severe("Failed to load plugin class: "+className);
-//			gcServer.log.exception(e);
-//		}
-//		return null;
-//	}
-//	private static final Class<?>[] parameters = new Class[]{URL.class};
-//	private static void addURL(URL url) throws IOException {
-//		if(url == null) throw new NullPointerException("url cannot be null");
-//		URLClassLoader sysLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-//		URL urls[] = sysLoader.getURLs();
-//		// skip if already loaded
-//		for (int i = 0; i < urls.length; i++)
-//			if (urls[i].toString().equalsIgnoreCase(url.toString())) return;
-//		// add classpath
-//		try {
-//			Class<?> sysclass = URLClassLoader.class;
-//			Method method = sysclass.getDeclaredMethod("addURL", parameters);
-//			method.setAccessible(true);
-//			method.invoke(sysLoader, new Object[]{url});
-//		} catch (Throwable e) {
-//			gcServer.log.exception(e);
-//			throw new IOException("Error, could not add URL to system classloader");
-//		}
-//	}
+	// get class by name
+	public static Class<?> getClass(File file, String className) throws Exception {
+		if(file      == null) throw new NullPointerException("file cannot be null");
+		if(className == null) throw new NullPointerException("className cannot be null");
+		addURL(file.toURI().toURL());
+		URL url = new File("jar:file://"+file.getAbsolutePath()+"!/").toURI().toURL();
+		URLClassLoader classLoader = new URLClassLoader(new URL[]{url});
+		try {
+			Class<?> clss = classLoader.loadClass(className);
+			return clss;
+		} catch (Exception e) {
+			pxnLogger.log().severe("Failed to load plugin class: "+className);
+			pxnLogger.log().exception(e);
+		}
+		return null;
+	}
+	private static final Class<?>[] parameters = new Class[]{URL.class};
+	private static void addURL(URL url) throws IOException {
+		if(url == null) throw new NullPointerException("url cannot be null");
+		URLClassLoader sysLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+		URL urls[] = sysLoader.getURLs();
+		// skip if already loaded
+		for (int i = 0; i < urls.length; i++)
+			if (urls[i].toString().equalsIgnoreCase(url.toString())) return;
+		// add classpath
+		try {
+			Class<?> sysclass = URLClassLoader.class;
+			Method method = sysclass.getDeclaredMethod("addURL", parameters);
+			method.setAccessible(true);
+			method.invoke(sysLoader, new Object[]{url});
+		} catch (Throwable e) {
+			pxnLogger.log().exception(e);
+			throw new IOException("Error, could not add URL to system classloader");
+		}
+	}
 
 
 //	// list plugins

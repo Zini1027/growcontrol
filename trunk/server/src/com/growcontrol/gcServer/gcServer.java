@@ -32,9 +32,7 @@ public class gcServer extends Thread {
 	public static final gcLogger log = gcLogger.getLogger(null);
 
 	// server modules
-	public static final gcServerPluginManager pluginManager =
-		new gcServerPluginManager(
-			gcLogger.getLogger("ServerPlugin") );
+	public static final gcServerPluginManager pluginManager = new gcServerPluginManager();
 //	public static final gcServerDeviceLoader deviceLoader = new gcServerDeviceLoader();
 
 	// config files
@@ -63,6 +61,7 @@ public class gcServer extends Thread {
 			"console",
 			new pxnLoggerConsole(pxnLogger.getReader(),
 				new pxnLevel(pxnLevel.LEVEL.DEBUG)) );
+		pluginManager.setMainClassYmlName("Server Main");
 //doesn't log anything
 //try {
 //	pxnLogger.getReader().setDebug(new PrintWriter(new FileWriter("log.txt", true)));
@@ -116,7 +115,6 @@ System.exit(0);
 			AnsiConsole.systemInstall();
 			ASCIIHeader();
 		}
-		log.printRaw("");
 		log.printRaw("[[ Starting GC Server ]]");
 		log.info("GrowControl "+version+" Server is starting..");
 		pxnUtils.addLibraryPath("lib");
@@ -146,8 +144,6 @@ System.exit(0);
 		// query time server
 		if(clock == null)
 			clock = pxnUtils.getClock();
-//TODO: figure out why this is locking up
-//		gcClock.setUsingNTP(true);
 
 		// zones
 		zones = config.getZones();
@@ -162,6 +158,7 @@ System.exit(0);
 		// load plugins
 		try {
 			pluginManager.LoadPlugins();
+			pluginManager.EnablePlugins();
 		} catch (Exception e) {
 			log.exception(e);
 			Shutdown();
@@ -250,28 +247,29 @@ for(Thread t : threadSet) {
 		if(line == null) throw new NullPointerException("line cannot be null");
 		line = line.trim();
 		if(line.isEmpty()) return;
-		String commandStr;
-		String[] args;
-		// get args list
-		if(line.contains(" ")) {
-			int index = line.indexOf(" ");
-			commandStr = line.substring(0, index);
-			List<String> argsList = new ArrayList<String>();
-			for(String arg : line.substring(index+1).split(" "))
-				if(!arg.isEmpty())
-					argsList.add(arg);
-			args = (String[]) argsList.toArray(new String[argsList.size()]);
-			argsList = null;
-		} else {
-			commandStr = new String(line);
-			args = new String[0];
-		}
+//		String commandStr;
+//		String[] args;
+//		// get args list
+//		if(line.contains(" ")) {
+//			int index = line.indexOf(" ");
+//			commandStr = line.substring(0, index);
+//			List<String> argsList = new ArrayList<String>();
+//			for(String arg : line.substring(index+1).split(" "))
+//				if(!arg.isEmpty())
+//					argsList.add(arg);
+//			args = (String[]) argsList.toArray(new String[argsList.size()]);
+//			argsList = null;
+//		} else {
+//			commandStr = new String(line);
+//			args = new String[0];
+//		}
 		// trigger event
-		if(pluginManager.triggerEvent(new gcServerEventCommand(commandStr, args)))
+		if(pluginManager.triggerEvent(new gcServerEventCommand(line)))
 			return;
 		// command not found
-		for(String arg : args) commandStr += " "+arg;
-		log.warning("Command not processed: "+commandStr);
+//		for(String arg : args) commandStr += " "+arg;
+//		log.warning("Command not processed: "+commandStr);
+		log.warning("Unknown command: "+line);
 	}
 
 
@@ -404,10 +402,10 @@ for(Thread t : threadSet) {
 		AnsiConsole.out.println(" For details type 'show w' for warranty, or 'show c' for conditions.");
 		AnsiConsole.out.println();
 
-		AnsiConsole.out.println("Grow Control Server "+gcServer.version);
-		AnsiConsole.out.println("Running as: "+System.getProperty("user.name"));
-		AnsiConsole.out.println("Current dir: "+System.getProperty("user.dir"));
-		AnsiConsole.out.println("java home: "+System.getProperty("java.home"));
+		AnsiConsole.out.println(" Grow Control Server "+gcServer.version);
+		AnsiConsole.out.println(" Running as: "+System.getProperty("user.name"));
+		AnsiConsole.out.println(" Current dir: "+System.getProperty("user.dir"));
+		AnsiConsole.out.println(" java home: "+System.getProperty("java.home"));
 		AnsiConsole.out.println();
 
 
