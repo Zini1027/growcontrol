@@ -8,9 +8,9 @@ import com.growcontrol.arduinogc.interfaces.ArduinoNet;
 import com.growcontrol.arduinogc.interfaces.ArduinoUSB;
 import com.growcontrol.gcServer.logger.gcLogger;
 import com.growcontrol.gcServer.serverPlugin.gcServerPlugin;
-import com.growcontrol.gcServer.serverPlugin.config.gcConfig;
-import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListener.ListenerType;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListenerOutput;
+import com.poixson.pxnConfig.pxnConfig;
+
 
 public class ArduinoGC extends gcServerPlugin implements gcServerListenerOutput {
 	private static final String PLUGIN_NAME = "ArduinoGC";
@@ -24,17 +24,18 @@ public class ArduinoGC extends gcServerPlugin implements gcServerListenerOutput 
 
 
 	@Override
+	public String getPluginName() {
+		// plugin name
+		return "ArduinoGC";
+	}
+	@Override
 	public void onEnable() {
-		// register plugin name
-		registerPlugin(PLUGIN_NAME);
 		// register listeners
-		registerListener(ListenerType.COMMAND, commands);
+		registerCommandListener(commands);
 //		registerListenerOutput(this);
 		// load configs
 		LoadConfig();
 	}
-
-
 	@Override
 	public void onDisable() {
 		for(ArduinoInterface controller : controllersMap.values())
@@ -45,7 +46,7 @@ public class ArduinoGC extends gcServerPlugin implements gcServerListenerOutput 
 
 	// load arduino configs
 	private void LoadConfig() {
-		gcConfig config = gcConfig.loadFile("plugins/ArduinoGC", "config.yml");
+		pxnConfig config = pxnConfig.loadFile("plugins/ArduinoGC", "config.yml");
 		if(config == null) {
 			log.severe("Failed to load config.yml");
 			return;
@@ -61,7 +62,7 @@ public class ArduinoGC extends gcServerPlugin implements gcServerListenerOutput 
 	}
 	private void LoadArduinoConfig(String configFile) {
 		if(!configFile.endsWith(".yml")) configFile += ".yml";
-		gcConfig config = gcConfig.loadFile("plugins/ArduinoGC/controllers", configFile);
+		pxnConfig config = pxnConfig.loadFile("plugins/ArduinoGC/controllers", configFile);
 		if(config == null) {
 			log.severe("Failed to load "+configFile);
 			return;
@@ -82,10 +83,10 @@ log.severe("TYPE:  "+type);
 
 
 	// create new controller
-	public static ArduinoInterface newController(gcConfig config, String name, String title, String type) {
+	public static ArduinoInterface newController(pxnConfig config, String name, String title, String type) {
 		return newController(config, name, title, ArduinoInterface.controllerTypeFromString(type));
 	}
-	public static ArduinoInterface newController(gcConfig config, String name, String title, ArduinoInterface.ControllerType type) {
+	public static ArduinoInterface newController(pxnConfig config, String name, String title, ArduinoInterface.ControllerType type) {
 		if(config==null || name==null || title==null || type==null) return null;
 		ArduinoInterface controller = null;
 		synchronized(controllersMap) {
