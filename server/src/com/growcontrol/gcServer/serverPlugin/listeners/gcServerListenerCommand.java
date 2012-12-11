@@ -52,7 +52,7 @@ public abstract class gcServerListenerCommand extends gcServerListener {
 //	}
 	public pxnCommand getCommand(gcServerEventCommand event) {
 		if(event == null) throw new NullPointerException("event cannot be null");
-		return getCommand(event.getCommandStr());
+		return getCommand(event.getLine().getFirst());
 	}
 	public pxnCommand getCommand(String name) {
 		if(name == null) throw new NullPointerException("name cannot be null");

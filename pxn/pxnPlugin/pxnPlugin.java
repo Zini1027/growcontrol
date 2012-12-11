@@ -5,9 +5,11 @@ import com.poixson.pxnLogger.pxnLogger;
 
 public abstract class pxnPlugin {
 
+	// plugin is enabled
+	protected boolean enabled = false;
+
 	// plugin manager
 	protected pxnPluginManager pluginManager;
-	protected boolean enabled = false;
 
 
 	// load/unload plugin
@@ -16,12 +18,17 @@ public abstract class pxnPlugin {
 	public abstract String getPluginName();
 
 
+	// plugin is enabled
 	public boolean isEnabled() {
 		return enabled;
 	}
+//	public void setEnabled(boolean enabled) {
+//		this.enabled = enabled;
+//	}
 
 
-	public void setManager(pxnPluginManager pluginManager) {
+	// plugin manager
+	public void setPluginManager(pxnPluginManager pluginManager) {
 		if(pluginManager == null) throw new NullPointerException("pluginManager cannot be null!");
 		this.pluginManager = pluginManager;
 	}

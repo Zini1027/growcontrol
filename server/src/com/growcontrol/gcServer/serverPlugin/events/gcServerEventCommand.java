@@ -1,21 +1,19 @@
 package com.growcontrol.gcServer.serverPlugin.events;
 
 import com.poixson.pxnCommand.pxnCommand;
+import com.poixson.pxnParser.pxnParser;
 
 
 public class gcServerEventCommand extends gcServerEvent {
 
 	protected pxnCommand command = null;
-	protected final String commandStr;
-	protected final String[] args;
+	protected final pxnParser parser;
 
 
-	public gcServerEventCommand(String commandStr, String[] args) {
+	public gcServerEventCommand(String commandStr) {
 		if(commandStr == null)   throw new NullPointerException("commandStr cannot be null");
 		if(commandStr.isEmpty()) throw new NullPointerException("commandStr cannot be empty");
-		if(args == null)         throw new NullPointerException("args cannot be null");
-		this.commandStr = commandStr;
-		this.args = args;
+		this.parser = new pxnParser(commandStr, ' ');
 	}
 
 
@@ -31,16 +29,22 @@ public class gcServerEventCommand extends gcServerEvent {
 	}
 
 
-	// command string
-	public String getCommandStr() {
-		return commandStr;
+	// get parser
+	public pxnParser getLine() {
+		return parser;
 	}
-	public String getArg(int index) {
-		return args[index];
-	}
-	public String[] getArgs() {
-		return args;
-	}
+
+
+//	// command string
+//	public String getCommandStr() {
+//		return commandStr;
+//	}
+//	public String getArg(int index) {
+//		return args[index];
+//	}
+//	public String[] getArgs() {
+//		return args;
+//	}
 
 
 //	public boolean equals(String compare) {

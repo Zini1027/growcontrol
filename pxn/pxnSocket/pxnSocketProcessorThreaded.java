@@ -4,6 +4,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import com.poixson.pxnLogger.pxnLogger;
+import com.poixson.pxnParser.pxnParser;
 
 
 public abstract class pxnSocketProcessorThreaded implements pxnSocketProcessor {
@@ -52,18 +53,19 @@ public abstract class pxnSocketProcessorThreaded implements pxnSocketProcessor {
 			// consume queue
 			try {
 				// submit packet for processing
-				processNow( queueIn.take() );
+				String line = queueIn.take();
+				processNow(new pxnParser(line));
 			} catch (InterruptedException e) {
 				pxnLogger.log().exception(e);
 			}
 			// processed count
-			if(queueIn.isEmpty()) {
+			count++;
+System.out.println(Integer.toString(queueIn.size()));
+			if(queueIn.size() == 0) {
 				if(count != 0) {
 					pxnLogger.log().debug("Processed [ "+Integer.toString(count)+" ] packets");
 					count = 0;
 				}
-			} else {
-				count++;
 			}
 		}
 	}
