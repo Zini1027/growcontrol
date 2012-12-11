@@ -63,11 +63,13 @@ public class pxnParser {
 	}
 
 
+	// reset parsing string to original
 	public void reset() {
 		temp = original;
 	}
 
 
+	// get original string
 	public String getOriginal() {
 		return original;
 	}

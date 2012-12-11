@@ -30,7 +30,6 @@ public class pxnSocketWorker {
 
 
 	public pxnSocketWorker(Socket socket, pxnSocketProcessor processor) {
-System.out.println("CONNECTED!!!!!!!!!!!!");
 		if(socket    == null) throw new NullPointerException("socket cannot be null!");
 		if(processor == null) throw new NullPointerException("processor cannot be null!");
 		this.socket = socket;

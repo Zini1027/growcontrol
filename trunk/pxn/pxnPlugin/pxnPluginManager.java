@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import com.poixson.pxnLogger.pxnLogger;
 
@@ -19,6 +20,8 @@ public class pxnPluginManager {
 
 	// plugin instances
 	protected HashMap<String, pxnPlugin> plugins = new HashMap<String, pxnPlugin>();
+
+	// plugin manager variables
 	protected String pluginsPath       = "plugins/";
 	protected String pluginYmlFileName = "plugin.yml";
 	protected String mainClassYmlName  = "main";
@@ -49,15 +52,20 @@ public class pxnPluginManager {
 		if(files == null)
 			throw new IOException(pluginsPath+" (Failed to get plugins list!)");
 		// loop .jar files
+		int successful = 0;
+		int failed     = 0;
 		for(File f : files) {
 			try {
 				LoadPlugin(f);
+				successful++;
 			} catch(Exception e) {
 				// non-interrupted exception
 				pxnLogger.log().exception(f.toString()+" (Failed to load plugin)", e);
+				failed++;
 			}
 		}
 		pxnLogger.log().info("Loaded [ "+Integer.toString(plugins.size())+" ] plugins.");
+		if(failed > 0) pxnLogger.log().warning("Failed to load [ "+Integer.toString(failed)+" ] plugins!");
 	}
 	// file filter .jar
 	protected final class fileFilterJar implements FileFilter {
@@ -95,65 +103,68 @@ public class pxnPluginManager {
 			pxnLogger.log().severe(f.toString()+" : "+mainClassValue+" (Plugin main class not found with required methods!)");
 			return;
 		}
-
 		// found plugin
 		pxnLogger.log().debug("Loading plugin: "+mainClassValue);
 		pxnPlugin plugin = clss.newInstance();
 		plugin.setPluginManager(this);
 		plugins.put(mainClassValue, plugin);
-
 	}
 
 
 	// enable plugins
 	public void EnablePlugins() {
-		for(pxnPlugin plugin : plugins.values())
-			if(!plugin.isEnabled())
-				EnablePlugin(plugin);
+		int successful = 0;
+		int failed     = 0;
+		for(pxnPlugin plugin : plugins.values()) {
+			if(!plugin.isEnabled()) {
+				try {
+					EnablePlugin(plugin);
+					successful++;
+				} catch (Exception e) {
+					pxnLogger.log().exception(e);
+					failed++;
+				}
+			}
+		}
+		if(successful > 0) pxnLogger.log().info("Successfully enabled [ "+Integer.toString(successful)+" ] plugins.");
+		if(failed     > 0) pxnLogger.log().warning("Failed to enable [ "+Integer.toString(failed)+" ] plugins!");
 	}
-	public void EnablePlugin(String pluginName) {
-		if(plugins.contains(pluginName))
+	public void EnablePlugin(String pluginName) throws Exception {
+		if(plugins.containsKey(pluginName))
 			EnablePlugin(plugins.get(pluginName));
 	}
-	public void EnablePlugin(pxnPlugin plugin) {
+	public void EnablePlugin(pxnPlugin plugin) throws Exception {
 		plugin.getLogger().info("Starting plugin..");
 		plugin.onEnable();
 		plugin.enabled = true;
 	}
 
 
-//		// enable plugins
-//		int pluginsLoaded = 0;
-//		for(Map.Entry<String, gcServerPluginHolder> pluginEntry : plugins.entrySet()) {
-//			gcServerPluginHolder plugin = pluginEntry.getValue();
-//			if(plugin == null) continue;
-//			try {
-//				plugin.getLogger().info("Starting plugin..");
-//				plugin.doEnable();
-//				pluginsLoaded++;
-//			} catch(Exception e) {
-//				gcServer.log.severe("Failed to enable server plugin!");
-//				gcServer.log.exception(e);
-//			}
-//		}
-//
-//		gcServer.log.info("Loaded [ "+Integer.toString(pluginsLoaded)+" ] server plugins");
-//		if(plugins.size() != pluginsLoaded)
-//			gcServer.log.warning("Failed to load [ "+Integer.toString(plugins.size()-pluginsLoaded)+" ] server plugins!");
-//	}
-
-
 	// unload plugins
 	public void UnloadPlugins() {
 		DisablePlugins();
+		for(Entry<String, pxnPlugin> entry : plugins.entrySet())
+			plugins.put(entry.getKey(), null);
 		plugins.clear();
 	}
 	public void DisablePlugins() {
-		for(pxnPlugin plugin : plugins.values())
-			DisablePlugin(plugin);
+		int successful = 0;
+		int failed     = 0;
+		for(pxnPlugin plugin : plugins.values()) {
+			try {
+				DisablePlugin(plugin);
+				successful++;
+			} catch (Exception e) {
+				pxnLogger.log().exception(e);
+				failed++;
+			}
+		}
+
+		if(successful > 0) pxnLogger.log().info("Successfully unloaded [ "+Integer.toString(successful)+" ] plugins.");
+		if(failed     > 0) pxnLogger.log().warning("Failed to unload [ "+Integer.toString(failed)+" ] plugins!");
 	}
 	public void DisablePlugin(String pluginName) {
-		if(plugins.contains(pluginName))
+		if(plugins.containsKey(pluginName))
 			DisablePlugin(plugins.get(pluginName));
 	}
 	public void DisablePlugin(pxnPlugin plugin) {
@@ -164,32 +175,7 @@ public class pxnPluginManager {
 	}
 
 
-	// load class (with required methods)
-	public static Class<pxnPlugin> getClassWithMethods(File f, String mainClass, List<String> methodsRequired) throws Exception {
-		if(f == null) throw new NullPointerException("file can't be null!");
-		if(mainClass == null) throw new NullPointerException("mainClass can't be null!");
-		if(methodsRequired == null) throw new NullPointerException("methodsRequired can't be null!");
-		Class<?> clss = getClass(f, mainClass);
-		if(methodsRequired.isEmpty())
-			return castPluginClass(clss);
-		List<String> methodsTmp = new ArrayList<String>(methodsRequired);
-		for(Method m : getClass(f, mainClass).getMethods() ) {
-			String methodName = m.getName();
-			if(methodsTmp.contains(methodName))
-				methodsTmp.remove(methodName);
-			if(methodsTmp.isEmpty())
-				break;
-		}
-		if(methodsTmp.isEmpty())
-			return castPluginClass(clss);
-		// required methods not all found
-		return null;
-	}
-	@SuppressWarnings("unchecked")
-	protected static Class<pxnPlugin> castPluginClass(Class<?> clss) {
-		return (Class<pxnPlugin>) clss;
-	}
-
+	// plugin manager variables
 
 	// plugins path
 	public void setPath(String path) {
@@ -220,60 +206,31 @@ public class pxnPluginManager {
 //	}
 
 
-//TODO:
-//	// trigger event by priority
-//	protected abstract boolean triggerEventPriority(pxnEvent event, EventPriority priority);
-
-
-//		for(Map.Entry<String, gcServerPluginListenerCommand> entry : listenersCommand.entrySet()) {
-//			// get plugin
-//			gcServerPluginHolder plugin = getPluginByClassName(entry.getKey());
-//			if(plugin == null) continue;
-//			// has command
-//			gcCommand command = plugin.commands.getCommandOrAlias(commandStr);
-//			if(command == null) continue;
-//			// get listener
-//			gcServerPluginListenerCommand listener = entry.getValue();
-//			if(listener == null) continue;
-//			// run listener
-//			if(listener.onCommand(command, args)) return true;
-//		}
-//		return false;
-
-
-//	public void doTick() {
-//		for(Map.Entry<String, gcServerPluginListenerTick> entry : listenersTick.entrySet()) {
-//			// validate plugin
-//			if(getPluginByClassName(entry.getKey()) == null) continue;
-//			// get listener
-//			gcServerPluginListenerTick listener = entry.getValue();
-//			if(listener == null) continue;
-//			// run listener
-//			listener.onTick();
-//		}
-//	}
-//	public boolean doOutput(String[] args) {
-//		if(args == null) throw new NullPointerException();
-//		if(args.length < 1) return false;
-//		for(Map.Entry<String, gcServerPluginListenerOutput> entry : listenersOutput.entrySet()) {
-//			// get plugin
-//			gcServerPluginHolder plugin = getPluginByClassName(entry.getKey());
-//			if(plugin == null) continue;
-////TODO: should outputs be registered?
-////			// is output registered
-////			plugin.isOutputRegistered()
-//			// get listener
-//			gcServerPluginListenerOutput listener = entry.getValue();
-//			if(listener == null) continue;
-//			// run listener
-//			if(listener.onOutput(args)) return true;
-//		}
-//		return false;
-//	}
-//	public boolean doInput(String[] args) {
-//TODO:
-//		return false;
-//	}
+	// load class (with required methods)
+	public static Class<pxnPlugin> getClassWithMethods(File f, String mainClass, List<String> methodsRequired) throws Exception {
+		if(f == null) throw new NullPointerException("file can't be null!");
+		if(mainClass == null) throw new NullPointerException("mainClass can't be null!");
+		if(methodsRequired == null) throw new NullPointerException("methodsRequired can't be null!");
+		Class<?> clss = getClass(f, mainClass);
+		if(methodsRequired.isEmpty())
+			return castPluginClass(clss);
+		List<String> methodsTmp = new ArrayList<String>(methodsRequired);
+		for(Method m : getClass(f, mainClass).getMethods() ) {
+			String methodName = m.getName();
+			if(methodsTmp.contains(methodName))
+				methodsTmp.remove(methodName);
+			if(methodsTmp.isEmpty())
+				break;
+		}
+		if(methodsTmp.isEmpty())
+			return castPluginClass(clss);
+		// required methods not all found
+		return null;
+	}
+	@SuppressWarnings("unchecked")
+	protected static Class<pxnPlugin> castPluginClass(Class<?> clss) {
+		return (Class<pxnPlugin>) clss;
+	}
 
 
 //	// list class names
@@ -327,6 +284,56 @@ public class pxnPluginManager {
 	}
 
 
+//TODO:
+//	// trigger event by priority
+//	protected abstract boolean triggerEventPriority(pxnEvent event, EventPriority priority);
+//		for(Map.Entry<String, gcServerPluginListenerCommand> entry : listenersCommand.entrySet()) {
+//			// get plugin
+//			gcServerPluginHolder plugin = getPluginByClassName(entry.getKey());
+//			if(plugin == null) continue;
+//			// has command
+//			gcCommand command = plugin.commands.getCommandOrAlias(commandStr);
+//			if(command == null) continue;
+//			// get listener
+//			gcServerPluginListenerCommand listener = entry.getValue();
+//			if(listener == null) continue;
+//			// run listener
+//			if(listener.onCommand(command, args)) return true;
+//		}
+//		return false;
+//	public void doTick() {
+//		for(Map.Entry<String, gcServerPluginListenerTick> entry : listenersTick.entrySet()) {
+//			// validate plugin
+//			if(getPluginByClassName(entry.getKey()) == null) continue;
+//			// get listener
+//			gcServerPluginListenerTick listener = entry.getValue();
+//			if(listener == null) continue;
+//			// run listener
+//			listener.onTick();
+//		}
+//	}
+//	public boolean doOutput(String[] args) {
+//		if(args == null) throw new NullPointerException();
+//		if(args.length < 1) return false;
+//		for(Map.Entry<String, gcServerPluginListenerOutput> entry : listenersOutput.entrySet()) {
+//			// get plugin
+//			gcServerPluginHolder plugin = getPluginByClassName(entry.getKey());
+//			if(plugin == null) continue;
+////TODO: should outputs be registered?
+////			// is output registered
+////			plugin.isOutputRegistered()
+//			// get listener
+//			gcServerPluginListenerOutput listener = entry.getValue();
+//			if(listener == null) continue;
+//			// run listener
+//			if(listener.onOutput(args)) return true;
+//		}
+//		return false;
+//	}
+//	public boolean doInput(String[] args) {
+//TODO:
+//		return false;
+//	}
 //	// list plugins
 //	public static void listPlugins() {
 //		String msg = "Plugins ("+Integer.toString(plugins.size())+"):  ";
@@ -337,16 +344,6 @@ public class pxnPluginManager {
 //			msg += plugin.pluginName;
 //		}
 //		gcServer.log.info(msg);
-//	}
-
-
-//	// get plugin by class name
-//	public static gcServerPluginHolder getPluginByClassName(String className) {
-//		if(className == null)   throw new NullPointerException("className cannot be null");
-//		if(className.isEmpty()) throw new NullPointerException("className cannot be empty");
-//		if(!plugins.containsKey(className)) return null;
-//		gcServerPluginHolder plugin = plugins.get(className);
-//		return plugin;
 //	}
 
 

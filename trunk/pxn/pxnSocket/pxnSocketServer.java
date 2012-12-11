@@ -14,6 +14,7 @@ import com.poixson.pxnLogger.pxnLogger;
 
 public class pxnSocketServer implements pxnSocket {
 
+//TODO:
 //	protected final String bindHost;
 	protected final int port;
 
@@ -69,7 +70,6 @@ public class pxnSocketServer implements pxnSocket {
 
 	// socket listener thread
 	private void doListenerThread() {
-System.out.println("LISTENER THREAD RUNNING");
 		// loop for new connections
 		while(true) {
 			flushClosed();
@@ -95,7 +95,6 @@ pxnLogger.log().exception(ignore);
 
 
 	// flush closed sockets from pool
-//	@Override
 	public void flushClosed() {
 		for(Iterator<pxnSocketWorker> it = socketWorkers.iterator(); it.hasNext();)
 			if(it.next().isClosed())
