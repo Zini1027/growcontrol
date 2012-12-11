@@ -3,10 +3,11 @@ package com.growcontrol.gctimer.timers;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.growcontrol.gcServer.gcServer;
 import com.growcontrol.gcServer.devices.gcServerDeviceBoolean;
 import com.growcontrol.gctimer.gcTimer;
 import com.growcontrol.gctimer.gcTimer.TimerType;
+import com.poixson.pxnUtils;
+
 
 public class timerTicker extends gcServerDeviceBoolean implements deviceTimer {
 
@@ -27,8 +28,8 @@ public class timerTicker extends gcServerDeviceBoolean implements deviceTimer {
 			validate(duration);
 		}
 		public void validate(long duration) {
-			onTick  = gcServer.MinMax(onTick,  0, duration-1);
-			offTick = gcServer.MinMax(offTick, 0, duration-1);
+			onTick  = pxnUtils.MinMax(onTick,  0, duration-1);
+			offTick = pxnUtils.MinMax(offTick, 0, duration-1);
 		}
 	}
 

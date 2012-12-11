@@ -3,20 +3,22 @@ package com.growcontrol.gctimer;
 import java.util.HashMap;
 import java.util.List;
 
-import com.growcontrol.gcServer.config.gcConfig;
 import com.growcontrol.gcServer.devices.gcServerDevice;
 import com.growcontrol.gcServer.devices.gcServerDevice.RunMode;
 import com.growcontrol.gcServer.logger.gcLogger;
 import com.growcontrol.gcServer.serverPlugin.gcServerPlugin;
-import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListenerTick;
 import com.growcontrol.gctimer.listeners.CommandsListener;
 import com.growcontrol.gctimer.timers.deviceTimer;
 import com.growcontrol.gctimer.timers.timerClock;
 import com.growcontrol.gctimer.timers.timerSequencer;
 import com.growcontrol.gctimer.timers.timerTicker;
+import com.poixson.pxnConfig.pxnConfig;
 
-public class gcTimer extends gcServerPlugin implements gcServerPluginListenerTick {
+
+public class gcTimer extends gcServerPlugin {
+	// plugin name
 	private static final String PLUGIN_NAME = "gcTimer";
+
 	// logger
 	public static gcLogger log = getLogger(PLUGIN_NAME);
 
@@ -31,20 +33,19 @@ public class gcTimer extends gcServerPlugin implements gcServerPluginListenerTic
 
 
 	@Override
+	public String getPluginName() {
+		// plugin name
+		return PLUGIN_NAME;
+	}
+	@Override
 	public void onEnable() {
-		// register plugin name
-		registerPlugin(PLUGIN_NAME);
-		// register commands
-		registerCommand("timer");
 		// register listeners
-		registerListenerCommand(commandsListener);
-		registerListenerTick(this);
+		registerCommandListener(commandsListener);
+//		registerListenerTick(this);
 //		registerListenerDevice(deviceListener);
 		// load timers from configs
 		LoadConfig();
 	}
-
-
 	@Override
 	public void onDisable() {
 		log.info("gcTimer disabled!");
@@ -53,7 +54,7 @@ public class gcTimer extends gcServerPlugin implements gcServerPluginListenerTic
 
 	// load timers
 	private static void LoadConfig() {
-		gcConfig config = gcConfig.loadFile("plugins/gcTimer", "config.yml");
+		pxnConfig config = pxnConfig.loadFile("plugins/gcTimer", "config.yml");
 		if(config == null) {
 			log.severe("Failed to load config.yml");
 			return;
@@ -69,7 +70,7 @@ public class gcTimer extends gcServerPlugin implements gcServerPluginListenerTic
 	}
 	private static void loadTimerConfig(String configFile) {
 		if(!configFile.endsWith(".yml")) configFile += ".yml";
-		gcConfig config = gcConfig.loadFile("plugins/gcTimer/timers", configFile);
+		pxnConfig config = pxnConfig.loadFile("plugins/gcTimer/timers", configFile);
 		if(config == null) {
 			log.severe("Failed to load "+configFile);
 			return;
@@ -160,13 +161,13 @@ public class gcTimer extends gcServerPlugin implements gcServerPluginListenerTic
 	}
 
 
-	// tick all timer devices
-	@Override
-	public void onTick() {
-		for(deviceTimer timer : timersMap.values())
-			if(timer != null)
-				timer.onTick();
-	}
+//	// tick all timer devices
+//	@Override
+//	public void onTick() {
+//		for(deviceTimer timer : timersMap.values())
+//			if(timer != null)
+//				timer.onTick();
+//	}
 
 
 }

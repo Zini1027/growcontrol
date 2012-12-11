@@ -1,16 +1,34 @@
 package com.growcontrol.gctimer.listeners;
 
-import com.growcontrol.gcServer.commands.gcCommand;
-import com.growcontrol.gcServer.serverPlugin.listeners.gcServerPluginListenerCommand;
+import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
+import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListenerCommand;
 import com.growcontrol.gctimer.gcTimer;
+import com.poixson.pxnCommand.pxnCommand;
+import com.poixson.pxnEvent.pxnEvent.EventPriority;
 
-public class CommandsListener implements gcServerPluginListenerCommand {
+
+public class CommandsListener extends gcServerListenerCommand {
+
+
+	public CommandsListener() {
+		setPriority(EventPriority.NORMAL);
+		// register commands
+		add("timer")
+			.setUsage("");
+	}
 
 
 	@Override
-	public boolean onCommand(gcCommand command, String[] args) {
-		gcTimer.log.severe("PLUGIN COMMAND!!!"+command.toString());
+	public boolean onCommand(gcServerEventCommand event) {
+		if(event.isHandled())   return false;
+		if(!event.hasCommand()) return false;
+		pxnCommand command = event.getCommand();
+gcTimer.log.severe("gcTimer Command: "+command.toString());
 		return true;
+//		pxnCommand command = event.getCommand();
+//		String[] args = event.getArgs();
+//		gcTimer.log.severe("PLUGIN COMMAND!!! "+command.toString());
+//		return true;
 //		// set output
 //		if(command.equalsIgnoreCase("set")) {
 //			if(numArgs < 3) return false;

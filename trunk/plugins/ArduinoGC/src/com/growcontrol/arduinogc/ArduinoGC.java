@@ -13,10 +13,13 @@ import com.poixson.pxnConfig.pxnConfig;
 
 
 public class ArduinoGC extends gcServerPlugin implements gcServerListenerOutput {
+
+	// plugin name
 	private static final String PLUGIN_NAME = "ArduinoGC";
 	// logger
 	public static gcLogger log = getLogger(PLUGIN_NAME);
 
+	// listeners
 	protected static CommandsListener commands = new CommandsListener();
 
 	// controllers map
@@ -26,7 +29,7 @@ public class ArduinoGC extends gcServerPlugin implements gcServerListenerOutput 
 	@Override
 	public String getPluginName() {
 		// plugin name
-		return "ArduinoGC";
+		return PLUGIN_NAME;
 	}
 	@Override
 	public void onEnable() {

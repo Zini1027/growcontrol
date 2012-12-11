@@ -13,9 +13,9 @@ public abstract class pxnPlugin {
 
 
 	// load/unload plugin
+	public abstract String getPluginName();
 	public abstract void onEnable();
 	public abstract void onDisable();
-	public abstract String getPluginName();
 
 
 	// plugin is enabled

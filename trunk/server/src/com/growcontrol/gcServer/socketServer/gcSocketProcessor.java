@@ -16,7 +16,7 @@ public class gcSocketProcessor extends pxnSocketProcessorThreaded {
 
 	@Override
 	public void processNow(pxnParser line) {
-System.out.println("PROCESSING: "+line.getOriginal());
+//System.out.println("PROCESSING: "+line.getOriginal());
 		String first = line.getFirst();
 		// HEY packet
 		if(first.equalsIgnoreCase("HELLO")) {
