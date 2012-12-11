@@ -45,7 +45,7 @@ public class pxnParser {
 			temp = "";
 		} else{
 			// next part
-			part = temp.substring(0, index-1);
+			part = temp.substring(0, index);
 			temp = temp.substring(index+1);
 		}
 		return true;
