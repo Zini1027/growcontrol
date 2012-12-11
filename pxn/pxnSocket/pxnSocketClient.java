@@ -3,10 +3,6 @@ package com.poixson.pxnSocket;
 import java.io.IOException;
 import java.net.Socket;
 
-import javax.swing.JOptionPane;
-
-import com.growcontrol.gcClient.gcClient;
-import com.growcontrol.gcClient.gcClient.ConnectState;
 import com.poixson.pxnLogger.pxnLogger;
 
 
@@ -61,11 +57,11 @@ public class pxnSocketClient implements pxnSocket {
 		} catch (IOException e) {
 			pxnLogger.log().severe("Failed to connect to: "+host+":"+Integer.toString(port));
 			pxnLogger.log().exception(e);
-JOptionPane.showMessageDialog(null, e.getMessage(), "Connection failed!", JOptionPane.ERROR_MESSAGE);
-gcClient.setConnectState(ConnectState.CLOSED);
+//JOptionPane.showMessageDialog(null, e.getMessage(), "Connection failed!", JOptionPane.ERROR_MESSAGE);
+//gcClient.setConnectState(ConnectState.CLOSED);
 			return;
-		} finally {
-gcClient.setConnectState(ConnectState.READY);
+//		} finally {
+//gcClient.setConnectState(ConnectState.READY);
 		}
 //socket.setSoTimeout(1000);
 //TODO: remove this
@@ -82,6 +78,12 @@ gcClient.setConnectState(ConnectState.READY);
 	@Override
 	public void close() {
 	}
+//	public void close() throws IOException {
+//		if(socket == null) return;
+//		if(socket.isConnected() || !socket.isClosed())
+//			socket.close();
+//		socket = null;
+//	}
 	@Override
 	public void stop() {
 	}
@@ -101,28 +103,6 @@ gcClient.setConnectState(ConnectState.READY);
 //TODO: when does this run?
 System.out.println("END");
 	}
-//	public void close() throws IOException {
-//		if(socket == null) return;
-//		if(socket.isConnected() || !socket.isClosed())
-//			socket.close();
-//		socket = null;
-//	}
-
-
-//	public boolean sendPacket(clientPacket packet) {
-//		if(packet == null) throw new NullPointerException();
-//		if(socket == null || !socket.isConnected()) return false;
-//		out.print(clientPacket.EOL);
-//		out.print(packet.getPacketString());
-//		out.print(clientPacket.EOL);
-//		out.flush();
-//		return false;
-//	}
-
-
-//	public boolean isConnected() {
-//		return false;
-//	}
 
 
 }

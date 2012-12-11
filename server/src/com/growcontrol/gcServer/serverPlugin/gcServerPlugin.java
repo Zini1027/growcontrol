@@ -7,9 +7,6 @@ import com.poixson.pxnPlugin.pxnPlugin;
 
 public abstract class gcServerPlugin extends pxnPlugin {
 
-//	// plugin manager
-//	protected gcServerPluginManager pluginManager;
-
 
 	// get logger
 	public static gcLogger getLogger(String pluginName) {
