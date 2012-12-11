@@ -20,15 +20,15 @@ public class gcServerPluginManager extends pxnPluginManager {
 //	protected static HashMap<String, gcServerPluginListenerDevice>	listenersDevice		= new HashMap<String, gcServerPluginListenerDevice>();
 
 
-	public gcServerPluginManager() {
-		super();
-	}
-	public gcServerPluginManager(String pluginsPath) {
-		super(pluginsPath);
-	}
-	public gcServerPluginManager(String pluginsPath, String pluginYmlFileName, String mainClassYmlName) {
-		super(pluginsPath, pluginYmlFileName, mainClassYmlName);
-	}
+//	public gcServerPluginManager() {
+//		super();
+//	}
+//	public gcServerPluginManager(String pluginsPath) {
+//		super(pluginsPath);
+//	}
+//	public gcServerPluginManager(String pluginsPath, String pluginYmlFileName, String mainClassYmlName) {
+//		super(pluginsPath, pluginYmlFileName, mainClassYmlName);
+//	}
 	
 
 	// register listeners
