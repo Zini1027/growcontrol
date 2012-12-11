@@ -7,6 +7,7 @@ import com.growcontrol.arduinogc.ArduinoPin;
 import com.growcontrol.arduinogc.ArduinoPin.PinMode;
 import com.growcontrol.arduinogc.msgQueue;
 
+
 public class ArduinoInterface extends Thread {
 	protected static final int THREAD_HEARTBEAT = 50;
 	protected static final int THREAD_WAIT = 100;

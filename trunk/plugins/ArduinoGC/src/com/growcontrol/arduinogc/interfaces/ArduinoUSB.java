@@ -14,7 +14,8 @@ import java.io.OutputStream;
 import com.growcontrol.arduinogc.ArduinoGC;
 import com.growcontrol.arduinogc.DataProcessor;
 import com.growcontrol.arduinogc.msgQueue;
-import com.growcontrol.gcServer.pxnUtils;
+import com.poixson.pxnUtils;
+
 
 public class ArduinoUSB extends ArduinoInterface {
 

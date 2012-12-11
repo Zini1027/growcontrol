@@ -9,7 +9,8 @@ import java.net.UnknownHostException;
 
 import com.growcontrol.arduinogc.ArduinoGC;
 import com.growcontrol.arduinogc.DataProcessor;
-import com.growcontrol.gcServer.pxnUtils;
+import com.poixson.pxnUtils;
+
 
 public class ArduinoNet extends ArduinoInterface {
 
