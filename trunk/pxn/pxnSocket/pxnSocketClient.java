@@ -15,13 +15,9 @@ public class pxnSocketClient implements pxnSocket {
 	protected Socket socket = null;
 	protected pxnSocketWorker worker = null;
 
-	// processor
-	protected final pxnSocketProcessor processor;
-
 
 	// new socket client
 	public pxnSocketClient(String host, int port, pxnSocketProcessor processor) {
-		this.processor = processor;
 		// host
 		if(host == null || host.isEmpty()) throw new IllegalArgumentException("host can't be null!");
 		// trim http:// or other prefix
@@ -90,7 +86,7 @@ public class pxnSocketClient implements pxnSocket {
 
 
 	public void sendData(String line) {
-		processor.sendData(line);
+		worker.sendData(line);
 	}
 
 

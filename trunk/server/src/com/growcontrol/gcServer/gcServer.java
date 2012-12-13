@@ -12,12 +12,13 @@ import com.growcontrol.gcServer.scheduler.gcSchedulerManager;
 import com.growcontrol.gcServer.scheduler.gcTicker;
 import com.growcontrol.gcServer.serverPlugin.gcServerPluginManager;
 import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
-import com.growcontrol.gcServer.socketServer.gcSocketProcessorFactory;
+import com.growcontrol.gcServer.socketServer.gcSocketProcessor;
 import com.poixson.pxnUtils;
 import com.poixson.pxnClock.pxnClock;
 import com.poixson.pxnLogger.pxnLevel;
 import com.poixson.pxnLogger.pxnLogger;
 import com.poixson.pxnLogger.pxnLoggerConsole;
+import com.poixson.pxnSocket.pxnSocketProcessorFactory;
 import com.poixson.pxnSocket.pxnSocketServer;
 
 
@@ -169,7 +170,13 @@ System.exit(0);
 //		deviceLoader.LoadDevices(Arrays.asList(new String[] {"Lamp"}));
 
 		// start socket listener
-		socket = new pxnSocketServer(config.getListenPort(), new gcSocketProcessorFactory() );
+//		socket = new pxnSocketServer(config.getListenPort(), new gcSocketProcessorFactory() );
+		socket = new pxnSocketServer(config.getListenPort(), new pxnSocketProcessorFactory(){
+			@Override
+			public gcSocketProcessor newProcessor() {
+				return new gcSocketProcessor();
+			}
+		});
 
 		// start schedulers
 		log.info("Starting schedulers..");

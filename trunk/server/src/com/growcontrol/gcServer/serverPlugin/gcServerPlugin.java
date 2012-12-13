@@ -8,6 +8,13 @@ import com.poixson.pxnPlugin.pxnPlugin;
 public abstract class gcServerPlugin extends pxnPlugin {
 
 
+	// get plugin manager
+	@Override
+	public gcServerPluginManager getPluginManager() {
+		return (gcServerPluginManager) this.pluginManager;
+	}
+
+
 	// get logger
 	public static gcLogger getLogger(String pluginName) {
 		return gcLogger.getLogger(pluginName);
@@ -17,8 +24,9 @@ public abstract class gcServerPlugin extends pxnPlugin {
 	// register listeners
 	public void registerCommandListener(gcServerListenerCommand listener) {
 		if(listener == null) throw new NullPointerException("listener can't be null!");
+		gcServerPluginManager pluginManager = getPluginManager();
 		if(pluginManager == null) throw new NullPointerException("pluginManager hasn't been set!");
-		((gcServerPluginManager) pluginManager).registerCommandListener(listener);
+		pluginManager.registerCommandListener(listener);
 	}
 
 

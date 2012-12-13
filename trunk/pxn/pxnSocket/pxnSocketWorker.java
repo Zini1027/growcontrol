@@ -1,8 +1,13 @@
 package com.poixson.pxnSocket;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -17,6 +22,7 @@ public class pxnSocketWorker {
 	protected final Socket socket;
 	protected final pxnSocketProcessor processor;
 	protected boolean closed = false;
+	protected final int socketId;
 
 	// input/output threads
 	protected final Thread threadIn;
@@ -33,6 +39,7 @@ public class pxnSocketWorker {
 		if(socket    == null) throw new NullPointerException("socket cannot be null!");
 		if(processor == null) throw new NullPointerException("processor cannot be null!");
 		this.socket = socket;
+		socketId = getNextId();
 		this.processor = processor;
 		try {
 			socket.setKeepAlive(true);
@@ -45,24 +52,24 @@ public class pxnSocketWorker {
 		// get queues
 		queueIn  = processor.getInputQueue();
 		queueOut = processor.getOutputQueue();
-queueOut.offer("FIRST PACKET");
-queueOut.offer("SECOND PACKET");
+//queueOut.offer("FIRST PACKET");
+//queueOut.offer("SECOND PACKET");
 		// reader thread
 		threadIn = new Thread() {
 			@Override
 			public void run() {
-				doReaderThread();
+				startReaderThread();
 			}
 		};
-		threadIn.setName("Socket Reader");
+		threadIn.setName("Socket-Reader-"+Integer.toString(socketId));
 		// sender thread
 		threadOut = new Thread() {
 			@Override
 			public void run() {
-				doSenderThread();
+				startSenderThread();
 			}
 		};
-		threadIn.setName("Socket Sender");
+		threadIn.setName("Socket-Sender-"+Integer.toString(socketId));
 		// start threads
 		threadOut.start();
 		threadIn.start();
@@ -70,7 +77,7 @@ queueOut.offer("SECOND PACKET");
 
 
 	// reader thread
-	private void doReaderThread() {
+	private void startReaderThread() {
 		pxnLogger.log().info("Connected: "+getIPString());
 		String line = "";
 		while(!closed) {
@@ -91,18 +98,62 @@ pxnLogger.log().exception(ignore);
 		close();
 	}
 	// sender thread
-	private void doSenderThread() {
+	private void startSenderThread() {
 		while(!closed) {
 			try {
-				out.println(queueOut.take());
-				out.flush();
+				String line = queueOut.take();
+				if(line.startsWith("SENDFILE:")) {
+					// send file
+					sendFileNow(line.substring(9).trim());
+				} else {
+					// send string
+					out.println(line);
+					out.flush();
+				}
 			} catch (InterruptedException e) {
 				pxnLogger.log().exception(e);
 			}
 		}
 	}
+	// send file (from sender thread)
+	private void sendFileNow(String fileName) {
+		pxnLogger.log().info("Sending file: "+fileName);
+		File file = new File(fileName);
+		final int bufferSize = 1024;
+		byte[] buffer = new byte[bufferSize];
+		try {
+			FileInputStream fileStream = new FileInputStream(file);
+			BufferedInputStream inputStream = new BufferedInputStream(fileStream);
+			OutputStream outputStream = socket.getOutputStream();
+//			while(true) {
+				inputStream.read(buffer, 0, buffer.length);
+				outputStream.write(buffer, 0, buffer.length);
+//			}
+			inputStream.close();
+			inputStream = null;
+			fileStream = null;
+			file = null;
+		} catch (FileNotFoundException e) {
+			pxnLogger.log().exception(e);
+		} catch (IOException e) {
+			pxnLogger.log().exception(e);
+		}
+	}
+	// add to output queue
 	public void sendData(String line) {
 		processor.sendData(line);
+	}
+
+
+	// get next id
+	private static int nextId = 0;
+	public static synchronized int getNextId() {
+		nextId++;
+		return nextId - 1;
+	}
+	// get socket id
+	public int getSocketId() {
+		return socketId;
 	}
 
 

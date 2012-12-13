@@ -8,10 +8,10 @@ import com.poixson.pxnSocket.pxnSocketProcessorThreaded;
 public class gcSocketProcessor extends pxnSocketProcessorThreaded {
 
 
-//	public gcSocketProcessor() {
+	public gcSocketProcessor() {
 //		// in/out queue size
-//		super(1, 1);
-//	}
+		super(1000, 1000);
+	}
 
 
 	@Override
@@ -24,7 +24,12 @@ public class gcSocketProcessor extends pxnSocketProcessorThreaded {
 			pxnLogger.log().severe("Got HELLO packet!");
 			return;
 		}
-		pxnLogger.log().warning("Unknown Packet: "+line.getOriginal());
+		if(first.equalsIgnoreCase("FILE")) {
+			sendData("SENDFILE: test.txt");
+pxnLogger.log().severe("SENDING FILE");
+			return;
+		}
+//		pxnLogger.log().warning("Unknown Packet: "+line.getOriginal());
 	}
 
 
