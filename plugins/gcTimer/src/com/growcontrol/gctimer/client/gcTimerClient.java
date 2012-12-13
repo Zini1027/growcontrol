@@ -1,6 +1,7 @@
 package com.growcontrol.gctimer.client;
 
 import com.growcontrol.gcClient.clientPlugin.gcClientPlugin;
+import com.growcontrol.gctimer.client.frames.gcTimerFrame;
 
 
 public class gcTimerClient extends gcClientPlugin {
@@ -17,7 +18,7 @@ public class gcTimerClient extends gcClientPlugin {
 	}
 	@Override
 	public void onEnable() {
-		//
+		getPluginManager().addFrame(new gcTimerFrame());
 	}
 	@Override
 	public void onDisable() {
