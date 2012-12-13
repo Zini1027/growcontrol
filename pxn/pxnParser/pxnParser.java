@@ -1,5 +1,8 @@
 package com.poixson.pxnParser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class pxnParser {
 
@@ -21,6 +24,15 @@ public class pxnParser {
 		this.delim    = delim;
 		next();
 		this.first = part;
+	}
+	// parse into list
+	public List<String> getList() {
+		pxnParser parser = new pxnParser(original);
+		List<String> list = new ArrayList<String>();
+		while(parser.hasNext())
+			list.add(parser.getNext());
+		parser = null;
+		return list;
 	}
 
 
@@ -60,6 +72,11 @@ public class pxnParser {
 	}
 	public String getPart() {
 		return part;
+	}
+	public boolean hasNext() {
+		if(temp == null)   return false;
+		if(temp.isEmpty()) return false;
+		return true;
 	}
 
 

@@ -25,6 +25,9 @@ public abstract class pxnPlugin {
 
 
 	// plugin manager
+	public pxnPluginManager getPluginManager() {
+		return pluginManager;
+	}
 	public void setPluginManager(pxnPluginManager pluginManager) {
 		if(pluginManager == null) throw new NullPointerException("pluginManager cannot be null!");
 		this.pluginManager = pluginManager;
