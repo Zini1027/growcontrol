@@ -59,17 +59,17 @@ public class pxnSocketServer implements pxnSocket {
 		threadListener = new Thread() {
 			@Override
 			public void run() {
-				doListenerThread();
+				startListenerThread();
 			}
 		};
-		threadListener.setName("SocketListener");
+		threadListener.setName("Socket-Server-Listener");
 		threadListener.start();
 		pxnUtils.Sleep(10);
 	}
 
 
 	// socket listener thread
-	private void doListenerThread() {
+	private void startListenerThread() {
 		// loop for new connections
 		while(true) {
 			flushClosed();
@@ -89,12 +89,14 @@ pxnLogger.log().exception(ignore);
 //			}
 			// add socket to pool
 			if(socket != null)
-				socketWorkers.add(new pxnSocketWorker(socket, processorFactory.newProcessor() ));
+				socketWorkers.add(new pxnSocketWorker(socket, processorFactory.newProcessor()));
 		}
 	}
 
 
 	// flush closed sockets from pool
+//TODO: try this
+//EventQueue.invokeLater(new Runnable() {
 	public void flushClosed() {
 		for(Iterator<pxnSocketWorker> it = socketWorkers.iterator(); it.hasNext();)
 			if(it.next().isClosed())

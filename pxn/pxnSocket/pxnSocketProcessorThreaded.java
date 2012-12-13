@@ -40,7 +40,7 @@ public abstract class pxnSocketProcessorThreaded implements pxnSocketProcessor {
 				doProcessorThread();
 			}
 		};
-		procThread.setName("Socket Processor");
+		procThread.setName("Socket-Processor-"+Integer.toString(pxnSocketWorker.getNextId()) );
 		// start processing thread
 		procThread.start();
 	}
@@ -60,12 +60,11 @@ public abstract class pxnSocketProcessorThreaded implements pxnSocketProcessor {
 			}
 			// processed count
 			count++;
-System.out.println(Integer.toString(queueIn.size()));
-			if(queueIn.size() == 0) {
-				if(count != 0) {
-					pxnLogger.log().debug("Processed [ "+Integer.toString(count)+" ] packets");
-					count = 0;
-				}
+			if(queueIn.size() == 0 && count > 0) {
+System.out.println("Processed [ "+Integer.toString(count)+" ] packets");
+//TODO: debug isn't working for some reason
+//				pxnLogger.log().debug("Processed [ "+Integer.toString(count)+" ] packets");
+				count = 0;
 			}
 		}
 	}
