@@ -1,18 +1,9 @@
 package com.poixson.pxnSocket;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.concurrent.BlockingQueue;
 
 import com.poixson.pxnLogger.pxnLogger;
 
@@ -25,14 +16,9 @@ public class pxnSocketWorker {
 	protected final int socketId;
 
 	// input/output threads
-	protected final Thread threadIn;
-	protected final Thread threadOut;
-	// buffers
-	protected BufferedReader in  = null;
-	protected PrintWriter    out = null;
+	protected final Thread threadReader;
+	protected final Thread threadSender;
 	// input/output queue
-	protected BlockingQueue<String> queueIn;
-	protected BlockingQueue<String> queueOut;
 
 
 	public pxnSocketWorker(Socket socket, pxnSocketProcessor processor) {
@@ -43,102 +29,21 @@ public class pxnSocketWorker {
 		this.processor = processor;
 		try {
 			socket.setKeepAlive(true);
-			in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			out = new PrintWriter(socket.getOutputStream());
-			out.flush();
-		} catch (IOException e) {
+		} catch (SocketException e) {
 			pxnLogger.log().exception(e);
 		}
-		// get queues
-		queueIn  = processor.getInputQueue();
-		queueOut = processor.getOutputQueue();
-//queueOut.offer("FIRST PACKET");
-//queueOut.offer("SECOND PACKET");
 		// reader thread
-		threadIn = new Thread() {
-			@Override
-			public void run() {
-				startReaderThread();
-			}
-		};
-		threadIn.setName("Socket-Reader-"+Integer.toString(socketId));
+		threadReader = new pxnSocketWorkerReader(this, socket, processor.getInputQueue());
+		threadReader.setName("Socket-Reader-"+Integer.toString(socketId));
 		// sender thread
-		threadOut = new Thread() {
-			@Override
-			public void run() {
-				startSenderThread();
-			}
-		};
-		threadIn.setName("Socket-Sender-"+Integer.toString(socketId));
+		threadSender = new pxnSocketWorkerSender(this, socket, processor.getOutputQueue());
+		threadSender.setName("Socket-Sender-"+Integer.toString(socketId));
 		// start threads
-		threadOut.start();
-		threadIn.start();
+		threadReader.start();
+		threadSender.start();
 	}
 
 
-	// reader thread
-	private void startReaderThread() {
-		pxnLogger.log().info("Connected: "+getIPString());
-		String line = "";
-		while(!closed) {
-			try {
-				line = in.readLine();
-			} catch (SocketException ignore) {
-pxnLogger.log().exception(ignore);
-				break;
-			} catch (IOException e) {
-				e.printStackTrace();
-				pxnLogger.log().exception(e);
-				break;
-			}
-			if(line == null) break;
-			if(line.isEmpty()) continue;
-			processor.processData(line);
-		}
-		close();
-	}
-	// sender thread
-	private void startSenderThread() {
-		while(!closed) {
-			try {
-				String line = queueOut.take();
-				if(line.startsWith("SENDFILE:")) {
-					// send file
-					sendFileNow(line.substring(9).trim());
-				} else {
-					// send string
-					out.println(line);
-					out.flush();
-				}
-			} catch (InterruptedException e) {
-				pxnLogger.log().exception(e);
-			}
-		}
-	}
-	// send file (from sender thread)
-	private void sendFileNow(String fileName) {
-		pxnLogger.log().info("Sending file: "+fileName);
-		File file = new File(fileName);
-		final int bufferSize = 1024;
-		byte[] buffer = new byte[bufferSize];
-		try {
-			FileInputStream fileStream = new FileInputStream(file);
-			BufferedInputStream inputStream = new BufferedInputStream(fileStream);
-			OutputStream outputStream = socket.getOutputStream();
-//			while(true) {
-				inputStream.read(buffer, 0, buffer.length);
-				outputStream.write(buffer, 0, buffer.length);
-//			}
-			inputStream.close();
-			inputStream = null;
-			fileStream = null;
-			file = null;
-		} catch (FileNotFoundException e) {
-			pxnLogger.log().exception(e);
-		} catch (IOException e) {
-			pxnLogger.log().exception(e);
-		}
-	}
 	// add to output queue
 	public void sendData(String line) {
 		processor.sendData(line);
@@ -161,7 +66,7 @@ pxnLogger.log().exception(ignore);
 	public void close() {
 		if(closed) return;
 		closed = true;
-		queueOut.clear();
+		processor.getOutputQueue().clear();
 		pxnLogger.log().info("Disconnected: "+getIPString());
 		if(socket != null) {
 			try {
@@ -173,9 +78,11 @@ pxnLogger.log().exception(ignore);
 	}
 	// is connected / closed
 	public boolean isClosed() {
-		if(socket == null || in == null || out == null)
+		if(socket == null)
+// || in == null || out == null)
 			closed = true;
-		else if(socket.isClosed() || out.checkError())
+		else if(socket.isClosed())
+// || out.checkError())
 			closed = true;
 		return closed;
 	}
