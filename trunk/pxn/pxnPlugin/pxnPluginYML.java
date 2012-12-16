@@ -39,7 +39,12 @@ public class pxnPluginYML {
 	}
 	public String getMainClassValue(String mainClassName) {
 		if(config == null) return null;
-		return config.getString(mainClassName);
+		// get main class from plugin.yml
+		String mainClassValue = config.getString(mainClassName);
+		// trim .class from end
+		if(mainClassValue.endsWith(".class"))
+			mainClassValue = mainClassValue.substring(0, mainClassValue.length()-6);
+		return mainClassValue;
 	}
 	// author
 	public String getAuthor() {

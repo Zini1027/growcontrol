@@ -24,7 +24,7 @@ public class pxnPluginManager {
 	// plugin manager variables
 	protected String pluginsPath       = "plugins/";
 	protected String pluginYmlFileName = "plugin.yml";
-	protected String mainClassYmlName  = "main";
+//	protected String mainClassYmlName  = "main";
 
 
 	public pxnPluginManager() {
@@ -32,19 +32,21 @@ public class pxnPluginManager {
 	public pxnPluginManager(String pluginsPath) {
 		this.setPath(pluginsPath);
 	}
-	public pxnPluginManager(String pluginsPath, String pluginYmlFileName, String mainClassYmlName) {
+	public pxnPluginManager(String pluginsPath, String pluginYmlFileName) {
 		if(pluginsPath != null && !pluginsPath.isEmpty())
 			setPath(pluginsPath);
 		if(pluginYmlFileName != null && !pluginYmlFileName.isEmpty())
 			this.setYmlFileName(pluginYmlFileName);
-		if(mainClassYmlName != null && !mainClassYmlName.isEmpty())
-			this.setMainClassYmlName(mainClassYmlName);
+//		if(mainClassYmlName != null && !mainClassYmlName.isEmpty())
+//			this.setMainClassYmlName(mainClassYmlName);
 	}
 
 
 	// load plugins dir
 	public void LoadPlugins() throws Exception {
 		File dir = new File(pluginsPath);
+		if(!dir.isDirectory())
+			dir.mkdirs();
 		if(!dir.isDirectory())
 			throw new FileNotFoundException(pluginsPath+" (Plugins folder not found!)");
 		// get files list from /plugins
@@ -78,24 +80,15 @@ public class pxnPluginManager {
 
 	// load plugin jar
 	public void LoadPlugin(File f) throws Exception {
-		LoadPlugin(f, this.mainClassYmlName);
-	}
-	public void LoadPlugin(File f, String mainClassYmlName) throws Exception {
-		String mainClassValue = "";
-
 		// load plugin.yml from jar
-		pxnPluginYML yml = new pxnPluginYML(f, this.pluginYmlFileName);
+		pxnPluginYML yml = getPluginYML(f);
 		// get server main class
-		mainClassValue = yml.getMainClassValue(this.mainClassYmlName);
+		String mainClassValue = yml.getMainClassValue();
 		if(mainClassValue == null || mainClassValue.isEmpty()) {
 			// non-interrupted exception
 			pxnLogger.log().exception(new FileNotFoundException(f.toString()+" : plugin.yml (File not found in jar!)"));
 			return;
 		}
-		// trim .class from end
-		if(mainClassValue.endsWith(".class"))
-			mainClassValue = mainClassValue.substring(0, mainClassValue.length()-6);
-
 		// find classes
 		Class<pxnPlugin> clss = getClassWithMethods(f, mainClassValue,
 			Arrays.asList("onEnable", "onDisable") );
@@ -108,6 +101,10 @@ public class pxnPluginManager {
 		pxnPlugin plugin = clss.newInstance();
 		plugin.setPluginManager(this);
 		plugins.put(mainClassValue, plugin);
+	}
+	// get plugin.yml
+	protected pxnPluginYML getPluginYML(File f) {
+		return new pxnPluginYML(f, this.pluginYmlFileName);
 	}
 
 
@@ -195,12 +192,12 @@ public class pxnPluginManager {
 //	public String getYmlFileName() {
 //		return pluginYmlFileName;
 //	}
-	// main class variable in yml
-	public void setMainClassYmlName(String mainClassYmlName) {
-		if(mainClassYmlName == null)   throw new NullPointerException("mainClassYmlName can't be null");
-		if(mainClassYmlName.isEmpty()) throw new IllegalArgumentException("mainClassYmlName can't be empty!");
-		this.mainClassYmlName = mainClassYmlName;
-	}
+//	// main class variable in yml
+//	public void setMainClassYmlName(String mainClassYmlName) {
+//		if(mainClassYmlName == null)   throw new NullPointerException("mainClassYmlName can't be null");
+//		if(mainClassYmlName.isEmpty()) throw new IllegalArgumentException("mainClassYmlName can't be empty!");
+//		this.mainClassYmlName = mainClassYmlName;
+//	}
 //	public String getMainClassYmlName() {
 //		return mainClassYmlName;
 //	}

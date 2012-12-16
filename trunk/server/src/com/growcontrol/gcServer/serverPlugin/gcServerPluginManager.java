@@ -1,5 +1,7 @@
 package com.growcontrol.gcServer.serverPlugin;
 
+import java.io.File;
+
 import com.growcontrol.gcServer.gcServer;
 import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListenerCommand;
@@ -7,6 +9,7 @@ import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListenerGroup;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListenerGroup.ListenerType;
 import com.poixson.pxnEvent.pxnEvent.EventPriority;
 import com.poixson.pxnPlugin.pxnPluginManager;
+import com.poixson.pxnPlugin.pxnPluginYML;
 
 
 public class gcServerPluginManager extends pxnPluginManager {
@@ -29,7 +32,14 @@ public class gcServerPluginManager extends pxnPluginManager {
 //	public gcServerPluginManager(String pluginsPath, String pluginYmlFileName, String mainClassYmlName) {
 //		super(pluginsPath, pluginYmlFileName, mainClassYmlName);
 //	}
-	
+
+
+	// get plugin.yml
+	@Override
+	protected pxnPluginYML getPluginYML(File f) {
+		return new gcPluginYML(f, this.pluginYmlFileName);
+	}
+
 
 	// register listeners
 	public void registerCommandListener(gcServerListenerCommand listener) {

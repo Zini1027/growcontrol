@@ -86,6 +86,7 @@ public class pxnSocketClient implements pxnSocket {
 
 
 	public void sendData(String line) {
+		if(worker == null) throw new NullPointerException("worker can't be null!");
 		worker.sendData(line);
 	}
 
