@@ -32,7 +32,7 @@ public class gcServer extends Thread {
 	// logger
 	public static final gcLogger log = gcLogger.getLogger(null);
 
-	// server modules
+	// server plugin manager
 	public static final gcServerPluginManager pluginManager = new gcServerPluginManager();
 //	public static final gcServerDeviceLoader deviceLoader = new gcServerDeviceLoader();
 
@@ -62,7 +62,7 @@ public class gcServer extends Thread {
 			"console",
 			new pxnLoggerConsole(pxnLogger.getReader(),
 				new pxnLevel(pxnLevel.LEVEL.DEBUG)) );
-		pluginManager.setMainClassYmlName("Server Main");
+//		pluginManager.setMainClassYmlName("Server Main");
 //doesn't log anything
 //try {
 //	pxnLogger.getReader().setDebug(new PrintWriter(new FileWriter("log.txt", true)));
