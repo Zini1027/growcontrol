@@ -1,6 +1,7 @@
 package com.poixson.pxnSocket;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.Socket;
 
 import com.poixson.pxnLogger.pxnLogger;
@@ -85,7 +86,7 @@ public class pxnSocketClient implements pxnSocket {
 	}
 
 
-	public void sendData(String line) {
+	public void sendData(String line) throws ConnectException {
 		if(worker == null) throw new NullPointerException("worker can't be null!");
 		worker.sendData(line);
 	}
