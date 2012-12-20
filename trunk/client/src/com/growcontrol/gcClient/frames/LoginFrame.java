@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.KeyboardFocusManager;
+import java.awt.event.WindowEvent;
+import java.util.ConcurrentModificationException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -16,6 +18,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -43,13 +46,13 @@ public class LoginFrame extends JFrame {
 
 
 	public LoginFrame(LoginHandler handler) {
-		super();
+		super("Connect to server..");
 		if(handler == null) throw new NullPointerException("login class is null!");
 		this.handler = handler;
-		this.setTitle("Connect to server..");
-setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setResizable(false);
-		this.setLayout(cardLayout);
+//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		enableEvents(java.awt.AWTEvent.WINDOW_EVENT_MASK);
+		setResizable(false);
+		setLayout(cardLayout);
 		// key listener
 		KeyboardFocusManager keyboard = KeyboardFocusManager.getCurrentKeyboardFocusManager();
 		keyboard.addKeyEventDispatcher(handler);
@@ -57,14 +60,24 @@ setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		createLoginPanel();
 		createConnectingPanel();
 		// create cards
-		this.add(panelLogin, LOGIN_WINDOW_NAME);
-		this.add(panelConnecting, CONNECTING_WINDOW_NAME);
+		add(panelLogin, LOGIN_WINDOW_NAME);
+		add(panelConnecting, CONNECTING_WINDOW_NAME);
 		pack();
 		// set window width
-		this.setSize(280, this.getHeight());
+		setSize(280, getHeight());
 		// display window
-		this.setLocationRelativeTo(null);
+		setLocationRelativeTo(null);
 		setVisible(true);
+	}
+
+
+	// close event
+	protected void processWindowEvent(WindowEvent event) {
+		if(event.getID() == WindowEvent.WINDOW_CLOSING) {
+System.out.println("CLOSING LOGIN WINDOW");
+			dispose();
+			System.exit(0);
+		}
 	}
 
 
@@ -137,12 +150,18 @@ setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// connect button
 		JButton buttonConnect = new JButton("Connect");
+		buttonConnect.setDefaultCapable(true);
 		panelLogin.add(buttonConnect, "span 2, center");
 		buttonConnect.addActionListener(handler);
 	}
 
 
 	// connecting.. panel
+	protected JLabel labelStatus = new JLabel();
+	public void setMessage(String message) {
+		if(!SwingUtilities.isEventDispatchThread()) throw new ConcurrentModificationException("Cannot call this function directly!");
+		this.labelStatus.setText(message);
+	}
 	private void createConnectingPanel() {
 		panelConnecting.setLayout(new FlowLayout(FlowLayout.CENTER));
 		panelConnecting.setBackground(Color.DARK_GRAY);
@@ -155,7 +174,6 @@ setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		panelConnecting.add(buttonCancel);
 		buttonCancel.addActionListener(handler);
 		// status
-		JLabel labelStatus = new JLabel("Connecting..");
 		labelStatus.setHorizontalAlignment(SwingConstants.CENTER);
 		labelStatus.setPreferredSize(new Dimension(180, 35));
 		labelStatus.setForeground(Color.WHITE);
@@ -167,6 +185,7 @@ setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 
 	public void DisplayCard(String cardName) {
+		if(!SwingUtilities.isEventDispatchThread()) throw new ConcurrentModificationException("Cannot call this function directly!");
 		if(cardName == null)   throw new NullPointerException("cardName can't be null");
 		if(cardName.isEmpty()) throw new NullPointerException("cardName can't be empty");
 		try {

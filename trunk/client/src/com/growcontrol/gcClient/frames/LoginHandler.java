@@ -4,11 +4,13 @@ import java.awt.KeyEventDispatcher;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.lang.reflect.InvocationTargetException;
+import java.net.ConnectException;
 
 import javax.swing.JButton;
+import javax.swing.SwingUtilities;
 
 import com.growcontrol.gcClient.gcClient;
-import com.growcontrol.gcClient.gcClient.ConnectState;
 import com.growcontrol.gcClient.socketClient.gcSocketProcessor;
 import com.poixson.pxnUtils;
 import com.poixson.pxnSocket.pxnSocketClient;
@@ -39,30 +41,61 @@ public class LoginHandler implements ActionListener, KeyEventDispatcher {
 //			return;
 //		}
 		if(buttonName.equals("Connect")) {
-			gcClient.setConnectState(ConnectState.CONNECTING);
+			gcClient.getConnectState().setStateConnecting();
 //			setDisplay(loginFrame.CONNECTING_WINDOW_NAME);
 
 
 		// connect to server
 		gcClient.socket = new pxnSocketClient(getHost(), getPort(), new gcSocketProcessor());
-		gcClient.socket.sendData("HELLO "+gcClient.version+"lorenzo pass");
+//pxnUtils.Sleep(1000);
+		try {
+			gcClient.socket.sendData("HELLO "+gcClient.version+" lorenzo pass");
+		} catch (ConnectException e) {
+e.printStackTrace();
+			gcClient.getConnectState().setStateConnecting("Failed to connect!");
+		}
 //		gcClient.socket.sendPacket(clientPacket.sendHELLO(gcClient.version, "lorenzo", "pass"));
 
 
 
 		} else if(buttonName.equals("Cancel"))
-			gcClient.setConnectState(ConnectState.CLOSED);
+			gcClient.getConnectState().setStateClosed();
 //			setDisplay(loginFrame.LOGIN_WINDOW_NAME);
 	}
 
 
+	// display window card
 	public String getDisplay() {
 		return cardName;
 	}
 	public void setDisplay(String cardName) {
 		if(cardName == null) throw new NullPointerException("showCard can't be null!");
 		this.cardName = cardName;
-		frame.DisplayCard(cardName);
+		// call directly
+		if(SwingUtilities.isEventDispatchThread()) {
+			new setDisplayTask(cardName).run();
+			return;
+		}
+		try {
+			// invoke gui event
+			SwingUtilities.invokeAndWait(new setDisplayTask(cardName));
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	private class setDisplayTask implements Runnable {
+		private String cardName;
+		public setDisplayTask(String cardName) {
+			this.cardName = cardName;
+		}
+		@Override
+		public void run() {
+			frame.DisplayCard(cardName);
+		}
 	}
 
 
@@ -95,6 +128,34 @@ public class LoginHandler implements ActionListener, KeyEventDispatcher {
 	}
 	public String getPassword() {
 		return pxnUtils.MD5(new String(frame.textPassword.getPassword()));
+	}
+
+
+	// set connecting message
+	public void setMessage(String message) {
+		// call directly
+		if(SwingUtilities.isEventDispatchThread()) {
+			new setMessageTask(message).run();
+			return;
+		}
+		try {
+			// invoke gui event
+			SwingUtilities.invokeAndWait(new setMessageTask(message));
+		} catch (InterruptedException e) {
+e.printStackTrace();
+		} catch (InvocationTargetException e) {
+e.printStackTrace();
+		}
+	}
+	private class setMessageTask implements Runnable {
+		private final String message;
+		public setMessageTask(String message) {
+			this.message = message;
+		}
+		@Override
+		public void run() {
+			frame.setMessage(message);
+		}
 	}
 
 
