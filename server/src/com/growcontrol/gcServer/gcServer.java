@@ -92,9 +92,9 @@ System.exit(0);
 			if(logLevel != null && !logLevel.isEmpty()) {
 				if(Main.isConsoleEnabled())
 					gcLogger.setLevel("console", logLevel);
-//				gcLogger.setLevel("file",    logLevel);
 			}
 		}
+//		gcLogger.setLevel("file",    logLevel);
 
 		// command listener
 		pluginManager.registerCommandListener(new ServerCommands());
@@ -405,6 +405,8 @@ for(Thread t : threadSet) {
 		AnsiConsole.out.println(" Running as: "+System.getProperty("user.name"));
 		AnsiConsole.out.println(" Current dir: "+System.getProperty("user.dir"));
 		AnsiConsole.out.println(" java home: "+System.getProperty("java.home"));
+		if(Main.forceDebug)
+			AnsiConsole.out.println(" Force Debug: true");
 		AnsiConsole.out.println();
 
 
