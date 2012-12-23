@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.jar.JarEntry;
@@ -13,6 +12,7 @@ import java.util.jar.JarFile;
 
 import org.yaml.snakeyaml.Yaml;
 
+import com.poixson.pxnUtils;
 import com.poixson.pxnLogger.pxnLogger;
 
 
@@ -195,16 +195,23 @@ public class pxnConfig {
 			return 0.0;
 		}
 	}
-
-
 	// get list
-	@SuppressWarnings("unchecked")
-	public List<String> getStringList(String path) {
+	public <T> List<T> getList(Class<? extends T> clss, String path) {
 		try {
-			return (List<String>) data.get(path);
-		} catch(Exception ignore) {
-			return new ArrayList<String>();
+			return pxnUtils.castList(clss, data.get(path));
+		} catch (Exception ignore) {
+ignore.printStackTrace();
+			return null;
 		}
+	}
+	public List<String> getStringList(String path) {
+		return getList(String.class, path);
+//		try {
+//			return pxnUtils.castList(String.class, data.get(path));
+////			return (List<String>) data.get(path);
+//		} catch(Exception ignore) {
+//			return new ArrayList<String>();
+//		}
 	}
 
 

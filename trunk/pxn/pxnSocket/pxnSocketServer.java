@@ -56,13 +56,12 @@ public class pxnSocketServer implements pxnSocket {
 			return;
 		}
 		// socket listener thread
-		threadListener = new Thread() {
+		threadListener = new Thread("Socket-Server-Listener-"+Integer.toString(port)) {
 			@Override
 			public void run() {
 				startListenerThread();
 			}
 		};
-		threadListener.setName("Socket-Server-Listener");
 		threadListener.start();
 		pxnUtils.Sleep(10);
 	}

@@ -18,6 +18,7 @@ public class pxnLevel {
 	protected static final int LEVEL_FATAL   = 0;
 
 	protected LEVEL level = LEVEL.INFO;
+	protected boolean forceDebug = false;
 
 
 	public pxnLevel() {
@@ -36,14 +37,21 @@ public class pxnLevel {
 	public void setLevel(LEVEL level) {
 		if(level == null) throw new NullPointerException("level cannot be null!");
 		this.level = level;
-		pxnLogger.log().debug("Set log level to: "+levelToString(level));
+//		System.out.println("Set log level to: "+levelToString(level));
+//		pxnLogger.log().debug("Set log level to: "+levelToString(level));
 	}
 	// get log level
 	public LEVEL getLevel() {
+		if(forceDebug)
+			return LEVEL.DEBUG;
 		return level;
 	}
 	public String getLevelString() {
 		return levelToString(getLevel());
+	}
+	// force debug mode
+	public void setForceDebug(boolean forceDebug) {
+		this.forceDebug = forceDebug;
 	}
 
 

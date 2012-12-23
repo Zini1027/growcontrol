@@ -34,10 +34,8 @@ public class pxnSocketWorker {
 		}
 		// reader thread
 		threadReader = new pxnSocketWorkerReader(this, socket, processor.getInputQueue());
-		threadReader.setName("Socket-Reader-"+Integer.toString(socketId));
 		// sender thread
 		threadSender = new pxnSocketWorkerSender(this, socket, processor.getOutputQueue());
-		threadSender.setName("Socket-Sender-"+Integer.toString(socketId));
 		// start threads
 		threadReader.start();
 		threadSender.start();

@@ -12,25 +12,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
-import com.poixson.pxnClock.pxnClock;
 import com.poixson.pxnLogger.pxnLogger;
 
 
 public class pxnUtils {
-
-
-	// static clock
-	protected static pxnClock clock = null;
-	public static pxnClock getClock() {
-		if(clock == null) {
-			clock = new pxnClock();
-			clock.update(false);
-		}
-		return clock;
-	}
-	public static void setClock(pxnClock clock) {
-		pxnUtils.clock = clock;
-	}
 
 
 	// add lib to paths
@@ -115,6 +100,7 @@ public class pxnUtils {
 
 
 	// sleep thread
+//TODO: add TimeUnit variant
 	public static void Sleep(long millis) {
 		try {
 			Thread.sleep(millis);
@@ -194,6 +180,10 @@ public class pxnUtils {
 	    for(Object o: c)
 	    	result.add(clss.cast(o));
 	    return result;
+	}
+	@SuppressWarnings("unchecked")
+	public static <T> List<T> castList(Class<? extends T> clss, Object object) {
+		return castList(clss, (Collection<T>) object);
 	}
 
 

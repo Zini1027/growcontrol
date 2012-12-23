@@ -6,9 +6,12 @@ import java.util.List;
 import java.util.UUID;
 
 import com.growcontrol.gcServer.gcServer;
+import com.growcontrol.gcServer.logger.gcLogger;
 
 
 public class gcSchedulerManager {
+
+	private final gcLogger log = gcServer.getLogger();
 
 //	protected Timer timerSingleThread = new Timer();
 
@@ -38,7 +41,7 @@ public class gcSchedulerManager {
 	private gcSchedulerManager(String schedulerName) {
 		if(schedulerName == null) throw new NullPointerException("schedulerName cannot be null");
 		this.schedulerName = schedulerName;
-		gcServer.log.debug("New scheduler created: "+schedulerName);
+		log.debug("New scheduler created: "+schedulerName);
 	}
 
 
@@ -47,7 +50,7 @@ public class gcSchedulerManager {
 		if(task == null) throw new NullPointerException("task cannot be null");
 		synchronized(tasks) {
 			this.tasks.add(task);
-			gcServer.log.debug("Created new task: "+task.getTaskName());
+			log.debug("Created new task: "+task.getTaskName());
 		}
 	}
 

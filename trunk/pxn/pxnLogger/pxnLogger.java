@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 
+import jline.ConsoleReader;
 import jline.History;
 
 import org.fusesource.jansi.Ansi;
@@ -27,7 +28,7 @@ public class pxnLogger implements pxnLoggerInterface {
 	protected static boolean consoleEnabled = true;
 	public static final String defaultPrompt = ">";
 	// jLine reader
-	protected static jline.ConsoleReader reader = null;
+	protected static ConsoleReader reader = null;
 	// jAnsi
 	protected static PrintWriter out = new PrintWriter(AnsiConsole.out);
 
@@ -70,7 +71,7 @@ public class pxnLogger implements pxnLoggerInterface {
 		// jline reader
 		if(consoleEnabled && reader == null) {
 			try {
-				reader = new jline.ConsoleReader();
+				reader = new ConsoleReader();
 				reader.setBellEnabled(false);
 				reader.setUseHistory(true);
 				reader.setDefaultPrompt(defaultPrompt);
@@ -152,6 +153,12 @@ public class pxnLogger implements pxnLoggerInterface {
 		if(handler == null) throw new NullPointerException(handlerName+" (can't set log level, handler not found!)");
 		handler.setLevel(level);
 	}
+	// force debug mode
+	public static void setForceDebug(String handlerName, boolean forceDebug) {
+		pxnLoggerHandlerInterface handler = getLogHandler(handlerName);
+		if(handler == null) throw new NullPointerException(handlerName+" (can't set log level, handler not found!)");
+		handler.setForceDebug(forceDebug);
+	}
 
 
 	// log handlers
@@ -189,6 +196,10 @@ public class pxnLogger implements pxnLoggerInterface {
 	@Override
 	public synchronized void printRaw(pxnLogRecord logRecord) {
 		if(logRecord == null) throw new NullPointerException("logRecord cannot be null");
+		if(logHandlers.size() == 0) {
+			System.out.println(logRecord.toString());
+			return;
+		}
 		for(pxnLoggerHandlerInterface handler : logHandlers.values())
 			handler.print(logRecord);
 	}

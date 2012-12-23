@@ -12,5 +12,6 @@ public interface pxnLoggerHandlerInterface {
 	// log level
 	public pxnLevel getLevel();
 	public void setLevel(LEVEL level);
+	public void setForceDebug(boolean forceDebug);
 
 }
