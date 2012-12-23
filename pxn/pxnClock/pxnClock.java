@@ -12,7 +12,9 @@ import java.util.Date;
 import com.poixson.pxnLogger.pxnLogger;
 
 
-public class pxnClock extends Thread {
+public class pxnClock {
+//TODO: this needs to be made thread safe!
+//need to block or throw exception if time-server query hasn't finished
 
 	protected boolean enabled  = true;
 	protected String timeServer = "pool.ntp.org";
@@ -22,6 +24,7 @@ public class pxnClock extends Thread {
 
 	// instance lock
 	protected final Object threadLock = new Object();
+	protected Thread updateThread = null;
 
 
 	// logger
@@ -31,6 +34,23 @@ public class pxnClock extends Thread {
 	}
 	public pxnClock() {
 		log = pxnLogger.getLogger();
+	}
+
+
+	// get static clock
+	protected static pxnClock clock = null;
+	public static pxnClock getClock() {
+		return getClock(false);
+	}
+	public static pxnClock getClock(boolean threaded) {
+		if(pxnClock.clock == null) {
+			pxnClock.clock = new pxnClock();
+			pxnClock.clock.update(threaded);
+		}
+		return pxnClock.clock;
+	}
+	protected static void setClock(pxnClock clock) {
+		pxnClock.clock = clock;
 	}
 
 
@@ -58,23 +78,34 @@ public class pxnClock extends Thread {
 	}
 	public synchronized void update(boolean threaded) {
 		if(!enabled) return;
-		// still running
-		if(this.isAlive()) return;
 		double time = System.currentTimeMillis();
-		if(lastChecked!=0.0 && (time-lastChecked)/1000.0 < 60.0) return;
+		if(lastChecked != 0.0 && ((time-lastChecked)/1000.0) < 60.0) return;
 		lastChecked = time;
+		// run threaded
 		if(threaded) {
-			// run threaded
-			this.start();
+			if(updateThread == null) {
+				updateThread = new Thread() {
+					@Override
+					public void run() {
+						doUpdate();
+					}
+				};
+			} else {
+				// already running
+				if(updateThread.isAlive()) return;
+			}
+			// start thread
+			updateThread.start();
+			return;
 		} else {
 			// run blocking
-			run();
+			doUpdate();
 		}
 	}
 
 
 	// run time query
-	public void run() {
+	protected void doUpdate() {
 		if(!enabled) return;
 		synchronized(threadLock) {
 			try {

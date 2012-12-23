@@ -49,7 +49,7 @@ public class gcServerPluginManager extends pxnPluginManager {
 //		return commandListenerGroup;
 //	}
 	public boolean triggerEvent(gcServerEventCommand event) {
-		gcServer.log.debug("Triggering event: "+event.getLine().getFirst());
+		gcServer.getLogger().debug("Triggering event: "+event.getLine().getFirst());
 		for(EventPriority priority : EventPriority.values()) {
 			if(commandListenerGroup.triggerEvent(event, priority))
 				event.setHandled();

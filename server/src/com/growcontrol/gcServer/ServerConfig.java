@@ -1,6 +1,6 @@
 package com.growcontrol.gcServer;
 
-import java.util.List;
+import java.util.Collection;
 
 import com.poixson.pxnUtils;
 import com.poixson.pxnConfig.pxnConfig;
@@ -21,7 +21,7 @@ public class ServerConfig {
 		try {
 			config = pxnConfig.loadFile(configsPath, "config.yml");
 		} catch (Exception e) {
-			gcServer.log.exception(e);
+			gcServer.getLogger().exception(e);
 		}
 	}
 
@@ -61,14 +61,16 @@ public class ServerConfig {
 
 
 	// zones (rooms)
-	public List<String> getZones() {
-		if(config == null) return null;
+	public void getZones(Collection<String> zones) {
+		if(config == null) return;
+		if(zones  == null) throw new NullPointerException("zones list can't be null!");
 		try {
-			@SuppressWarnings("unchecked")
-			List<String> zones = (List<String>) config.get("zones");
-			return zones;
+			zones.addAll(config.getStringList("Zones"));
+//			zones.addAll( pxnUtils.castList(String.class, config.get("Zones")) );
+//			zones.addAll((Collection<? extends String>) config.get("Zones"));
 		} catch(Exception ignore) {
-			return null;
+ignore.printStackTrace();
+			return;
 		}
 	}
 

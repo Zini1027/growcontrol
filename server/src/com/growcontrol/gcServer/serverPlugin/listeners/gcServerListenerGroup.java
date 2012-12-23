@@ -20,7 +20,7 @@ public class gcServerListenerGroup extends pxnListenerGroup {
 	public void registerCommandListener(gcServerListenerCommand listener) {
 		if(listener == null) throw new NullPointerException("listener cannot be null");
 		TypeMustEqual(listenerType, listener);
-gcServer.log.debug("Registered listener");
+gcServer.getLogger().debug("Registered listener: "+listener.toString());
 		listeners.add(listener);
 	}
 
@@ -28,7 +28,7 @@ gcServer.log.debug("Registered listener");
 	// listener type equals
 	public static void TypeMustEqual(ListenerType listenerType, gcServerListener listener) {
 		if(!TypeEquals(listenerType, listener)) {
-			gcServer.log.severe("Invalid listener type!");
+			gcServer.getLogger().severe("Invalid listener type!");
 //TODO: throw an exception!
 throw new NullPointerException("Invalid listener type");
 		}

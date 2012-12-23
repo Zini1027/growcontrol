@@ -22,6 +22,7 @@ public class pxnSocketWorkerSender extends Thread {
 
 
 	public pxnSocketWorkerSender(pxnSocketWorker worker, Socket socket, BlockingQueue<String> queueOut) {
+		super("Socket-Sender-"+Integer.toString(worker.socketId));
 		this.worker = worker;
 		this.socket = socket;
 		try {

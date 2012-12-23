@@ -17,6 +17,7 @@ public class pxnSocketWorkerReader extends Thread {
 
 
 	public pxnSocketWorkerReader(pxnSocketWorker worker, Socket socket, BlockingQueue<String> queueIn) {
+		super("Socket-Reader-"+Integer.toString(worker.socketId));
 		this.worker = worker;
 		try {
 			in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));

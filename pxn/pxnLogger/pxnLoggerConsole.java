@@ -64,6 +64,11 @@ public class pxnLoggerConsole implements pxnLoggerHandlerInterface {
 throw new NullPointerException("NOT FINISHED!");
 //		return null;
 	}
+	// force debug mode
+	@Override
+	public void setForceDebug(boolean forceDebug) {
+		this.level.setForceDebug(forceDebug);
+	}
 
 
 }

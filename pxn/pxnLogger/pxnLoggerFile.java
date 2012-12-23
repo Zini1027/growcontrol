@@ -20,10 +20,11 @@ public class pxnLoggerFile extends Thread implements pxnLoggerHandlerInterface {
 	public pxnLevel getLevel() {
 		return null;
 	}
-
-
 	@Override
 	public void setLevel(LEVEL level) {
+	}
+	@Override
+	public void setForceDebug(boolean forceDebug) {
 	}
 
 

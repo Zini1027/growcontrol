@@ -34,13 +34,12 @@ public abstract class pxnSocketProcessorThreaded implements pxnSocketProcessor {
 		this.queueIn  = queueIn;
 		this.queueOut = queueOut;
 		// processing thread
-		procThread = new Thread() {
+		procThread = new Thread("Socket-Processor-"+Integer.toString(pxnSocketWorker.getNextId())) {
 			@Override
 			public void run() {
 				doProcessorThread();
 			}
 		};
-		procThread.setName("Socket-Processor-"+Integer.toString(pxnSocketWorker.getNextId()) );
 		// start processing thread
 		procThread.start();
 	}
