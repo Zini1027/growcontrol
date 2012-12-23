@@ -29,7 +29,7 @@ public class pxnSocketWorkerSender extends Thread {
 			out = new PrintWriter(socket.getOutputStream());
 			out.flush();
 		} catch (IOException e) {
-			pxnLogger.log().exception(e);
+			pxnLogger.getLogger().exception(e);
 		}
 		this.queueOut = queueOut;
 	}
@@ -50,7 +50,7 @@ public class pxnSocketWorkerSender extends Thread {
 					out.flush();
 				}
 			} catch (InterruptedException e) {
-				pxnLogger.log().exception(e);
+				pxnLogger.getLogger().exception(e);
 			}
 		}
 	}
@@ -58,7 +58,7 @@ public class pxnSocketWorkerSender extends Thread {
 
 	// send file
 	public void sendFileNow(String fileName) {
-		pxnLogger.log().info("Sending file: "+fileName);
+		pxnLogger.getLogger().info("Sending file: "+fileName);
 		File file = new File(fileName);
 		final int bufferSize = 1000;
 		byte[] buffer = new byte[bufferSize];
@@ -92,9 +92,9 @@ System.out.println("Finished [ "+Long.toString(bytesSent)+" ] bytes!");
 			fileStream = null;
 			file = null;
 		} catch (FileNotFoundException e) {
-			pxnLogger.log().exception(e);
+			pxnLogger.getLogger().exception(e);
 		} catch (IOException e) {
-			pxnLogger.log().exception(e);
+			pxnLogger.getLogger().exception(e);
 		}
 	}
 

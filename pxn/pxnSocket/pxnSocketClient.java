@@ -28,13 +28,13 @@ public class pxnSocketClient implements pxnSocket {
 		this.host = host;
 		// port
 		if(port < 1 || port > 65536) {
-			pxnLogger.log().severe("Invalid port "+Integer.toString(port)+" is not valid! Out of range!");
+			pxnLogger.getLogger().severe("Invalid port "+Integer.toString(port)+" is not valid! Out of range!");
 			throw new IllegalArgumentException("Invalid port "+Integer.toString(port));
 		}
 		this.port = port;
 		// start connecting
 		try {
-			pxnLogger.log().info("Connecting to: "+host+":"+Integer.toString(port));
+			pxnLogger.getLogger().info("Connecting to: "+host+":"+Integer.toString(port));
 			socket = new Socket(host, port);
 			worker = new pxnSocketWorker(socket, processor);
 //		} catch(UnknownHostException e) {
@@ -52,8 +52,8 @@ public class pxnSocketClient implements pxnSocket {
 //			gcClient.setConnectState(ConnectState.CLOSED);
 //			return;
 		} catch (IOException e) {
-			pxnLogger.log().severe("Failed to connect to: "+host+":"+Integer.toString(port));
-			pxnLogger.log().exception(e);
+			pxnLogger.getLogger().severe("Failed to connect to: "+host+":"+Integer.toString(port));
+			pxnLogger.getLogger().exception(e);
 //JOptionPane.showMessageDialog(null, e.getMessage(), "Connection failed!", JOptionPane.ERROR_MESSAGE);
 //gcClient.setConnectState(ConnectState.CLOSED);
 			return;

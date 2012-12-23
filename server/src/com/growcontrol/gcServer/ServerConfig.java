@@ -2,6 +2,7 @@ package com.growcontrol.gcServer;
 
 import java.util.Collection;
 
+import com.growcontrol.gcServer.logger.gcLogger;
 import com.poixson.pxnUtils;
 import com.poixson.pxnConfig.pxnConfig;
 
@@ -69,7 +70,7 @@ public class ServerConfig {
 //			zones.addAll( pxnUtils.castList(String.class, config.get("Zones")) );
 //			zones.addAll((Collection<? extends String>) config.get("Zones"));
 		} catch(Exception ignore) {
-ignore.printStackTrace();
+			gcLogger.getLogger().debug(ignore);
 			return;
 		}
 	}

@@ -16,7 +16,7 @@ public class pxnListenerGroup {
 	// register listener
 	public void register(pxnListener listener) {
 		if(listener == null) throw new NullPointerException("listener cannot be null!");
-pxnLogger.log().debug("Registered listener: "+listener.toString());
+pxnLogger.getLogger().debug("Registered listener: "+listener.toString());
 		synchronized(listeners) {
 			listeners.add(listener);
 		}

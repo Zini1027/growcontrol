@@ -38,7 +38,7 @@ public class pxnLevel {
 		if(level == null) throw new NullPointerException("level cannot be null!");
 		this.level = level;
 //		System.out.println("Set log level to: "+levelToString(level));
-		pxnLogger.log().debug("Set log level to: "+levelToString(level));
+		pxnLogger.getLogger().debug("Set log level to: "+levelToString(level));
 	}
 	// get log level
 	public LEVEL getLevel() {

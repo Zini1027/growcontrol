@@ -55,7 +55,7 @@ public abstract class pxnSocketProcessorThreaded implements pxnSocketProcessor {
 				String line = queueIn.take();
 				processNow(new pxnParser(line));
 			} catch (InterruptedException e) {
-				pxnLogger.log().exception(e);
+				pxnLogger.getLogger().exception(e);
 			}
 			// processed count
 			count++;
