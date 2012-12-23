@@ -50,6 +50,7 @@ public class Main {
 				consoleEnabled = false;
 			// debug mode
 			} else if(arg.equalsIgnoreCase("debug")) {
+				forceDebug = true;
 				gcLogger.setForceDebug("console", true);
 //				forceDebug = true;
 //				try {
