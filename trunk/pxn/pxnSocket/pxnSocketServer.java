@@ -42,17 +42,17 @@ public class pxnSocketServer implements pxnSocket {
 		}
 		// port
 		if(port < 1 || port > 65536) {
-			pxnLogger.log().severe("Invalid port "+Integer.toString(port)+" is not valid! Out of range!");
+			pxnLogger.getLogger().severe("Invalid port "+Integer.toString(port)+" is not valid! Out of range!");
 			throw new IllegalArgumentException("Invalid port "+Integer.toString(port));
 		}
 		this.port = port;
 		// start listening
 		try {
 			listenerSocket = new ServerSocket(port, 8);
-			pxnLogger.log().info("Listening on port: "+Integer.toString(port));
+			pxnLogger.getLogger().info("Listening on port: "+Integer.toString(port));
 		} catch (IOException e) {
-			pxnLogger.log().severe("Failed to listen on port: "+Integer.toString(port));
-			pxnLogger.log().exception(e);
+			pxnLogger.getLogger().severe("Failed to listen on port: "+Integer.toString(port));
+			pxnLogger.getLogger().exception(e);
 			return;
 		}
 		// socket listener thread
@@ -77,9 +77,9 @@ public class pxnSocketServer implements pxnSocket {
 				// wait for a connection
 				socket = listenerSocket.accept();
 			} catch (SocketException ignore) {
-pxnLogger.log().exception(ignore);
+pxnLogger.getLogger().exception(ignore);
 			} catch (IOException e) {
-				pxnLogger.log().exception(e);
+				pxnLogger.getLogger().exception(e);
 			}
 //			// closing sockets
 //			if(stopping) {
@@ -100,7 +100,7 @@ pxnLogger.log().exception(ignore);
 		for(Iterator<pxnSocketWorker> it = socketWorkers.iterator(); it.hasNext();)
 			if(it.next().isClosed())
 				it.remove();
-		pxnLogger.log().debug("Sockets loaded: "+Integer.toString(socketWorkers.size()));
+		pxnLogger.getLogger().debug("Sockets loaded: "+Integer.toString(socketWorkers.size()));
 	}
 
 

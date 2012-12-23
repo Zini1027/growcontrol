@@ -14,7 +14,7 @@ import org.fusesource.jansi.AnsiConsole;
 import com.poixson.pxnLogger.pxnLevel.LEVEL;
 
 
-public class pxnLogger implements pxnLoggerInterface {
+public class pxnLogger implements pxnLoggerInterface, pxnLogPrinter {
 
 	protected static Boolean inited = false;
 
@@ -45,9 +45,6 @@ public class pxnLogger implements pxnLoggerInterface {
 			loggers.put(loggerName, log);
 			return log;
 		}
-	}
-	public static pxnLogger log() {
-		return getLogger(null);
 	}
 	// new logger
 	protected pxnLogger() {
@@ -120,7 +117,7 @@ public class pxnLogger implements pxnLoggerInterface {
 		reader.redrawLine();
 		reader.flushConsole();
 	}
-	public static jline.ConsoleReader getReader() {
+	public static ConsoleReader getReader() {
 		return reader;
 	}
 
@@ -256,6 +253,11 @@ public class pxnLogger implements pxnLoggerInterface {
 //			throwable.printStackTrace(new PrintWriter(stringwriter));
 //			stringbuilder.append(stringwriter.toString());
 //		}
+	}
+	@Override
+	public void debug(Throwable e) {
+//TODO: only throw exception if in debug mode
+		exception(e);
 	}
 
 

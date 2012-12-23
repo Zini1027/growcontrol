@@ -22,7 +22,7 @@ public class pxnSocketWorkerReader extends Thread {
 		try {
 			in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		} catch (IOException e) {
-			pxnLogger.log().exception(e);
+			pxnLogger.getLogger().exception(e);
 		}
 	}
 
@@ -30,17 +30,17 @@ public class pxnSocketWorkerReader extends Thread {
 	// reader thread
 	@Override
 	public void run() {
-		pxnLogger.log().info("Connected: "+worker.getIPString());
+		pxnLogger.getLogger().info("Connected: "+worker.getIPString());
 		String line = "";
 		while(!worker.closed) {
 			try {
 				line = in.readLine();
 			} catch (SocketException ignore) {
-pxnLogger.log().exception(ignore);
+pxnLogger.getLogger().exception(ignore);
 				break;
 			} catch (IOException e) {
 				e.printStackTrace();
-				pxnLogger.log().exception(e);
+				pxnLogger.getLogger().exception(e);
 				break;
 			}
 			if(line == null) break;

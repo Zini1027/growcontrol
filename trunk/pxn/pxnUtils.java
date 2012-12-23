@@ -29,7 +29,7 @@ public class pxnUtils {
 		// get current paths
 		String currentPaths = System.getProperty("java.library.path");
 		if(currentPaths == null) return;
-		pxnLogger.log().debug("Adding lib path: "+libDir);
+		pxnLogger.getLogger().debug("Adding lib path: "+libDir);
 		// set library paths
 		if(currentPaths.isEmpty()) {
 			System.setProperty("java.library.path", libPath);
@@ -44,13 +44,13 @@ public class pxnUtils {
 			fieldSysPath.setAccessible(true);
 			fieldSysPath.set(null, null);
 		} catch (SecurityException e) {
-			pxnLogger.log().exception(e);
+			pxnLogger.getLogger().exception(e);
 		} catch (NoSuchFieldException e) {
-			pxnLogger.log().exception(e);
+			pxnLogger.getLogger().exception(e);
 		} catch (IllegalArgumentException e) {
-			pxnLogger.log().exception(e);
+			pxnLogger.getLogger().exception(e);
 		} catch (IllegalAccessException e) {
-			pxnLogger.log().exception(e);
+			pxnLogger.getLogger().exception(e);
 		}
 	}
 
@@ -72,16 +72,16 @@ public class pxnUtils {
 							randomAccessFile.close();
 							file.delete();
 						} catch (Exception e) {
-							pxnLogger.log().severe("Unable to remove lock file: "+lockFile);
-							pxnLogger.log().exception(e);
+							pxnLogger.getLogger().severe("Unable to remove lock file: "+lockFile);
+							pxnLogger.getLogger().exception(e);
 						}
 					}
 				});
 				return true;
 			}
 		} catch (Exception e) {
-			pxnLogger.log().severe("Unable to create and/or lock file: "+lockFile);
-			pxnLogger.log().exception(e);
+			pxnLogger.getLogger().severe("Unable to create and/or lock file: "+lockFile);
+			pxnLogger.getLogger().exception(e);
 		}
 		return false;
 	}
@@ -91,9 +91,9 @@ public class pxnUtils {
 		try {
 			pid = Integer.parseInt( ( new File("/proc/self")).getCanonicalFile().getName() );
 		} catch (NumberFormatException e) {
-			pxnLogger.log().exception(e);
+			pxnLogger.getLogger().exception(e);
 		} catch (IOException e) {
-			pxnLogger.log().exception(e);
+			pxnLogger.getLogger().exception(e);
 		}
 		return pid;
 	}
@@ -105,7 +105,7 @@ public class pxnUtils {
 		try {
 			Thread.sleep(millis);
 		} catch (InterruptedException e) {
-			pxnLogger.log().exception(e);
+			pxnLogger.getLogger().exception(e);
 		}
 	}
 	// current time ms
