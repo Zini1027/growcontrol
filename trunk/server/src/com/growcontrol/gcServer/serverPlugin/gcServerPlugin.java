@@ -11,7 +11,7 @@ public abstract class gcServerPlugin extends pxnPlugin {
 	// get plugin manager
 	@Override
 	public gcServerPluginManager getPluginManager() {
-		return (gcServerPluginManager) this.pluginManager;
+		return (gcServerPluginManager) this.getPluginManager();
 	}
 
 

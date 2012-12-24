@@ -5,12 +5,6 @@ import com.poixson.pxnLogger.pxnLogger;
 
 public abstract class pxnPlugin {
 
-	// plugin is enabled
-	protected boolean enabled = false;
-
-	// plugin manager
-	protected pxnPluginManager pluginManager;
-
 
 	// load/unload plugin
 	public abstract String getPluginName();
@@ -19,12 +13,17 @@ public abstract class pxnPlugin {
 
 
 	// plugin is enabled
+	private boolean enabled = false;
+	protected void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 	public boolean isEnabled() {
 		return enabled;
 	}
 
 
 	// plugin manager
+	private pxnPluginManager pluginManager;
 	public pxnPluginManager getPluginManager() {
 		return pluginManager;
 	}
