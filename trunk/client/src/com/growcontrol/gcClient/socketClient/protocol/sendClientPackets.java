@@ -7,6 +7,7 @@ public class sendClientPackets {
 
 
 	// HELLO <client-version> [<username> [<password>]]
+	// (login packet)
 	public static void sendHELLO(pxnSocketProcessor processor, String clientVersion) {
 		sendHELLO(processor, clientVersion, null, null);
 	}
@@ -20,6 +21,15 @@ public class sendClientPackets {
 			}
 		}
 		processor.sendData(packet);
+	}
+
+
+	// LIST plugins client
+	// (client plugins request)
+	public static void sendLIST(pxnSocketProcessor processor, String args) {
+		if(args == null) throw new NullPointerException("LIST args can't be null!");
+		if(args.isEmpty()) throw new IllegalArgumentException("LIST args can't be empty!");
+		processor.sendData("LIST "+args);
 	}
 
 
