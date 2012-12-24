@@ -1,5 +1,6 @@
 package com.growcontrol.gcClient.socketClient.packets;
 
+
 public class clientPacket {
 
 	public String packetString = null;
