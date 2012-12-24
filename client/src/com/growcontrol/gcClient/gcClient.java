@@ -1,66 +1,114 @@
 package com.growcontrol.gcClient;
 
-import java.io.File;
-
-import javax.swing.ImageIcon;
-
 import com.growcontrol.gcClient.ConnectState.gcConnectState;
 import com.growcontrol.gcClient.clientPlugin.gcClientPluginManager;
-import com.growcontrol.gcClient.frames.DashboardHandler;
-import com.growcontrol.gcClient.frames.LoginHandler;
+import com.poixson.pxnUtils;
 import com.poixson.pxnSocket.pxnSocketClient;
 
 
 public class gcClient {
 	public static final String version = "3.0.3";
-	public static gcClient client = null;
-	private static boolean stopping = false;
-	public static pxnSocketClient socket = null;
+//	public static final String defaultPrompt = ">";
+
+//	private boolean stopping = false;
+
+//	// logger
+//	private final gcLogger log;
+//	private Thread consoleInputThread = null;
 
 	// client plugin manager
-	public static final gcClientPluginManager pluginManager = new gcClientPluginManager();
+	private final gcClientPluginManager pluginManager = new gcClientPluginManager();
 
+//	// config files
+//	private ClientConfig config = null;
+//	protected String configsPath = null;
+
+//	// clock
+//	private pxnClock clock = null;
+
+	// client socket
+	private pxnSocketClient socket = null;
 	// client connection state
-	protected static final gcConnectState state = new gcConnectState();
+	private final gcConnectState state = new gcConnectState();
 
-	// frame handlers (windows)
-	protected LoginHandler loginWindow = null;
-	protected DashboardHandler dashboardWindow = null;
+//	// zones
+//	private List<String> zones = null;
 
-
-	public static void main(String[] args) {
-		if(client != null) throw new UnsupportedOperationException("Cannot redefine singleton gcClient; already running");
-//		pluginManager.setMainClassYmlName("Client Main");
-		// process args
-		for(String arg : args) {
-			// version
-			if(arg.equalsIgnoreCase("version")) {
-				System.out.println("GrowControl "+version+" Client");
-				System.exit(0);
-			}
-		}
-//			// debug mode
-//			} else if(arg.equalsIgnoreCase("debug")) {
-//				gcLogger.setLevel("console", pxnLevel.LEVEL.DEBUG);
-//				gcLogger.setLevel("file",    pxnLevel.LEVEL.DEBUG);
-//			// configs path
-//			} else if(arg.startsWith("configspath=")) {
-//				configsPath = arg.substring(12);
-//				log.debug("Set configs path to: "+configsPath);
-//			// plugins path
-//			} else if(arg.startsWith("pluginspath=")) {
-//				pluginManager.setPath(arg.substring(12));
-//				log.debug("Set plugins path to: "+pluginManager.getPath());
-//			}
-		// start gc client gui
-		client = new gcClient();
-	}
+//	// frame handlers (windows)
+//	private LoginHandler loginWindow = null;
+//	private DashboardHandler dashboardWindow = null;
 
 
 	// wait for connection state change
 	public gcClient() {
-		// start jline console
+//		log = Main.getLogger();
+	}
+
+
+	// init client gui
+	public void Start() {
+		// single instance lock
+		pxnUtils.lockInstance("gcClient.lock");
+//		if(!Main.isConsoleEnabled()) {
+//			System.out.println("Console input is disabled due to noconsole command argument.");
+//		} else {
+//			AnsiConsole.systemInstall();
+//			ASCIIHeader();
+//		}
+//		log.printRaw("[[ Starting GC Client ]]");
+//		log.info("GrowControl "+version+" Client is starting..");
+		pxnUtils.addLibraryPath("lib");
+
+//		// load configs
+//		config = new ClientConfig(configsPath);
+//		if(config==null || config.config==null) {
+//			log.severe("Failed to load config.yml");
+//			System.exit(1);
+//		}
+
+//		// set log level
+//		String logLevel = config.getLogLevel();
+//		if(logLevel != null && !logLevel.isEmpty()) {
+//			if(Main.isConsoleEnabled())
+//				gcLogger.setLevel("console", logLevel);
+//			gcLogger.setLevel("file",    logLevel);
+//		}
+
+		// command listener
 		pluginManager.registerCommandListener(new ClientCommands());
+//		// start console input thread
+//		if(Main.isConsoleEnabled()) {
+//			consoleInputThread = new Thread() {
+//				@Override
+//				public void run() {
+//					StartConsole();
+//				}
+//			};
+//			consoleInputThread.start();
+//		}
+
+//		// query time server
+//		if(clock == null)
+//			clock = pxnUtils.getClock();
+
+//TODO: remove this - will load from server
+//		// zones
+//		if(zones == null) zones = new ArrayList<String>();
+//		synchronized(zones) {
+//			config.getZones(zones);
+//			log.info("Loaded [ "+Integer.toString(zones.size())+" ] zones.");
+//		}
+
+//TODO: remove this - probably don't need it
+//		// load scheduler (paused)
+//		scheduler = gcSchedulerManager.getScheduler("gcClient");
+//		// load ticker
+//		ticker = new gcTicker();
+
+//TODO: remove this - probably don't need it
+//		// start schedulers
+//		log.info("Starting schedulers..");
+//		gcSchedulerManager.StartAll();
 
 		// load plugins
 		try {
@@ -69,9 +117,9 @@ public class gcClient {
 		} catch (Exception e) {
 //			log.exception(e);
 //			Shutdown();
+//			return;
 e.printStackTrace();
 System.exit(1);
-			return;
 		}
 
 		// show connect window
@@ -79,37 +127,47 @@ System.exit(1);
 //		// connect to server
 //		conn = new connection("192.168.3.3", 1142);
 //		conn.sendPacket(clientPacket.sendHELLO(version, "lorenzo", "pass"));
+
+//		log.printRaw("[[ GC Client Running! ]]");
 	}
 
 
-	public static boolean isStopping() {
-		return stopping;
+//	public void Shutdown() {
+//	}
+//	public boolean isStopping() {
+//		return stopping;
+//	}
+
+
+//	// get main logger
+//	public static gcLogger getLogger() {
+//		return Main.getLogger();
+//	}
+
+
+	// get plugin manager
+	public gcClientPluginManager getPluginManager() {
+		return pluginManager;
+	}
+
+
+	// get client socket
+	public pxnSocketClient getSocket() {
+		return socket;
+	}
+	public void setSocket(pxnSocketClient socket) {
+		if(socket == null) throw new NullPointerException("socket can't be null!");
+		if(this.socket != null) {
+			this.socket.close();
+			this.socket = null;
+		}
+		this.socket = socket;
 	}
 
 
 	// get connect state manager
-	public static gcConnectState getConnectState() {
+	public gcConnectState getConnectState() {
 		return state;
-	}
-
-
-	// load image file/resource
-	public static ImageIcon loadImageResource(String path) {
-		ImageIcon image = null;
-		File file = new File(path);
-		// open file
-		if(file.exists()) {
-			try {
-				image = new ImageIcon(path);
-			} catch(Exception ignore) {}
-		}
-		// open resource
-		if(image == null) {
-			try {
-				image = new ImageIcon(client.getClass().getResource(path));
-			} catch(Exception ignore) {}
-		}
-		return image;
 	}
 
 

@@ -1,9 +1,12 @@
 package com.growcontrol.gcClient.ConnectState;
 
-import com.growcontrol.gcClient.gcClient;
+import javax.swing.JFrame;
+
+import com.growcontrol.gcClient.Main;
 import com.growcontrol.gcClient.frames.DashboardHandler;
-import com.growcontrol.gcClient.frames.LoginFrame;
+import com.growcontrol.gcClient.frames.LoginFrame.LoginWindows;
 import com.growcontrol.gcClient.frames.LoginHandler;
+import com.poixson.pxnSocket.pxnSocketClient;
 
 
 public class gcConnectState extends ConnectState {
@@ -17,47 +20,69 @@ public class gcConnectState extends ConnectState {
 
 	@Override
 	protected void doChangedState(State lastState) {
+		// preload login window
+		if(state.equals(State.CLOSED)
+		|| state.equals(State.CONNECTING)
+		|| state.equals(State.CONNECTED) ) {
+			if(loginWindow == null)
+				loginWindow = new LoginHandler();
+			if(loginWindow == null) {
+System.out.println("Failed to load login window!");
+				return;
+			}
+		} else
+		// preload dashboard window
+		if(state.equals(State.READY)) {
+			if(dashboardWindow == null)
+				dashboardWindow = new DashboardHandler();
+			if(dashboardWindow == null) {
+System.out.println("Failed to load login window!");
+				return;
+			}
+		}
+
 		switch(state) {
 		case CLOSED:
-			// load login window
-			if(loginWindow == null) loginWindow = new LoginHandler();
-			if(loginWindow == null)
-System.exit(1);
+System.out.println("state: CLOSED");
 			// display login card
-			loginWindow.setDisplay(LoginFrame.LOGIN_WINDOW_NAME);
+			loginWindow.setDisplay(LoginWindows.LOGIN);
 			// close socket
-			if(gcClient.socket != null) {
-				gcClient.socket.close();
-				gcClient.socket = null;
+			pxnSocketClient socket = Main.getSocket();
+			if(socket != null) {
+				socket.close();
+				socket = null;
 			}
 			break;
 		case CONNECTING:
-			// load login window
-			if(loginWindow == null) loginWindow = new LoginHandler();
-			if(loginWindow == null)
-System.exit(1);
+System.out.println("state: CONNECTING");
 			// display connecting card
-			loginWindow.setDisplay(LoginFrame.CONNECTING_WINDOW_NAME);
+			loginWindow.setDisplay(LoginWindows.CONNECTING);
 			break;
 		case CONNECTED:
-			// load login window
-			if(loginWindow == null) loginWindow = new LoginHandler();
-			if(loginWindow == null)
-System.exit(1);
+System.out.println("state: CONNECTED");
 			// display connecting card
-			loginWindow.setDisplay(LoginFrame.CONNECTING_WINDOW_NAME);
+			loginWindow.setDisplay(LoginWindows.CONNECTING);
 			break;
 		case READY:
+System.out.println("state: READY");
 			if(loginWindow != null) {
 				loginWindow.close();
 				loginWindow = null;
 			}
-			// load dashboard window
-			if(dashboardWindow == null) dashboardWindow = new DashboardHandler();
-			if(dashboardWindow == null)
-System.exit(1);
+			// display dashboard window
+//			dashboardWindow.show();
 			break;
 		}
+	}
+
+
+	// get window frame
+	public JFrame getFrame(String frameName) {
+		if(frameName.equals("login"))
+			return loginWindow.getFrame();
+		if(frameName.equals("dashboard"))
+			return dashboardWindow.getFrame();
+		return null;
 	}
 
 
@@ -77,8 +102,7 @@ System.exit(1);
 
 	// connecting..
 	public void setStateConnecting() {
-		setConnectState(State.CONNECTING);
-		loginWindow.setMessage("Connecting..");
+		setStateConnecting("Connecting..");
 	}
 	public void setStateConnecting(String message) {
 		setConnectState(State.CONNECTING);
