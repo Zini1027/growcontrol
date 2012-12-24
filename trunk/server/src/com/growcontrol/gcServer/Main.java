@@ -21,6 +21,7 @@ public class Main {
 
 	// app startup
 	public static void main(String[] args) {
+		System.out.println();
 		if(server != null) throw new UnsupportedOperationException("Cannot redefine singleton gcServer; already running");
 		pxnLogger.addLogHandler(
 			"console",
@@ -40,16 +41,17 @@ public class Main {
 //			new pxnLoggerFile(
 //				new pxnLevel(pxnLevel.LEVEL.DEBUG)) );
 		// process args
-		for(String arg : args) {
+		for(int i=0; i<args.length; i++) {
+			String arg = args[i];
 			// version
 			if(arg.equalsIgnoreCase("version")) {
 				System.out.println("GrowControl "+gcServer.version+" Server");
 				System.exit(0);
 			// no console
-			} else if(arg.equalsIgnoreCase("noconsole")) {
+			} else if(arg.equalsIgnoreCase("--no-console")) {
 				consoleEnabled = false;
 			// debug mode
-			} else if(arg.equalsIgnoreCase("debug")) {
+			} else if(arg.equalsIgnoreCase("--debug")) {
 				forceDebug = true;
 				gcLogger.setForceDebug("console", true);
 //				forceDebug = true;
@@ -64,12 +66,20 @@ public class Main {
 //ignore.printStackTrace();
 //				}
 			// configs path
-			} else if(arg.startsWith("configspath=")) {
-				server.configsPath = arg.substring(12);
+			} else if(arg.equalsIgnoreCase("--configs-path")) {
+				i++; if(i <= args.length) {
+					System.out.println("Incomplete --configs-path argument!");
+					break;
+				}
+				server.configsPath = args[i];
 				System.out.println("Set configs path to: "+server.configsPath);
 			// plugins path
-			} else if(arg.startsWith("pluginspath=")) {
-				server.getPluginManager().setPath(arg.substring(12));
+			} else if(arg.equalsIgnoreCase("--plugins-path")) {
+				i++; if(i <= args.length) {
+					System.out.println("Incomplete --plugins-path argument!");
+					break;
+				}
+				server.getPluginManager().setPath(args[i]);
 				System.out.println("Set plugins path to: "+server.getPluginManager().getPath());
 			}
 		}
