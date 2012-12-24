@@ -3,7 +3,10 @@ package com.poixson.pxnSocket;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 
+import com.poixson.pxnUtils;
 import com.poixson.pxnLogger.pxnLogger;
 
 
@@ -18,7 +21,8 @@ public class pxnSocketClient implements pxnSocket {
 
 
 	// new socket client
-	public pxnSocketClient(String host, int port, pxnSocketProcessor processor) {
+	public pxnSocketClient(String host, int port, pxnSocketProcessor processor)
+			throws UnknownHostException, SocketTimeoutException, ConnectException, IOException {
 		// host
 		if(host == null || host.isEmpty()) throw new IllegalArgumentException("host can't be null!");
 		// trim http:// or other prefix
@@ -33,7 +37,7 @@ public class pxnSocketClient implements pxnSocket {
 		}
 		this.port = port;
 		// start connecting
-		try {
+//		try {
 			pxnLogger.getLogger().info("Connecting to: "+host+":"+Integer.toString(port));
 			socket = new Socket(host, port);
 			worker = new pxnSocketWorker(socket, processor);
@@ -48,19 +52,20 @@ public class pxnSocketClient implements pxnSocket {
 //			e.printStackTrace();
 //		} catch(ConnectException e) {
 //			// connection refused
-//			JOptionPane.showMessageDialog(null, e.getMessage(), "Connection failed!", JOptionPane.ERROR_MESSAGE);
+//JOptionPane.showMessageDialog(null, e.getMessage(), "Connection failed!", JOptionPane.ERROR_MESSAGE);
 //			gcClient.setConnectState(ConnectState.CLOSED);
+//			close();
 //			return;
-		} catch (IOException e) {
-			pxnLogger.getLogger().severe("Failed to connect to: "+host+":"+Integer.toString(port));
-			pxnLogger.getLogger().exception(e);
+//		} catch (IOException e) {
+//			pxnLogger.getLogger().severe("Failed to connect to: "+host+":"+Integer.toString(port));
+//			pxnLogger.getLogger().exception(e);
 //JOptionPane.showMessageDialog(null, e.getMessage(), "Connection failed!", JOptionPane.ERROR_MESSAGE);
 //gcClient.setConnectState(ConnectState.CLOSED);
-			return;
+//			close();
+//			return;
 //		} finally {
 //gcClient.setConnectState(ConnectState.READY);
-		}
-//socket.setSoTimeout(1000);
+//		}
 //TODO: remove this
 	}
 
@@ -86,8 +91,20 @@ public class pxnSocketClient implements pxnSocket {
 	}
 
 
-	public void sendData(String line) throws ConnectException {
-		if(worker == null) throw new NullPointerException("worker can't be null!");
+	public void sendData(String line) {
+		if(worker == null) {
+			// sleep 5 seconds max
+			for(int i=0; i<20; i++) {
+				pxnUtils.Sleep(250);
+				if(worker != null) break;
+			}
+			if(worker == null) {
+socket = null;
+//TODO: disconnect socket and queue a reconnect
+				return;
+//throw new NullPointerException("worker can't be null!");
+			}
+		}
 		worker.sendData(line);
 	}
 
@@ -99,7 +116,7 @@ public class pxnSocketClient implements pxnSocket {
 //			e.printStackTrace();
 //		}
 //TODO: when does this run?
-System.out.println("END");
+System.out.println("END - finalize()");
 	}
 
 
