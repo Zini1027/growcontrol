@@ -290,6 +290,12 @@ for(Thread t : threadSet) {
 	}
 
 
+	// get zones
+	public List<String> getZones() {
+		return zones;
+	}
+
+
 	// ascii header
 	private static void ASCIIHeader() {
 		AnsiConsole.out.println();
