@@ -31,7 +31,7 @@ public abstract class pxnSocketProcessorBlocking implements pxnSocketProcessor {
 	// submit packet for processing
 	@Override
 	public void processData(String line) {
-		processNow(new pxnParser(line));
+		processNow(this, new pxnParser(line));
 	}
 	@Override
 	public void sendData(String line) {

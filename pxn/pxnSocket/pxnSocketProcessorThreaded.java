@@ -9,7 +9,6 @@ import com.poixson.pxnParser.pxnParser;
 
 public abstract class pxnSocketProcessorThreaded implements pxnSocketProcessor {
 
-//TODO: queues should be moved to worker
 	// input/output queues
 	protected BlockingQueue<String> queueIn;
 	protected BlockingQueue<String> queueOut;
@@ -53,7 +52,7 @@ public abstract class pxnSocketProcessorThreaded implements pxnSocketProcessor {
 			try {
 				// submit packet for processing
 				String line = queueIn.take();
-				processNow(new pxnParser(line));
+				processNow(this, new pxnParser(line));
 			} catch (InterruptedException e) {
 				pxnLogger.getLogger().exception(e);
 			}
