@@ -1,7 +1,9 @@
 package com.growcontrol.gcServer.socketServer;
 
 import com.growcontrol.gcServer.gcServer;
+import com.growcontrol.gcServer.socketServer.protocol.sendServerPackets;
 import com.poixson.pxnParser.pxnParser;
+import com.poixson.pxnSocket.pxnSocketProcessor;
 import com.poixson.pxnSocket.pxnSocketProcessorThreaded;
 
 
@@ -15,13 +17,13 @@ public class gcSocketProcessor extends pxnSocketProcessorThreaded {
 
 
 	@Override
-	public void processNow(pxnParser line) {
+	public void processNow(pxnSocketProcessor processor, pxnParser line) {
 //System.out.println("PROCESSING: "+line.getOriginal());
 		String first = line.getFirst();
 		// HEY packet
 		if(first.equalsIgnoreCase("HELLO")) {
-			sendData("HEY");
-			gcServer.getLogger().severe("Got HELLO packet!");
+gcServer.getLogger().severe("Got HELLO packet!");
+			sendServerPackets.sendHEY(processor, gcServer.version);
 			return;
 		}
 		if(first.equalsIgnoreCase("FILE")) {
