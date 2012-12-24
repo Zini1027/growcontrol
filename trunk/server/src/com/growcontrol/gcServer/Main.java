@@ -95,10 +95,10 @@ public class Main {
 	}
 
 
-//	// get server
-//	public static gcServer getServer() {
-//		return server;
-//	}
+	// get server
+	public static gcServer getServer() {
+		return server;
+	}
 
 
 	// is console input enabled

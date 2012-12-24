@@ -78,6 +78,15 @@ public class pxnParser {
 		if(temp.isEmpty()) return false;
 		return true;
 	}
+	// get rest of string
+	public String getRest() {
+		return temp;
+//		String str = "";
+//		String part;
+//		while((part = getNext()) != null)
+//			str += part;
+//		return str;
+	}
 
 
 	// reset parsing string to original
