@@ -87,11 +87,11 @@ System.exit(0);
 		}
 
 		// set log level
-		if(!Main.forceDebug) {
+		if(!Main.forceDebug && Main.isConsoleEnabled()) {
 			String logLevel = config.getLogLevel();
 			if(logLevel != null && !logLevel.isEmpty()) {
-				if(Main.isConsoleEnabled())
-					gcLogger.setLevel("console", logLevel);
+				log.info("Set log level: "+logLevel.toString());
+				gcLogger.setLevel("console", logLevel);
 			}
 		}
 //		gcLogger.setLevel("file",    logLevel);
