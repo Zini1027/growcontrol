@@ -24,7 +24,6 @@ public class pxnPluginManager {
 	// plugin manager variables
 	protected String pluginsPath       = "plugins/";
 	protected String pluginYmlFileName = "plugin.yml";
-//	protected String mainClassYmlName  = "main";
 
 
 	public pxnPluginManager() {
@@ -37,8 +36,6 @@ public class pxnPluginManager {
 			setPath(pluginsPath);
 		if(pluginYmlFileName != null && !pluginYmlFileName.isEmpty())
 			this.setYmlFileName(pluginYmlFileName);
-//		if(mainClassYmlName != null && !mainClassYmlName.isEmpty())
-//			this.setMainClassYmlName(mainClassYmlName);
 	}
 
 
@@ -133,7 +130,7 @@ public class pxnPluginManager {
 	public void EnablePlugin(pxnPlugin plugin) throws Exception {
 		plugin.getLogger().info("Starting plugin..");
 		plugin.onEnable();
-		plugin.enabled = true;
+		plugin.setEnabled(true);
 	}
 
 
@@ -167,7 +164,7 @@ public class pxnPluginManager {
 	public void DisablePlugin(pxnPlugin plugin) {
 //TODO: add UnloadPlugin(String className) to unregister listeners
 		plugin.getLogger().info("Stopping plugin..");
-		plugin.enabled = false;
+		plugin.setEnabled(false);
 		plugin.onDisable();
 	}
 
@@ -189,18 +186,6 @@ public class pxnPluginManager {
 		if(fileName.isEmpty()) throw new IllegalArgumentException("fileName can't be empty!");
 		this.pluginYmlFileName = fileName;
 	}
-//	public String getYmlFileName() {
-//		return pluginYmlFileName;
-//	}
-//	// main class variable in yml
-//	public void setMainClassYmlName(String mainClassYmlName) {
-//		if(mainClassYmlName == null)   throw new NullPointerException("mainClassYmlName can't be null");
-//		if(mainClassYmlName.isEmpty()) throw new IllegalArgumentException("mainClassYmlName can't be empty!");
-//		this.mainClassYmlName = mainClassYmlName;
-//	}
-//	public String getMainClassYmlName() {
-//		return mainClassYmlName;
-//	}
 
 
 	// load class (with required methods)
@@ -226,7 +211,10 @@ public class pxnPluginManager {
 	}
 	@SuppressWarnings("unchecked")
 	protected static Class<pxnPlugin> castPluginClass(Class<?> clss) {
-		return (Class<pxnPlugin>) clss;
+		if(clss == null) return null;
+		if(clss.isAssignableFrom(pxnPlugin.class))
+			return (Class<pxnPlugin>) clss;
+		return null;
 	}
 
 
@@ -252,8 +240,7 @@ public class pxnPluginManager {
 		URL url = new File("jar:file://"+file.getAbsolutePath()+"!/").toURI().toURL();
 		URLClassLoader classLoader = new URLClassLoader(new URL[]{url});
 		try {
-			Class<?> clss = classLoader.loadClass(className);
-			return clss;
+			return classLoader.loadClass(className);
 		} catch (Exception e) {
 			pxnLogger.getLogger().severe("Failed to load plugin class: "+className);
 			pxnLogger.getLogger().exception(e);

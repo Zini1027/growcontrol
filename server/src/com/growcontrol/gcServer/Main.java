@@ -44,7 +44,7 @@ public class Main {
 		for(int i=0; i<args.length; i++) {
 			String arg = args[i];
 			// version
-			if(arg.equalsIgnoreCase("version")) {
+			if(arg.equalsIgnoreCase("--version")) {
 				System.out.println("GrowControl "+gcServer.version+" Server");
 				System.exit(0);
 			// no console
@@ -83,6 +83,7 @@ public class Main {
 				System.out.println("Set plugins path to: "+server.getPluginManager().getPath());
 			}
 		}
+		System.out.flush();
 		// start server
 		server.Start();
 	}

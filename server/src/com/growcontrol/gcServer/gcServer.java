@@ -408,6 +408,7 @@ for(Thread t : threadSet) {
 		if(Main.forceDebug)
 			AnsiConsole.out.println(" Force Debug: true");
 		AnsiConsole.out.println();
+		AnsiConsole.out.flush();
 
 
 
