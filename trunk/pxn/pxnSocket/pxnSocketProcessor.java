@@ -9,7 +9,7 @@ public interface pxnSocketProcessor {
 
 	// in queue
 	public void processData(String line);
-	public void processNow(pxnParser line);
+	public void processNow(pxnSocketProcessor processor, pxnParser line);
 	// out queue
 	public void sendData(String line);
 

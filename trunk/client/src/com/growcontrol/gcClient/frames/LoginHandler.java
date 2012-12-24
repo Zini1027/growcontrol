@@ -18,6 +18,7 @@ import com.growcontrol.gcClient.Main;
 import com.growcontrol.gcClient.gcClient;
 import com.growcontrol.gcClient.frames.LoginFrame.LoginWindows;
 import com.growcontrol.gcClient.socketClient.gcSocketProcessor;
+import com.growcontrol.gcClient.socketClient.protocol.sendClientPackets;
 import com.poixson.pxnUtils;
 import com.poixson.pxnSocket.pxnSocketClient;
 
@@ -74,8 +75,10 @@ e.printStackTrace();
 e.printStackTrace();
 			}
 //pxnUtils.Sleep(1000);
-socket.sendData("FILE");
-socket.sendData("HELLO "+gcClient.version+" lorenzo pass");
+			sendClientPackets.sendHELLO( Main.getSocket().getProcessor(),
+				gcClient.version,
+				"lorenzop",
+				"pass");
 //gcClient.socket.sendPacket(clientPacket.sendHELLO(gcClient.version, "lorenzo", "pass"));
 
 

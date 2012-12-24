@@ -14,6 +14,7 @@ import com.poixson.pxnLogger.pxnLogger;
 
 
 public class pxnSocketWorkerSender extends Thread {
+	private static final String EOL = "\r\n";
 
 	private pxnSocketWorker worker;
 	private Socket socket;
@@ -46,7 +47,7 @@ public class pxnSocketWorkerSender extends Thread {
 					sendFileNow(line.substring(9).trim());
 				} else {
 					// send string
-					out.println(line);
+					out.print(line + EOL);
 					out.flush();
 				}
 			} catch (InterruptedException e) {

@@ -1,43 +1,25 @@
-package com.growcontrol.gcClient.socketClient.packets;
+package com.growcontrol.gcClient.socketClient.protocol;
+
+import com.poixson.pxnSocket.pxnSocketProcessor;
 
 
-public class clientPacket {
-
-	public String packetString = null;
-	public static final String EOL = "\r\n";
+public class sendClientPackets {
 
 
-	public clientPacket() {
+	// HELLO <client-version> [<username> [<password>]]
+	public static void sendHELLO(pxnSocketProcessor processor, String clientVersion) {
+		sendHELLO(processor, clientVersion, null, null);
 	}
-	public clientPacket(String packetString) {
-		if(packetString == null) throw new NullPointerException();
-		this.packetString = packetString;
-	}
-
-
-	public String getPacketString() {
-		if(packetString != null) return packetString;
-		return "UNKNOWN PACKET"+EOL;
-	};
-
-
-	// HELLO <client version> [<username> [<password>]]
-	public static clientPacket sendHELLO(String version) {
-		return sendHELLO(version, null, null);
-	}
-	public static clientPacket sendHELLO(String version, String username) {
-		return sendHELLO(version, username, null);
-	}
-	public static clientPacket sendHELLO(String version, String username, String password) {
-		if(version == null) throw new NullPointerException();
-		String hello = "HELLO "+version;
+	public static void sendHELLO(pxnSocketProcessor processor, String clientVersion, String username, String password) {
+		if(clientVersion == null) throw new NullPointerException("clientVersion can't be null!");
+		String packet = "HELLO "+clientVersion;
 		if(username != null && !username.isEmpty()) {
-			hello += " "+username;
-			if(password != null && !password.isEmpty())
-				hello += " "+password;
+			packet += " "+username;
+			if(password != null && !password.isEmpty()) {
+				packet += " "+password;
+			}
 		}
-		clientPacket packet = new clientPacket(hello+EOL);
-		return packet;
+		processor.sendData(packet);
 	}
 
 

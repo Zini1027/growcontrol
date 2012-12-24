@@ -120,4 +120,9 @@ System.out.println("END - finalize()");
 	}
 
 
+	public pxnSocketProcessor getProcessor() {
+		return worker.processor;
+	}
+
+
 }
