@@ -51,7 +51,8 @@ public class pxnSocketWorkerSender extends Thread {
 					out.flush();
 				}
 			} catch (InterruptedException e) {
-				pxnLogger.getLogger().exception(e);
+				// socket closed
+				break;
 			}
 		}
 	}

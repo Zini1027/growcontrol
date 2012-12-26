@@ -36,7 +36,7 @@ public class pxnSocketWorkerReader extends Thread {
 			try {
 				line = in.readLine();
 			} catch (SocketException ignore) {
-pxnLogger.getLogger().exception(ignore);
+				// socket closed
 				break;
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -45,7 +45,11 @@ pxnLogger.getLogger().exception(ignore);
 			}
 			if(line == null) break;
 			if(line.isEmpty()) continue;
-			worker.processor.processData(line);
+			try {
+				worker.processor.processData(line);
+			} catch (Exception e) {
+e.printStackTrace();
+			}
 		}
 		worker.close();
 	}

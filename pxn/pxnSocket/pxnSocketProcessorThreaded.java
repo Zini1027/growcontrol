@@ -2,19 +2,16 @@ package com.poixson.pxnSocket;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
-import com.poixson.pxnLogger.pxnLogger;
 import com.poixson.pxnParser.pxnParser;
 
 
-public abstract class pxnSocketProcessorThreaded implements pxnSocketProcessor {
+public abstract class pxnSocketProcessorThreaded extends Thread implements pxnSocketProcessor {
 
 	// input/output queues
 	protected BlockingQueue<String> queueIn;
 	protected BlockingQueue<String> queueOut;
-
-	// processing thread
-	protected final Thread procThread;
 
 
 	public pxnSocketProcessorThreaded() {
@@ -33,19 +30,15 @@ public abstract class pxnSocketProcessorThreaded implements pxnSocketProcessor {
 		this.queueIn  = queueIn;
 		this.queueOut = queueOut;
 		// processing thread
-		procThread = new Thread("Socket-Processor-"+Integer.toString(pxnSocketWorker.getNextId())) {
-			@Override
-			public void run() {
-				doProcessorThread();
-			}
-		};
+		this.setName( "Socket-Processor-"+Integer.toString(pxnSocketWorker.getNextId()) );
 		// start processing thread
-		procThread.start();
+		this.start();
 	}
 
 
 	// processing thread
-	private void doProcessorThread() {
+	@Override
+	public void run() {
 		int count = 0;
 		while(true) {
 			// consume queue
@@ -53,8 +46,8 @@ public abstract class pxnSocketProcessorThreaded implements pxnSocketProcessor {
 				// submit packet for processing
 				String line = queueIn.take();
 				processNow(this, new pxnParser(line));
-			} catch (InterruptedException e) {
-				pxnLogger.getLogger().exception(e);
+			} catch (InterruptedException ignore) {
+				break;
 			}
 			// processed count
 			count++;
@@ -70,17 +63,17 @@ System.out.println("Processed [ "+Integer.toString(count)+" ] packets");
 
 	// add to queue
 	@Override
-	public void processData(String line) {
+	public void processData(String line) throws Exception {
 		if(line == null) return;
-		queueIn.offer(line.trim());
+		queueIn.offer(line.trim(), 1, TimeUnit.SECONDS);
 //if full:
 // .offer waits
 // .add throws an exception
 	}
 	@Override
-	public void sendData(String line) {
+	public void sendData(String line) throws Exception {
 		if(line == null) return;
-		queueOut.offer(line.trim());
+		queueOut.offer(line.trim(), 1, TimeUnit.SECONDS);
 	}
 
 

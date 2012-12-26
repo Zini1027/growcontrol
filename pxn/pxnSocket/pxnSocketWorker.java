@@ -18,7 +18,6 @@ public class pxnSocketWorker {
 	// input/output threads
 	protected final Thread threadReader;
 	protected final Thread threadSender;
-	// input/output queue
 
 
 	public pxnSocketWorker(Socket socket, pxnSocketProcessor processor) {
@@ -43,7 +42,7 @@ public class pxnSocketWorker {
 
 
 	// add to output queue
-	public void sendData(String line) {
+	public void sendData(String line) throws Exception {
 		processor.sendData(line);
 	}
 
@@ -64,23 +63,26 @@ public class pxnSocketWorker {
 	public void close() {
 		if(closed) return;
 		closed = true;
+		// clear out queue
 		processor.getOutputQueue().clear();
-		pxnLogger.getLogger().info("Disconnected: "+getIPString());
+		// close socket
 		if(socket != null) {
 			try {
 				socket.close();
 			} catch (IOException e) {
-				pxnLogger.getLogger().exception(e);
+pxnLogger.getLogger().exception(e);
 			}
 		}
+		// stop processor
+		processor.interrupt();
+		pxnLogger.getLogger().info("Disconnected: "+getIPString());
+		// stop input/output threads
+		threadReader.interrupt();
+		threadSender.interrupt();
 	}
 	// is connected / closed
 	public boolean isClosed() {
-		if(socket == null)
-// || in == null || out == null)
-			closed = true;
-		else if(socket.isClosed())
-// || out.checkError())
+		if(socket == null || socket.isClosed())
 			closed = true;
 		return closed;
 	}

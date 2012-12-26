@@ -1,15 +1,19 @@
 package com.growcontrol.gcServer;
 
+import org.fusesource.jansi.AnsiConsole;
+
 import com.growcontrol.gcServer.logger.gcLogger;
 import com.poixson.pxnLogger.pxnLevel;
 import com.poixson.pxnLogger.pxnLogger;
 import com.poixson.pxnLogger.pxnLoggerConsole;
+import com.poixson.pxnThreadQueue.pxnThreadQueue;
 
 
 public class Main {
 
 	// server instance
 	private static gcServer server = null;
+	private static pxnThreadQueue mainThread = new pxnThreadQueue();
 
 	// logger
 	private static final gcLogger log = gcLogger.getLogger();
@@ -21,6 +25,8 @@ public class Main {
 
 	// app startup
 	public static void main(String[] args) {
+		AnsiConsole.systemInstall();
+		Thread.currentThread().setName("Main-Server-Thread");
 		System.out.println();
 		if(server != null) throw new UnsupportedOperationException("Cannot redefine singleton gcServer; already running");
 		pxnLogger.addLogHandler(
@@ -45,7 +51,7 @@ public class Main {
 			String arg = args[i];
 			// version
 			if(arg.equalsIgnoreCase("--version")) {
-				System.out.println("GrowControl "+gcServer.version+" Server");
+//				System.out.println("GrowControl "+gcServer.version+" Server");
 				System.exit(0);
 			// no console
 			} else if(arg.equalsIgnoreCase("--no-console")) {
@@ -71,33 +77,44 @@ public class Main {
 					System.out.println("Incomplete --configs-path argument!");
 					break;
 				}
-				server.configsPath = args[i];
-				System.out.println("Set configs path to: "+server.configsPath);
+				getServer().configsPath = args[i];
+				System.out.println("Set configs path to: "+getServer().configsPath);
 			// plugins path
 			} else if(arg.equalsIgnoreCase("--plugins-path")) {
 				i++; if(i <= args.length) {
 					System.out.println("Incomplete --plugins-path argument!");
 					break;
 				}
-				server.getPluginManager().setPath(args[i]);
-				System.out.println("Set plugins path to: "+server.getPluginManager().getPath());
+				getServer().getPluginManager().setPath(args[i]);
+				System.out.println("Set plugins path to: "+getServer().getPluginManager().getPath());
+			} else {
+				System.out.println("Unknown argument: "+arg);
 			}
 		}
 		System.out.flush();
-		// start server
-		server.Start();
-	}
-
-
-	// shutdown server
-	public static void Shutdown() {
-		server.Shutdown();
+		// queue startup in main thread
+		mainThread.addQueue(new Runnable() {
+			@Override
+			public void run() {
+				// start server
+				getServer().Start();
+			}
+		});
+		// hand-off thread to queue
+		mainThread.run();
 	}
 
 
 	// get server
 	public static gcServer getServer() {
 		return server;
+	}
+	public static pxnThreadQueue getMainThread() {
+		return mainThread;
+	}
+	// shutdown server
+	public static void Shutdown() {
+		getServer().Shutdown();
 	}
 
 

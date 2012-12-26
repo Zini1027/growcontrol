@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.growcontrol.gcServer.Main;
 import com.poixson.pxnUtils;
 import com.poixson.pxnLogger.pxnLogger;
 
@@ -27,7 +28,7 @@ public class pxnSocketServer implements pxnSocket {
 
 	// socket pool
 	protected final List<pxnSocketWorker> socketWorkers = new ArrayList<pxnSocketWorker>();
-//	protected boolean stopping = false;
+	protected boolean stopping = false;
 
 
 	// new socket server
@@ -70,37 +71,58 @@ public class pxnSocketServer implements pxnSocket {
 	// socket listener thread
 	private void startListenerThread() {
 		// loop for new connections
-		while(true) {
-			flushClosed();
+		while(!stopping) {
+			// queue flushing closed sockets
+			Main.getMainThread().addQueue(new Runnable() {
+				@Override
+				public void run() {
+					flushClosed();
+				}
+			});
 			Socket socket = null;
 			try {
 				// wait for a connection
 				socket = listenerSocket.accept();
 			} catch (SocketException ignore) {
-pxnLogger.getLogger().exception(ignore);
+				// socket listener closed
+				stopping = true;
+				break;
 			} catch (IOException e) {
 				pxnLogger.getLogger().exception(e);
 			}
-//			// closing sockets
-//			if(stopping) {
-//				pxnLogger.log().info("Stopping socket listener..");
-//				break;
-//			}
 			// add socket to pool
-			if(socket != null)
-				socketWorkers.add(new pxnSocketWorker(socket, processorFactory.newProcessor()));
+			if(socket != null) {
+				synchronized(socketWorkers) {
+					socketWorkers.add(new pxnSocketWorker(socket, processorFactory.newProcessor()));
+				}
+			}
+		}
+		// stopping socket listener
+		pxnLogger.getLogger().info("Stopping socket listener..");
+		if(listenerSocket != null && !listenerSocket.isClosed()) {
+			try {
+				listenerSocket.close();
+			} catch (IOException e) {
+e.printStackTrace();
+			}
 		}
 	}
 
 
 	// flush closed sockets from pool
-//TODO: try this
-//EventQueue.invokeLater(new Runnable() {
 	public void flushClosed() {
-		for(Iterator<pxnSocketWorker> it = socketWorkers.iterator(); it.hasNext();)
-			if(it.next().isClosed())
-				it.remove();
+		int flushCount = 0;
+		synchronized(socketWorkers) {
+			for(Iterator<pxnSocketWorker> it = socketWorkers.iterator(); it.hasNext();) {
+				if(it.next().isClosed()) {
+					it.remove();
+					flushCount++;
+				}
+			}
+		}
 		pxnLogger.getLogger().debug("Sockets loaded: "+Integer.toString(socketWorkers.size()));
+		if(flushCount > 0)
+			pxnLogger.getLogger().info("Flushed [ "+Integer.toString(flushCount)+" ] closed sockets.");
 	}
 
 
@@ -110,23 +132,25 @@ pxnLogger.getLogger().exception(ignore);
 	}
 //	public void close(int socketId) {
 //	}
-//	public void closeAll() {
-//	}
+	@Override
+	public void forceCloseAll() {
+		synchronized(socketWorkers) {
+			for(pxnSocketWorker worker : socketWorkers)
+				worker.close();
+		}
+		flushClosed();
+	}
 	@Override
 	public void stop() {
-//		stopping = true;
-//		// stop listening
-//		if(listenerSocket != null) {
-//			try {
-//				listenerSocket.close();
-//			} catch (IOException e) {
-//				gcServer.log.exception(e);
-//			}
-//		}
-//		// close sockets
-//		for(Iterator<socketWorker> it = socketPool.iterator(); it.hasNext();) {
-//			it.next().close();
-//		}
+		stopping = true;
+		// stop listening
+		if(listenerSocket != null) {
+			try {
+				listenerSocket.close();
+			} catch (IOException e) {
+pxnLogger.getLogger().exception(e);
+			}
+		}
 	}
 
 
