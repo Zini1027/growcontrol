@@ -14,6 +14,14 @@ public class pxnThreadQueue implements Runnable {
 	protected boolean stopping = false;
 
 
+	protected static pxnThreadQueue mainThread = null;
+	public static pxnThreadQueue getMainThread() {
+		if(mainThread == null)
+			mainThread = new pxnThreadQueue();
+		return mainThread;
+	}
+
+
 	public pxnThreadQueue() {
 		queue.add(new Runnable() {
 			@Override

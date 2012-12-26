@@ -13,7 +13,7 @@ public class Main {
 
 	// server instance
 	private static gcServer server = null;
-	private static pxnThreadQueue mainThread = new pxnThreadQueue();
+	private static pxnThreadQueue mainThread = pxnThreadQueue.getMainThread();
 
 	// logger
 	private static final gcLogger log = gcLogger.getLogger();
