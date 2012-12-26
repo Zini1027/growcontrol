@@ -1,4 +1,4 @@
-package com.growcontrol.gcServer.socketServer.protocol;
+package com.growcontrol.gcServer.socketServer;
 
 import java.io.File;
 import java.util.List;

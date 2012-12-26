@@ -1,4 +1,4 @@
-package com.growcontrol.gcClient.socketClient.protocol;
+package com.growcontrol.gcClient.socketClient;
 
 import com.poixson.pxnSocket.pxnSocketProcessor;
 
