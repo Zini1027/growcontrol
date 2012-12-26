@@ -14,7 +14,8 @@ public class sendServerPackets {
 
 
 	// HEY <server-version>
-	public static void sendHEY(pxnSocketProcessor processor, String serverVersion) {
+	// (login is ok)
+	public static void sendHEY(pxnSocketProcessor processor, String serverVersion) throws Exception {
 		if(serverVersion == null) throw new NullPointerException("serverVersion can't be null!");
 		processor.sendData("HEY "+serverVersion);
 gcLogger.getLogger().severe("Sent HEY packet!");
@@ -22,27 +23,31 @@ gcLogger.getLogger().severe("Sent HEY packet!");
 
 
 	// LIST zones
-	public static void sendLISTZones(pxnSocketProcessor processor) {
+	// (list loaded zones)
+	public static void sendLISTZones(pxnSocketProcessor processor) throws Exception {
 		List<String> zones = Main.getServer().getZones();
 		for(String zoneName : zones)
 			sendZONE(processor, zoneName);
 gcLogger.getLogger().severe("Sent ZONE packets!");
 	}
 	// ZONE
-	public static void sendZONE(pxnSocketProcessor processor, String zoneName) {
+	// (send a zone)
+	public static void sendZONE(pxnSocketProcessor processor, String zoneName) throws Exception {
 		processor.sendData("ZONE "+zoneName);
 	}
 
 
 	// LIST client plugins
-	public static void sendLISTPluginsClient(pxnSocketProcessor processor) {
+	// (list loaded client plugins)
+	public static void sendLISTPluginsClient(pxnSocketProcessor processor) throws Exception {
 		for(Entry<String, File> entry : gcPluginYML.clientMainClasses.entrySet()) {
-			sendPLUGIN(processor, entry.getKey());
+			sendPLUGIN(processor, entry.getValue().getName() );
 		}
 gcLogger.getLogger().severe("Sent PLUGIN packets!");
 	}
 	// PLUGIN
-	public static void sendPLUGIN(pxnSocketProcessor processor, String pluginName) {
+	// (send a plugin)
+	public static void sendPLUGIN(pxnSocketProcessor processor, String pluginName) throws Exception {
 		processor.sendData("PLUGIN "+pluginName);
 	}
 

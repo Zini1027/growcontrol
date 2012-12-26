@@ -24,7 +24,11 @@ public class gcSocketProcessor extends pxnSocketProcessorThreaded {
 		// HEY packet
 		if(first.equalsIgnoreCase("HELLO")) {
 gcServer.getLogger().severe("Got HELLO packet!");
-			sendServerPackets.sendHEY(processor, gcServer.version);
+			try {
+				sendServerPackets.sendHEY(processor, gcServer.version);
+			} catch (Exception e) {
+e.printStackTrace();
+			}
 		} else
 
 		// LIST request
@@ -53,7 +57,11 @@ gcServer.getLogger().severe("SENDING FILE");
 
 		// list zones
 		if(next.equalsIgnoreCase("zones")) {
-			sendServerPackets.sendLISTZones(processor);
+			try {
+				sendServerPackets.sendLISTZones(processor);
+			} catch (Exception e) {
+e.printStackTrace();
+			}
 		} else
 
 		// list plugins
@@ -62,7 +70,11 @@ gcServer.getLogger().severe("SENDING FILE");
 			if(next == null || next.isEmpty()) throw new NullPointerException("Invalid 'LIST plugins' packet! "+line.getOriginal());
 			// client plugins
 			if(next.equalsIgnoreCase("client")) {
-				sendServerPackets.sendLISTPluginsClient(processor);
+				try {
+					sendServerPackets.sendLISTPluginsClient(processor);
+				} catch (Exception e) {
+e.printStackTrace();
+				}
 			} else {
 System.out.println("Invalid 'LIST plugins' packet!");
 			}
