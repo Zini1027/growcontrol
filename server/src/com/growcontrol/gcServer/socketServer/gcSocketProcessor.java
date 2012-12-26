@@ -1,7 +1,6 @@
 package com.growcontrol.gcServer.socketServer;
 
 import com.growcontrol.gcServer.gcServer;
-import com.growcontrol.gcServer.socketServer.protocol.sendServerPackets;
 import com.poixson.pxnParser.pxnParser;
 import com.poixson.pxnSocket.pxnSocketProcessor;
 import com.poixson.pxnSocket.pxnSocketProcessorThreaded;

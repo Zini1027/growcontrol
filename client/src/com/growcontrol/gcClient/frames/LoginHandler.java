@@ -18,7 +18,7 @@ import com.growcontrol.gcClient.Main;
 import com.growcontrol.gcClient.gcClient;
 import com.growcontrol.gcClient.frames.LoginFrame.LoginWindows;
 import com.growcontrol.gcClient.socketClient.gcSocketProcessor;
-import com.growcontrol.gcClient.socketClient.protocol.sendClientPackets;
+import com.growcontrol.gcClient.socketClient.sendClientPackets;
 import com.poixson.pxnUtils;
 import com.poixson.pxnSocket.pxnSocketClient;
 
