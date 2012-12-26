@@ -8,13 +8,15 @@ import com.poixson.pxnParser.pxnParser;
 public interface pxnSocketProcessor {
 
 	// in queue
-	public void processData(String line);
+	public void processData(String line) throws Exception;
 	public void processNow(pxnSocketProcessor processor, pxnParser line);
 	// out queue
-	public void sendData(String line);
+	public void sendData(String line) throws Exception;
 
 	// queues
 	public BlockingQueue<String> getInputQueue();
 	public BlockingQueue<String> getOutputQueue();
+
+	public void interrupt();
 
 }

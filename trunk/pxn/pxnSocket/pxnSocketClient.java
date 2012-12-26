@@ -79,6 +79,11 @@ public class pxnSocketClient implements pxnSocket {
 	// close socket
 	@Override
 	public void close() {
+		worker.close();
+	}
+	@Override
+	public void forceCloseAll() {
+		close();
 	}
 //	public void close() throws IOException {
 //		if(socket == null) return;
@@ -91,7 +96,7 @@ public class pxnSocketClient implements pxnSocket {
 	}
 
 
-	public void sendData(String line) {
+	public void sendData(String line) throws Exception {
 		if(worker == null) {
 			// sleep 5 seconds max
 			for(int i=0; i<20; i++) {
@@ -101,8 +106,7 @@ public class pxnSocketClient implements pxnSocket {
 			if(worker == null) {
 socket = null;
 //TODO: disconnect socket and queue a reconnect
-				return;
-//throw new NullPointerException("worker can't be null!");
+throw new NullPointerException("worker can't be null! 5 second timeout expired!");
 			}
 		}
 		worker.sendData(line);

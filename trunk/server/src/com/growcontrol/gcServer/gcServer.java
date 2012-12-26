@@ -53,16 +53,13 @@ public class gcServer {
 
 	// server instance
 	public gcServer() {
+		ASCIIHeader();
 		log = Main.getLogger();
 	}
 
 
 	// init server
 	public void Start() {
-//TODO: should this be left here?
-// query time server
-if(clock == null)
-	clock = pxnClock.getClock(true);
 //		if(noconsole)
 //			gcLogger.setLevel("console", pxnLevel.LEVEL.WARNING);
 		// single instance lock
@@ -71,13 +68,13 @@ if(clock == null)
 			System.out.println("Console input is disabled due to noconsole command argument.");
 //TODO: currently no way to stop the server with no console input
 System.exit(0);
-		} else {
-			AnsiConsole.systemInstall();
-			ASCIIHeader();
 		}
 		log.printRaw("[[ Starting GC Server ]]");
 		log.info("GrowControl "+version+" Server is starting..");
 		pxnUtils.addLibraryPath("lib");
+
+		// query time server
+		clock = pxnClock.getClock(true);
 
 		// load configs
 		config = new ServerConfig(configsPath);
@@ -108,10 +105,6 @@ System.exit(0);
 			};
 			consoleInputThread.start();
 		}
-
-//		// query time server
-//		if(clock == null)
-//			clock = pxnClock.getClock(true);
 
 		// zones
 		if(zones == null) zones = new ArrayList<String>();
@@ -161,42 +154,50 @@ System.exit(0);
 
 	// stop server
 	public void Shutdown() {
-		Thread shutdownThread = new Thread() {
+		// queue shutdown
+		Main.getMainThread().addQueue(new Thread() {
 			@Override
 			public void run() {
+				doShutdown();
+			}
+		});
+	}
+	private void doShutdown() {
 //TODO: display total time running
-//TODO: make this threaded!
-				stopping = true;
-				log.printRaw("[[ Stopping GC Server ]]");
-				log.warning("Stopping GC Server..");
-				// pause scheduler
-				gcSchedulerManager.StopAll();
-				// shutdown event
+		stopping = true;
+		log.printRaw("[[ Stopping GC Server ]]");
+		log.warning("Stopping GC Server..");
+		// close socket listener
+		socket.stop();
+		// pause scheduler
+		gcSchedulerManager.StopAll();
+		// shutdown event
 //TODO: trigger shutdown event here
-				// sleep
-				log.debug("Waiting 200ms..");
-				pxnUtils.Sleep(200L);
-				// close sockets
-				socket.stop();
-				// plugins
-				pluginManager.UnloadPlugins();
-				// end schedulers
-				gcSchedulerManager.ShutdownAll();
-				// loggers
-				consoleInputThread.interrupt(); // doesn't do much of anything
-				AnsiConsole.systemUninstall();
+		// sleep
+		log.debug("Waiting 200ms..");
+		pxnUtils.Sleep(200L);
+		// close sockets
+		socket.forceCloseAll();
+		// plugins
+		pluginManager.UnloadPlugins();
+		// end schedulers
+		gcSchedulerManager.ShutdownAll();
+		// sleep
+		log.debug("Waiting 200ms..");
+		pxnUtils.Sleep(200L);
+		// loggers
+		consoleInputThread.interrupt(); // doesn't do much of anything
+		AnsiConsole.systemUninstall();
+
 // display threads still running
 log.severe("Threads still running:");
 Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
 //Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
-for(Thread t : threadSet) {
+for(Thread t : threadSet)
 	log.printRaw(t.getName());
-}
 
-				System.exit(0);
-			}
-		};
-		shutdownThread.start();
+		// queue exit
+		Main.getMainThread().exit();
 	}
 	public boolean isStopping() {
 		return stopping;
