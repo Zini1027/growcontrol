@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.growcontrol.gcServer.Main;
 import com.poixson.pxnUtils;
 import com.poixson.pxnLogger.pxnLogger;
+import com.poixson.pxnThreadQueue.pxnThreadQueue;
 
 
 public class pxnSocketServer implements pxnSocket {
@@ -73,7 +73,7 @@ public class pxnSocketServer implements pxnSocket {
 		// loop for new connections
 		while(!stopping) {
 			// queue flushing closed sockets
-			Main.getMainThread().addQueue(new Runnable() {
+			pxnThreadQueue.getMainThread().addQueue(new Runnable() {
 				@Override
 				public void run() {
 					flushClosed();
