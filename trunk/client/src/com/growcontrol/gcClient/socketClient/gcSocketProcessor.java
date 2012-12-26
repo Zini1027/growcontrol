@@ -21,8 +21,12 @@ public class gcSocketProcessor extends pxnSocketProcessorThreaded {
 		// HEY packet
 		if(first.equalsIgnoreCase("HEY")) {
 System.out.println("Got HEY packet!");
-			sendClientPackets.sendLIST(processor, "zones");
-			sendClientPackets.sendLIST(processor, "plugins client");
+			try {
+				sendClientPackets.sendLIST(processor, "zones");
+				sendClientPackets.sendLIST(processor, "plugins client");
+			} catch (Exception e) {
+e.printStackTrace();
+			}
 		} else
 		// ZONE packet
 		if(first.equalsIgnoreCase("ZONE")) {
@@ -35,6 +39,7 @@ System.out.println("Got PLUGIN packet! "+line.getRest());
 System.out.println("Unknown packet: "+line.getOriginal());
 		}
 	}
+
 
 //private boolean sendingFile = false;
 //private boolean sendingFile = true;

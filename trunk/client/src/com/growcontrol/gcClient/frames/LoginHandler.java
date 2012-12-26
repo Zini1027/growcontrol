@@ -52,36 +52,39 @@ public class LoginHandler implements gcFrameHandler, ActionListener, KeyEventDis
 //		} catch(Exception ignore) {
 //			return;
 //		}
+
 		if(buttonName.equals("Connect")) {
 			Main.getConnectState().setStateConnecting();
 //			setDisplay(loginFrame.CONNECTING_WINDOW_NAME);
-
 			// connect to server
 			pxnSocketClient socket = null;
 			try {
 				// get connect info from window
 				ConnectInfo connectInfo = new ConnectInfo();
-System.out.println("Username: "+connectInfo.username);
-System.out.println("Password: "+connectInfo.password);
+				// connect to server
 				socket = new pxnSocketClient(connectInfo.host, connectInfo.port, new gcSocketProcessor());
 				Main.getClient().setSocket(socket);
+				// send HELLO packet
+				try {
+					sendClientPackets.sendHELLO( Main.getSocket().getProcessor(),
+							gcClient.version,
+							connectInfo.username,
+							connectInfo.password);
+				} catch (Exception e) {
+e.printStackTrace();
+				}
 			} catch (SocketTimeoutException e) {
-e.printStackTrace();
+				// connection timeout
+				return;
 			} catch (ConnectException e) {
-e.printStackTrace();
+				// socket closed
+				return;
 			} catch (UnknownHostException e) {
-e.printStackTrace();
+				// unknown hostname
+				return;
 			} catch (IOException e) {
 e.printStackTrace();
 			}
-//pxnUtils.Sleep(1000);
-			sendClientPackets.sendHELLO( Main.getSocket().getProcessor(),
-				gcClient.version,
-				"lorenzop",
-				"pass");
-//gcClient.socket.sendPacket(clientPacket.sendHELLO(gcClient.version, "lorenzo", "pass"));
-
-
 
 		} else if(buttonName.equals("Cancel"))
 			Main.getConnectState().setStateClosed();
@@ -124,11 +127,9 @@ e.printStackTrace();
 			// invoke gui event
 			SwingUtilities.invokeAndWait(new setDisplayTask(displayCard));
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return;
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+e.printStackTrace();
 		}
 	}
 	private class setDisplayTask implements Runnable {
@@ -184,8 +185,8 @@ e.printStackTrace();
 		try {
 			// invoke gui event
 			SwingUtilities.invokeAndWait(new setMessageTask(message));
-		} catch (InterruptedException e) {
-e.printStackTrace();
+		} catch (InterruptedException ignore) {
+			return;
 		} catch (InvocationTargetException e) {
 e.printStackTrace();
 		}
