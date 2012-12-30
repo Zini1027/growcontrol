@@ -54,7 +54,7 @@ public class LoginHandler implements gcFrameHandler, ActionListener, KeyEventDis
 //		}
 
 		if(buttonName.equals("Connect")) {
-			Main.getConnectState().setStateConnecting();
+			Main.getClient().getConnectState().setStateConnecting();
 //			setDisplay(loginFrame.CONNECTING_WINDOW_NAME);
 			// connect to server
 			pxnSocketClient socket = null;
@@ -66,7 +66,7 @@ public class LoginHandler implements gcFrameHandler, ActionListener, KeyEventDis
 				Main.getClient().setSocket(socket);
 				// send HELLO packet
 				try {
-					sendClientPackets.sendHELLO( Main.getSocket().getProcessor(),
+					sendClientPackets.sendHELLO( Main.getClient().getSocket().getProcessor(),
 							gcClient.version,
 							connectInfo.username,
 							connectInfo.password);
@@ -87,7 +87,7 @@ e.printStackTrace();
 			}
 
 		} else if(buttonName.equals("Cancel"))
-			Main.getConnectState().setStateClosed();
+			Main.getClient().getConnectState().setStateClosed();
 //			setDisplay(loginFrame.LOGIN_WINDOW_NAME);
 	}
 	// get info from text boxes

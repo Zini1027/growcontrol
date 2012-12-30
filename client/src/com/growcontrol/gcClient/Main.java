@@ -4,9 +4,6 @@ import java.io.File;
 
 import javax.swing.ImageIcon;
 
-import com.growcontrol.gcClient.ConnectState.gcConnectState;
-import com.poixson.pxnSocket.pxnSocketClient;
-
 
 public class Main {
 
@@ -56,29 +53,10 @@ public class Main {
 	}
 
 
-
 	// get client
 	public static gcClient getClient() {
 		return client;
 	}
-
-
-	// get client socket
-	public static pxnSocketClient getSocket() {
-		return client.getSocket();
-	}
-
-
-	// get connect state manager
-	public static gcConnectState getConnectState() {
-		return client.getConnectState();
-	}
-
-
-//	// is console input enabled
-//	public static boolean isConsoleEnabled() {
-//		return consoleEnabled;
-//	}
 
 
 //	// get main logger

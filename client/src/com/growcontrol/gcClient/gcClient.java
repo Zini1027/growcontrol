@@ -1,8 +1,12 @@
 package com.growcontrol.gcClient;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.growcontrol.gcClient.ConnectState.gcConnectState;
 import com.growcontrol.gcClient.clientPlugin.gcClientPluginManager;
 import com.poixson.pxnUtils;
+import com.poixson.pxnParser.pxnParser;
 import com.poixson.pxnSocket.pxnSocketClient;
 
 
@@ -31,8 +35,11 @@ public class gcClient {
 	// client connection state
 	private final gcConnectState state = new gcConnectState();
 
-//	// zones
-//	private List<String> zones = null;
+	// zones
+	private List<String> zones = new ArrayList<String>();
+
+	// plugins
+	private List<String> plugins = new ArrayList<String>();
 
 //	// frame handlers (windows)
 //	private LoginHandler loginWindow = null;
@@ -168,6 +175,14 @@ System.exit(1);
 	// get connect state manager
 	public gcConnectState getConnectState() {
 		return state;
+	}
+
+
+	public void addZone(pxnParser line) {
+		zones.add(line.getRest());
+	}
+	public void addPlugin(pxnParser line) {
+		plugins.add(line.getRest());
 	}
 
 
