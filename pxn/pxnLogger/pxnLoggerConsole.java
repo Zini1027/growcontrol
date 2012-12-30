@@ -4,7 +4,7 @@ import java.io.IOException;
 
 
 
-public class pxnLoggerConsole implements pxnLoggerHandlerInterface {
+public class pxnLoggerConsole implements pxnLoggerHandler {
 
 	protected final jline.ConsoleReader reader;
 	protected pxnLevel level;
