@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 import com.poixson.pxnLogger.pxnLogger;
 
@@ -114,6 +115,28 @@ public class pxnUtils {
 	}
 
 
+	// compare version numbers
+	public static String compareVersions(String oldVersion, String newVersion) {
+		if(oldVersion == null || newVersion == null) return null;
+		oldVersion = normalisedVersion(oldVersion);
+		newVersion = normalisedVersion(newVersion);
+		int cmp = oldVersion.compareTo(newVersion);
+		if(cmp < 0) return "<";
+		if(cmp > 0) return ">";
+		return "=";
+		//return cmp<0 ? "<" : cmp>0 ? ">" : "=";
+	}
+	public static String normalisedVersion(String version) {
+		String delim = ".";
+		int maxWidth = 5;
+		String[] split = Pattern.compile(delim, Pattern.LITERAL).split(version);
+		String output = "";
+		for(String s : split)
+			output += String.format("%"+maxWidth+'s', s);
+		return output;
+	}
+
+
 	// min/max value
 	public static int MinMax(int value, int min, int max) {
 		if(value < min) value = min;
@@ -176,14 +199,22 @@ public class pxnUtils {
 
 	// cast a collection to list
 	public static <T> List<T> castList(Class<? extends T> clss, Collection<?> c) {
+		if(clss == null) throw new NullPointerException("clss can't be null!");
+		if(c    == null) throw new NullPointerException("c can't be null!");
 	    List<T> result = new ArrayList<T>(c.size());
-	    for(Object o: c)
+	    for(Object o : c)
 	    	result.add(clss.cast(o));
 	    return result;
 	}
 	@SuppressWarnings("unchecked")
 	public static <T> List<T> castList(Class<? extends T> clss, Object object) {
-		return castList(clss, (Collection<T>) object);
+		if(clss   == null) throw new NullPointerException("clss can't be null!");
+		if(object == null) throw new NullPointerException("object can't be null!");
+		try {
+			return castList(clss, (Collection<T>) object);
+		} catch(Exception ignore) {
+			return null;
+		}
 	}
 
 
