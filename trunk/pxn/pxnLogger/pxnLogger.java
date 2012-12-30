@@ -22,7 +22,7 @@ public class pxnLogger implements pxnLoggerInterface, pxnLogPrinter {
 
 	// loggers
 	protected static HashMap<String, pxnLogger> loggers = new HashMap<String, pxnLogger>();
-	protected static HashMap<String, pxnLoggerHandlerInterface> logHandlers = new HashMap<String, pxnLoggerHandlerInterface>();
+	protected static HashMap<String, pxnLoggerHandler> logHandlers = new HashMap<String, pxnLoggerHandler>();
 
 	// console interface
 	protected static boolean consoleEnabled = true;
@@ -31,6 +31,7 @@ public class pxnLogger implements pxnLoggerInterface, pxnLogPrinter {
 	protected static ConsoleReader reader = null;
 	// jAnsi
 	protected static PrintWriter out = new PrintWriter(AnsiConsole.out);
+//	protected PrintStream system;
 
 
 	// get logger
@@ -80,6 +81,11 @@ public class pxnLogger implements pxnLoggerInterface, pxnLogPrinter {
 				e.printStackTrace();
 			}
 		}
+//TODO:
+//		// intercept system output stream
+//		system = System.out;
+//		Ansi.
+//		System.setOut();
 //moved to gcServer
 //		// log to console
 //		logHandlers.add(new gcLoggerConsole(reader, logLevel));
@@ -138,7 +144,7 @@ public class pxnLogger implements pxnLoggerInterface, pxnLogPrinter {
 
 	// log levels
 	public static pxnLevel getLevel(String handlerName) {
-		pxnLoggerHandlerInterface handler = getLogHandler(handlerName);
+		pxnLoggerHandler handler = getLogHandler(handlerName);
 		if(handler == null) return null;
 		return handler.getLevel();
 	}
@@ -146,27 +152,27 @@ public class pxnLogger implements pxnLoggerInterface, pxnLogPrinter {
 		setLevel(handlerName, pxnLevel.levelFromString(level));
 	}
 	public static void setLevel(String handlerName, LEVEL level) {
-		pxnLoggerHandlerInterface handler = getLogHandler(handlerName);
+		pxnLoggerHandler handler = getLogHandler(handlerName);
 		if(handler == null) throw new NullPointerException(handlerName+" (can't set log level, handler not found!)");
 		handler.setLevel(level);
 	}
 	// force debug mode
 	public static void setForceDebug(String handlerName, boolean forceDebug) {
-		pxnLoggerHandlerInterface handler = getLogHandler(handlerName);
+		pxnLoggerHandler handler = getLogHandler(handlerName);
 		if(handler == null) throw new NullPointerException(handlerName+" (can't set log level, handler not found!)");
 		handler.setForceDebug(forceDebug);
 	}
 
 
 	// log handlers
-	public static pxnLoggerHandlerInterface getLogHandler(String handlerName) {
+	public static pxnLoggerHandler getLogHandler(String handlerName) {
 		synchronized(logHandlers) {
 			if(logHandlers.containsKey(handlerName))
 				return logHandlers.get(handlerName);
 		}
 		return null;
 	}
-	public static void addLogHandler(String handlerName, pxnLoggerHandlerInterface handler) {
+	public static void addLogHandler(String handlerName, pxnLoggerHandler handler) {
 		synchronized(logHandlers) {
 			logHandlers.put(handlerName, handler);
 		}
@@ -197,13 +203,13 @@ public class pxnLogger implements pxnLoggerInterface, pxnLogPrinter {
 			System.out.println(logRecord.toString());
 			return;
 		}
-		for(pxnLoggerHandlerInterface handler : logHandlers.values())
+		for(pxnLoggerHandler handler : logHandlers.values())
 			handler.print(logRecord);
 	}
 	@Override
 	public synchronized void printRaw(String msg) {
 		if(msg == null) throw new NullPointerException("msg cannot be null");
-		for(pxnLoggerHandlerInterface handler : logHandlers.values())
+		for(pxnLoggerHandler handler : logHandlers.values())
 			handler.print(msg);
 	}
 

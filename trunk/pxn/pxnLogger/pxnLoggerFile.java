@@ -3,7 +3,7 @@ package com.poixson.pxnLogger;
 import com.poixson.pxnLogger.pxnLevel.LEVEL;
 
 
-public class pxnLoggerFile extends Thread implements pxnLoggerHandlerInterface {
+public class pxnLoggerFile extends Thread implements pxnLoggerHandler {
 
 
 	@Override

@@ -3,7 +3,9 @@ package com.poixson.pxnLogger;
 import com.poixson.pxnLogger.pxnLevel.LEVEL;
 
 
-public interface pxnLoggerHandlerInterface {
+public interface pxnLoggerHandler {
+//TODO:
+//public abstract class pxnLoggerHandler extends PrintWriter {
 
 	// print
 	public void print(pxnLogRecord logRecord);
