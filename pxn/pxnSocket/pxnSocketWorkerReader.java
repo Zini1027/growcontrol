@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.concurrent.BlockingQueue;
 
 import com.poixson.pxnLogger.pxnLogger;
 
@@ -16,7 +15,7 @@ public class pxnSocketWorkerReader extends Thread {
 	private BufferedReader in;
 
 
-	public pxnSocketWorkerReader(pxnSocketWorker worker, Socket socket, BlockingQueue<String> queueIn) {
+	public pxnSocketWorkerReader(pxnSocketWorker worker, Socket socket) {
 		super("Socket-Reader-"+Integer.toString(worker.socketId));
 		this.worker = worker;
 		try {
@@ -39,9 +38,8 @@ public class pxnSocketWorkerReader extends Thread {
 				// socket closed
 				break;
 			} catch (IOException e) {
-				e.printStackTrace();
-				pxnLogger.getLogger().exception(e);
-				break;
+e.printStackTrace();
+break;
 			}
 			if(line == null) break;
 			if(line.isEmpty()) continue;

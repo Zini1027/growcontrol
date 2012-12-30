@@ -1,6 +1,6 @@
 package com.growcontrol.gcServer.serverPlugin.listeners;
 
-import com.growcontrol.gcServer.gcServer;
+import com.growcontrol.gcServer.Main;
 import com.poixson.pxnListener.pxnListenerGroup;
 
 
@@ -20,7 +20,7 @@ public class gcServerListenerGroup extends pxnListenerGroup {
 	public void registerCommandListener(gcServerListenerCommand listener) {
 		if(listener == null) throw new NullPointerException("listener cannot be null");
 		TypeMustEqual(listenerType, listener);
-		gcServer.getLogger().debug("Registered listener: "+listener.toString());
+		Main.getLogger().debug("Registered listener: "+listener.toString());
 		listeners.add(listener);
 	}
 
@@ -28,7 +28,7 @@ public class gcServerListenerGroup extends pxnListenerGroup {
 	// listener type equals
 	public static void TypeMustEqual(ListenerType listenerType, gcServerListener listener) {
 		if(!TypeEquals(listenerType, listener)) {
-			gcServer.getLogger().severe("Invalid listener type!");
+			Main.getLogger().severe("Invalid listener type!");
 			throw new IllegalArgumentException("Invalid listener type!");
 		}
 	}
@@ -40,7 +40,7 @@ public class gcServerListenerGroup extends pxnListenerGroup {
 		//
 //		else if(listener instanceof gcServerListenerSomethingelse)
 //			return listenerType.equals(ListenerType);
-		gcServer.getLogger().severe("Unknown listener type!");
+		Main.getLogger().severe("Unknown listener type!");
 		throw new IllegalArgumentException("Unknown listener type!");
 	}
 

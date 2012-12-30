@@ -22,7 +22,7 @@ public class pxnSocketWorkerSender extends Thread {
 	private BlockingQueue<String> queueOut;
 
 
-	public pxnSocketWorkerSender(pxnSocketWorker worker, Socket socket, BlockingQueue<String> queueOut) {
+	public pxnSocketWorkerSender(pxnSocketWorker worker, Socket socket) {
 		super("Socket-Sender-"+Integer.toString(worker.socketId));
 		this.worker = worker;
 		this.socket = socket;
@@ -32,7 +32,7 @@ public class pxnSocketWorkerSender extends Thread {
 		} catch (IOException e) {
 			pxnLogger.getLogger().exception(e);
 		}
-		this.queueOut = queueOut;
+		this.queueOut = worker.processor.getOutputQueue();
 	}
 
 
