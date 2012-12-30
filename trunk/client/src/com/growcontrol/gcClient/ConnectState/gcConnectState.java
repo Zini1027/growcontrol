@@ -47,7 +47,7 @@ System.out.println("state: CLOSED");
 			// display login card
 			loginWindow.setDisplay(LoginWindows.LOGIN);
 			// close socket
-			pxnSocketClient socket = Main.getSocket();
+			pxnSocketClient socket = Main.getClient().getSocket();
 			if(socket != null) {
 				socket.close();
 				socket = null;

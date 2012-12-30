@@ -55,7 +55,7 @@ public class gcClientPluginManager extends pxnPluginManager {
 
 	// add frame to dashboard
 	public void addFrame(gcPluginFrame frame) {
-		Main.getConnectState().getFrame("dashboard");
+		Main.getClient().getConnectState().getFrame("dashboard");
 	}
 
 
