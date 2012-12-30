@@ -32,9 +32,9 @@ public class pxnSocketWorker {
 			pxnLogger.getLogger().exception(e);
 		}
 		// reader thread
-		threadReader = new pxnSocketWorkerReader(this, socket, processor.getInputQueue());
+		threadReader = new pxnSocketWorkerReader(this, socket);
 		// sender thread
-		threadSender = new pxnSocketWorkerSender(this, socket, processor.getOutputQueue());
+		threadSender = new pxnSocketWorkerSender(this, socket);
 		// start threads
 		threadReader.start();
 		threadSender.start();

@@ -5,13 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import com.growcontrol.gcServer.gcServer;
+import com.growcontrol.gcServer.Main;
 import com.growcontrol.gcServer.logger.gcLogger;
 
 
 public class gcSchedulerManager {
 
-	private final gcLogger log = gcServer.getLogger();
+	private final gcLogger log = Main.getLogger();
 
 //	protected Timer timerSingleThread = new Timer();
 

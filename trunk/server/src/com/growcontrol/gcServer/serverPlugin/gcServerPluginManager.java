@@ -2,7 +2,7 @@ package com.growcontrol.gcServer.serverPlugin;
 
 import java.io.File;
 
-import com.growcontrol.gcServer.gcServer;
+import com.growcontrol.gcServer.Main;
 import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListenerCommand;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListenerGroup;
@@ -49,7 +49,7 @@ public class gcServerPluginManager extends pxnPluginManager {
 //		return commandListenerGroup;
 //	}
 	public boolean triggerEvent(gcServerEventCommand event) {
-		gcServer.getLogger().debug("Triggering event: "+event.getLine().getFirst());
+		Main.getLogger().debug("Triggering event: "+event.getLine().getFirst());
 		for(EventPriority priority : EventPriority.values()) {
 			if(commandListenerGroup.triggerEvent(event, priority))
 				event.setHandled();

@@ -22,7 +22,7 @@ public class ServerConfig {
 		try {
 			config = pxnConfig.loadFile(configsPath, "config.yml");
 		} catch (Exception e) {
-			gcServer.getLogger().exception(e);
+			Main.getLogger().exception(e);
 		}
 	}
 
