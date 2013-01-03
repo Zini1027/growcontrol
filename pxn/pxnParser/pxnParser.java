@@ -6,11 +6,12 @@ import java.util.List;
 
 public class pxnParser {
 
-	protected String original;
+	protected final String original;
 	protected String temp;
 	protected String first;
 	protected String part;
-	protected char delim;
+	protected final char delim;
+	private boolean hasNexted = false; // is on first iteration
 	
 
 	// new parser
@@ -22,8 +23,7 @@ public class pxnParser {
 		this.original = data;
 		this.temp     = data;
 		this.delim    = delim;
-		next();
-		this.first = part;
+		reset();
 	}
 	// parse into list
 	public List<String> getList() {
@@ -60,6 +60,7 @@ public class pxnParser {
 			part = temp.substring(0, index);
 			temp = temp.substring(index+1);
 		}
+		hasNexted = true;
 		return true;
 	}
 	public String getNext() {
@@ -80,7 +81,7 @@ public class pxnParser {
 	}
 	// get rest of string
 	public String getRest() {
-		return temp;
+		return temp.trim();
 //		String str = "";
 //		String part;
 //		while((part = getNext()) != null)
@@ -90,14 +91,33 @@ public class pxnParser {
 
 
 	// reset parsing string to original
-	public void reset() {
-		temp = original;
+	public pxnParser reset() {
+		if(hasNexted) {
+			temp = original;
+			next();
+			this.first = part;
+			hasNexted = false;
+		}
+		return this;
 	}
 
 
 	// get original string
 	public String getOriginal() {
 		return original;
+	}
+
+
+	// part equals
+	public boolean isFirst(String equals) {
+		if(first == null)
+			return equals == null;
+		return first.equalsIgnoreCase(equals);
+	}
+	public boolean isPart(String equals) {
+		if(part == null)
+			return equals == null;
+		return part.equalsIgnoreCase(equals);
 	}
 
 
