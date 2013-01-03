@@ -56,8 +56,6 @@ public class gcServer {
 
 	// server instance
 	public gcServer() {
-		Main.displayLogoHeader();
-		Main.displayStartupVars();
 		log = Main.getLogger();
 		startTime = pxnUtils.getCurrentMillis();
 	}

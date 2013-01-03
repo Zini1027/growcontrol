@@ -32,6 +32,8 @@ public class Main {
 			new pxnLoggerConsole(pxnLogger.getReader(),
 				new pxnLevel(pxnLevel.LEVEL.DEBUG)) );
 		server = new gcServer();
+		displayLogoHeader();
+		displayStartupVars();
 //		pluginManager.setMainClassYmlName("Server Main");
 //doesn't log anything
 //try {
