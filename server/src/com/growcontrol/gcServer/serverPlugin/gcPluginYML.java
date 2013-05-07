@@ -3,7 +3,7 @@ package com.growcontrol.gcServer.serverPlugin;
 import java.io.File;
 import java.util.HashMap;
 
-import com.poixson.pxnPlugin.pxnPluginYML;
+import com.gcCommon.pxnPlugin.pxnPluginYML;
 
 
 public class gcPluginYML extends pxnPluginYML {

@@ -2,7 +2,7 @@ package com.growcontrol.gcServer.serverPlugin;
 
 import com.growcontrol.gcServer.logger.gcLogger;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListenerCommand;
-import com.poixson.pxnPlugin.pxnPlugin;
+import com.gcCommon.pxnPlugin.pxnPlugin;
 
 
 public abstract class gcServerPlugin extends pxnPlugin {

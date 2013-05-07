@@ -1,7 +1,7 @@
 package com.growcontrol.gcServer.serverPlugin.listeners;
 
 import com.growcontrol.gcServer.Main;
-import com.poixson.pxnListener.pxnListenerGroup;
+import com.gcCommon.pxnListener.pxnListenerGroup;
 
 
 public class gcServerListenerGroup extends pxnListenerGroup {
