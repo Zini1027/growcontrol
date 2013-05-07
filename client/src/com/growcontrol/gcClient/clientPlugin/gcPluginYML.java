@@ -2,7 +2,7 @@ package com.growcontrol.gcClient.clientPlugin;
 
 import java.io.File;
 
-import com.poixson.pxnPlugin.pxnPluginYML;
+import com.gcCommon.pxnPlugin.pxnPluginYML;
 
 
 public class gcPluginYML extends pxnPluginYML {

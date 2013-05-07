@@ -19,8 +19,8 @@ import com.growcontrol.gcClient.gcClient;
 import com.growcontrol.gcClient.frames.LoginFrame.LoginWindows;
 import com.growcontrol.gcClient.socketClient.gcSocketProcessor;
 import com.growcontrol.gcClient.socketClient.sendClientPackets;
-import com.poixson.pxnUtils;
-import com.poixson.pxnSocket.pxnSocketClient;
+import com.gcCommon.pxnUtils;
+import com.gcCommon.pxnSocket.pxnSocketClient;
 
 
 public class LoginHandler implements gcFrameHandler, ActionListener, KeyEventDispatcher {

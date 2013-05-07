@@ -7,9 +7,9 @@ import com.growcontrol.gcClient.clientPlugin.events.gcClientEventCommand;
 import com.growcontrol.gcClient.clientPlugin.listeners.gcClientListenerCommand;
 import com.growcontrol.gcClient.clientPlugin.listeners.gcClientListenerGroup;
 import com.growcontrol.gcClient.clientPlugin.listeners.gcClientListenerGroup.ListenerType;
-import com.poixson.pxnEvent.pxnEvent.EventPriority;
-import com.poixson.pxnPlugin.pxnPluginManager;
-import com.poixson.pxnPlugin.pxnPluginYML;
+import com.gcCommon.pxnEvent.pxnEvent.EventPriority;
+import com.gcCommon.pxnPlugin.pxnPluginManager;
+import com.gcCommon.pxnPlugin.pxnPluginYML;
 
 
 public class gcClientPluginManager extends pxnPluginManager {

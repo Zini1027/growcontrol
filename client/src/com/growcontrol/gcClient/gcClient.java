@@ -5,9 +5,9 @@ import java.util.List;
 
 import com.growcontrol.gcClient.ConnectState.gcConnectState;
 import com.growcontrol.gcClient.clientPlugin.gcClientPluginManager;
-import com.poixson.pxnUtils;
-import com.poixson.pxnParser.pxnParser;
-import com.poixson.pxnSocket.pxnSocketClient;
+import com.gcCommon.pxnUtils;
+import com.gcCommon.pxnParser.pxnParser;
+import com.gcCommon.pxnSocket.pxnSocketClient;
 
 
 public class gcClient {
