@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 import com.growcontrol.gcServer.Main;
 import com.growcontrol.gcServer.logger.gcLogger;
 import com.growcontrol.gcServer.serverPlugin.gcPluginYML;
-import com.poixson.pxnSocket.pxnSocketProcessor;
+import com.gcCommon.pxnSocket.pxnSocketProcessor;
 
 
 public class sendServerPackets {

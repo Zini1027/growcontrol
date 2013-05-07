@@ -1,9 +1,9 @@
 package com.growcontrol.gcServer.socketServer;
 
 import com.growcontrol.gcServer.gcServer;
-import com.poixson.pxnParser.pxnParser;
-import com.poixson.pxnSocket.pxnSocketProcessor;
-import com.poixson.pxnSocket.pxnSocketProcessorThreaded;
+import com.gcCommon.pxnParser.pxnParser;
+import com.gcCommon.pxnSocket.pxnSocketProcessor;
+import com.gcCommon.pxnSocket.pxnSocketProcessorThreaded;
 
 
 public class gcSocketProcessor extends pxnSocketProcessorThreaded {

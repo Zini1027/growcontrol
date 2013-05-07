@@ -4,10 +4,10 @@ import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
 import com.growcontrol.gcServer.logger.gcLogger;
-import com.poixson.pxnLogger.pxnLevel;
-import com.poixson.pxnLogger.pxnLogger;
-import com.poixson.pxnLogger.pxnLoggerConsole;
-import com.poixson.pxnThreadQueue.pxnThreadQueue;
+import com.gcCommon.pxnLogger.pxnLevel;
+import com.gcCommon.pxnLogger.pxnLogger;
+import com.gcCommon.pxnLogger.pxnLoggerConsole;
+import com.gcCommon.pxnThreadQueue.pxnThreadQueue;
 
 
 public class Main {

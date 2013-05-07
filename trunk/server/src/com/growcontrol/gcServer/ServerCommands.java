@@ -2,8 +2,8 @@ package com.growcontrol.gcServer;
 
 import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
 import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListenerCommand;
-import com.poixson.pxnCommand.pxnCommand;
-import com.poixson.pxnEvent.pxnEvent.EventPriority;
+import com.gcCommon.pxnCommand.pxnCommand;
+import com.gcCommon.pxnEvent.pxnEvent.EventPriority;
 
 
 public class ServerCommands extends gcServerListenerCommand {

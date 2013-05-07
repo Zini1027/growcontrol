@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
-import com.poixson.pxnCommand.pxnCommand;
+import com.gcCommon.pxnCommand.pxnCommand;
 
 
 public abstract class gcServerListenerCommand extends gcServerListener {
