@@ -6,7 +6,7 @@ import com.growcontrol.gcClient.Main;
 import com.growcontrol.gcClient.frames.DashboardHandler;
 import com.growcontrol.gcClient.frames.LoginFrame.LoginWindows;
 import com.growcontrol.gcClient.frames.LoginHandler;
-import com.poixson.pxnSocket.pxnSocketClient;
+import com.gcCommon.pxnSocket.pxnSocketClient;
 
 
 public class gcConnectState extends ConnectState {

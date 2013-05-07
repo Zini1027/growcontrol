@@ -3,7 +3,7 @@ package com.growcontrol.gcClient.clientPlugin;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.poixson.pxnPlugin.pxnPlugin;
+import com.gcCommon.pxnPlugin.pxnPlugin;
 
 
 public abstract class gcClientPlugin  extends pxnPlugin {

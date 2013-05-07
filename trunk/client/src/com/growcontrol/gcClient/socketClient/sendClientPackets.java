@@ -1,6 +1,6 @@
 package com.growcontrol.gcClient.socketClient;
 
-import com.poixson.pxnSocket.pxnSocketProcessor;
+import com.gcCommon.pxnSocket.pxnSocketProcessor;
 
 
 public class sendClientPackets {
