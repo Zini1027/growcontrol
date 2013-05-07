@@ -1,10 +1,10 @@
-package com.poixson.pxnSocket;
+package com.gcCommon.pxnSocket;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import com.poixson.pxnParser.pxnParser;
+import com.gcCommon.pxnParser.pxnParser;
 
 
 public abstract class pxnSocketProcessorThreaded extends Thread implements pxnSocketProcessor {

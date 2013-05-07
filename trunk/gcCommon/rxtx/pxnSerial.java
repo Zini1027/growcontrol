@@ -1,4 +1,4 @@
-package com.poixson.rxtx;
+package com.gcCommon.rxtx;
 
 import gnu.io.CommPortIdentifier;
 

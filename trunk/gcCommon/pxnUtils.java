@@ -1,4 +1,4 @@
-package com.poixson;
+package com.gcCommon;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.regex.Pattern;
 
-import com.poixson.pxnLogger.pxnLogger;
+import com.gcCommon.pxnLogger.pxnLogger;
 
 
 public class pxnUtils {

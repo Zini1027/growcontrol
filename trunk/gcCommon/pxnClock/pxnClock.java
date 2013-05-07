@@ -1,4 +1,4 @@
-package com.poixson.pxnClock;
+package com.gcCommon.pxnClock;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -9,7 +9,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.poixson.pxnLogger.pxnLogger;
+import com.gcCommon.pxnLogger.pxnLogger;
 
 
 public class pxnClock {

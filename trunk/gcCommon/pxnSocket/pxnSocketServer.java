@@ -1,4 +1,4 @@
-package com.poixson.pxnSocket;
+package com.gcCommon.pxnSocket;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.poixson.pxnUtils;
-import com.poixson.pxnLogger.pxnLogger;
-import com.poixson.pxnThreadQueue.pxnThreadQueue;
+import com.gcCommon.pxnUtils;
+import com.gcCommon.pxnLogger.pxnLogger;
+import com.gcCommon.pxnThreadQueue.pxnThreadQueue;
 
 
 public class pxnSocketServer implements pxnSocket {

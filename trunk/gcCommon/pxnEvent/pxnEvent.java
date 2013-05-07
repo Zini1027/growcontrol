@@ -1,4 +1,4 @@
-package com.poixson.pxnEvent;
+package com.gcCommon.pxnEvent;
 
 
 public class pxnEvent {

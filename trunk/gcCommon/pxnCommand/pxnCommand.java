@@ -1,4 +1,4 @@
-package com.poixson.pxnCommand;
+package com.gcCommon.pxnCommand;
 
 import java.util.ArrayList;
 import java.util.List;

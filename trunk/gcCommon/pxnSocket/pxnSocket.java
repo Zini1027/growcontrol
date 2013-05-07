@@ -1,4 +1,4 @@
-package com.poixson.pxnSocket;
+package com.gcCommon.pxnSocket;
 
 
 public interface pxnSocket {

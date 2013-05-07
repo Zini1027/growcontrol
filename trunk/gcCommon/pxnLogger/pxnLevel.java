@@ -1,4 +1,4 @@
-package com.poixson.pxnLogger;
+package com.gcCommon.pxnLogger;
 
 
 public class pxnLevel {

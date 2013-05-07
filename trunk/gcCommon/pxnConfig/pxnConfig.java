@@ -1,4 +1,4 @@
-package com.poixson.pxnConfig;
+package com.gcCommon.pxnConfig;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,8 +12,8 @@ import java.util.jar.JarFile;
 
 import org.yaml.snakeyaml.Yaml;
 
-import com.poixson.pxnUtils;
-import com.poixson.pxnLogger.pxnLogger;
+import com.gcCommon.pxnUtils;
+import com.gcCommon.pxnLogger.pxnLogger;
 
 
 public class pxnConfig {

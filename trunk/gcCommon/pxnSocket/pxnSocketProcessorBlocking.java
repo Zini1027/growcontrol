@@ -1,9 +1,9 @@
-package com.poixson.pxnSocket;
+package com.gcCommon.pxnSocket;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import com.poixson.pxnParser.pxnParser;
+import com.gcCommon.pxnParser.pxnParser;
 
 
 public abstract class pxnSocketProcessorBlocking implements pxnSocketProcessor {

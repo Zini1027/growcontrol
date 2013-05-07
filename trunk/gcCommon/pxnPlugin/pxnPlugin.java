@@ -1,6 +1,6 @@
-package com.poixson.pxnPlugin;
+package com.gcCommon.pxnPlugin;
 
-import com.poixson.pxnLogger.pxnLogger;
+import com.gcCommon.pxnLogger.pxnLogger;
 
 
 public abstract class pxnPlugin {

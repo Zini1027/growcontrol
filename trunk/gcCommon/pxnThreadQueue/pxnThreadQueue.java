@@ -1,10 +1,10 @@
-package com.poixson.pxnThreadQueue;
+package com.gcCommon.pxnThreadQueue;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import com.poixson.pxnLogger.pxnLogger;
+import com.gcCommon.pxnLogger.pxnLogger;
 
 
 public class pxnThreadQueue implements Runnable {

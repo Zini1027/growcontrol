@@ -1,10 +1,10 @@
-package com.poixson.pxnPlugin;
+package com.gcCommon.pxnPlugin;
 
 import java.io.File;
 import java.io.IOException;
 
-import com.poixson.pxnConfig.pxnConfig;
-import com.poixson.pxnLogger.pxnLogger;
+import com.gcCommon.pxnConfig.pxnConfig;
+import com.gcCommon.pxnLogger.pxnLogger;
 
 
 public class pxnPluginYML {
