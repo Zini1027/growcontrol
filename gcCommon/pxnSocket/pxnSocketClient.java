@@ -1,4 +1,4 @@
-package com.poixson.pxnSocket;
+package com.gcCommon.pxnSocket;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -6,8 +6,8 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
-import com.poixson.pxnUtils;
-import com.poixson.pxnLogger.pxnLogger;
+import com.gcCommon.pxnUtils;
+import com.gcCommon.pxnLogger.pxnLogger;
 
 
 public class pxnSocketClient implements pxnSocket {

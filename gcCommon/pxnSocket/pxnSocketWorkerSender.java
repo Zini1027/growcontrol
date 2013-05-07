@@ -1,4 +1,4 @@
-package com.poixson.pxnSocket;
+package com.gcCommon.pxnSocket;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -10,7 +10,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 
-import com.poixson.pxnLogger.pxnLogger;
+import com.gcCommon.pxnLogger.pxnLogger;
 
 
 public class pxnSocketWorkerSender extends Thread {

@@ -1,11 +1,11 @@
-package com.poixson.pxnSocket;
+package com.gcCommon.pxnSocket;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 
-import com.poixson.pxnLogger.pxnLogger;
+import com.gcCommon.pxnLogger.pxnLogger;
 
 
 public class pxnSocketWorker {

@@ -1,4 +1,4 @@
-package com.poixson.pxnParser;
+package com.gcCommon.pxnParser;
 
 import java.util.ArrayList;
 import java.util.List;

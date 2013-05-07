@@ -1,10 +1,10 @@
-package com.poixson.pxnLogger;
+package com.gcCommon.pxnLogger;
 
 import java.text.SimpleDateFormat;
 
 import org.fusesource.jansi.Ansi;
 
-import com.poixson.pxnClock.pxnClock;
+import com.gcCommon.pxnClock.pxnClock;
 
 
 public final class pxnLogRecord {

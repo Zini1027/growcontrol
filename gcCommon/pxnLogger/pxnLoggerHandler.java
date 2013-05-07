@@ -1,6 +1,6 @@
-package com.poixson.pxnLogger;
+package com.gcCommon.pxnLogger;
 
-import com.poixson.pxnLogger.pxnLevel.LEVEL;
+import com.gcCommon.pxnLogger.pxnLevel.LEVEL;
 
 
 public interface pxnLoggerHandler {

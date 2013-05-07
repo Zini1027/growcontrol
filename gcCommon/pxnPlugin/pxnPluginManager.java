@@ -1,4 +1,4 @@
-package com.poixson.pxnPlugin;
+package com.gcCommon.pxnPlugin;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import com.poixson.pxnLogger.pxnLogger;
+import com.gcCommon.pxnLogger.pxnLogger;
 
 
 public class pxnPluginManager {

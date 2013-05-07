@@ -1,7 +1,7 @@
-package com.poixson.pxnListener;
+package com.gcCommon.pxnListener;
 
-import com.poixson.pxnEvent.pxnEvent;
-import com.poixson.pxnEvent.pxnEvent.EventPriority;
+import com.gcCommon.pxnEvent.pxnEvent;
+import com.gcCommon.pxnEvent.pxnEvent.EventPriority;
 
 
 public abstract class pxnListener {
