@@ -3,60 +3,87 @@ package com.gcCommon.pxnCommand;
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class pxnCommand {
-
-	protected final String name;
-	protected List<String> aliases = new ArrayList<String>();
-	protected String usageMsg = null;
+import com.gcCommon.pxnEvent.pxnEvent;
+import com.gcCommon.pxnListener.pxnListener;
 
 
-	public pxnCommand(String name) {
-		if(name == null) throw new NullPointerException("name cannot be null");
-		this.name = name;
+public class pxnCommand extends pxnListener {
+
+	private String commandStr = "";
+	private List<String> aliases = new ArrayList<String>();
+	private String usageMsg = null;
+
+
+	// command
+	public pxnCommand(String commandStr) {
+		if(commandStr == null) throw new NullPointerException("commandStr cannot be null");
+		this.commandStr = commandStr.toLowerCase();
 	}
-
-
-	// command name
-	public String getName() {
-		return name;
+	public String get(int index) {
+		if(index <= -1)
+			return commandStr;
+		if(index < aliases.size())
+			return aliases.get(index);
+		return null;
 	}
 	public String toString() {
-		return name;
+		return this.get(-1);
 	}
 
 
 	// aliases
-	public pxnCommand addAlias(String alias) {
-		if(alias == null) throw new NullPointerException("alias cannot be null");
-		aliases.add(alias.toLowerCase());
+	public pxnCommand addAlias(String aliasStr) {
+		if(aliasStr == null) throw new NullPointerException("aliasStr cannot be null");
+		this.aliases.add(aliasStr.toLowerCase());
 		return this;
 	}
 	public pxnCommand addAliases(List<String> aliases) {
-		if(aliases == null) throw new NullPointerException("aliases cannot be null");
+		if(aliases == null) throw new NullPointerException("aliases list cannot be null");
 		for(String alias : aliases)
-			aliases.add(alias);
+			this.addAlias(alias);
 		return this;
 	}
 
 
-	// is/has command/alias
-	public boolean equalsCommand(String name) {
-		if(name == null) throw new NullPointerException("name cannot be null");
-		// is command name
-		if(this.name.equalsIgnoreCase(name)) return true;
-		// has alias
-//System.out.println(this.name+"  [ "+pxnUtils.addStringSet("", aliases, ", ")+" ]");
-		return aliases.contains(name.toLowerCase());
+	// is command/alias
+	public boolean isCommand(String commandStr) {
+		if(commandStr == null) return false;
+		commandStr = commandStr.toLowerCase();
+		if(commandStr == this.commandStr)
+			return true;
+		if(this.hasAlias(commandStr))
+			return true;
+		return false;
 	}
-	
+	public boolean hasAlias(String commandStr) {
+		if(commandStr == null) return false;
+		commandStr = commandStr.toLowerCase();
+		for(String str : this.aliases)
+			if(str == commandStr)
+{
+//System.out.println(this.name+"  [ "+pxnUtils.addStringSet("", aliases, ", ")+" ]");
+				return true;
+}
+		return false;
+	}
+
 
 	// command usage
-	public String getUsage() {
-		return usageMsg;
+	public void setUsage(String usage) {
+		if(usage == null)
+			this.usageMsg = null;
+		else
+			this.usageMsg = usage;
 	}
-	public void setUsage(String usageMsg) {
-		this.usageMsg = usageMsg;
+	public String getUsage() {
+		return this.usageMsg;
+	}
+
+
+	@Override
+	public boolean doEvent(pxnEvent event) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 
