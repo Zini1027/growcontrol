@@ -17,6 +17,7 @@ public class pxnCommandEvent extends pxnEvent {
 	public pxnCommandEvent(pxnCommand command, String commandRaw) {
 		if(command    == null) throw new NullPointerException("command cannot be null!");
 		if(commandRaw == null) throw new NullPointerException("commandRaw cannot be null!");
+		if(commandRaw.isEmpty()) throw new NullPointerException("commandRaw cannot be empty!");
 		this.command = command;
 		this.commandRaw = commandRaw;
 		String[] tmp = commandRaw.split(" ");

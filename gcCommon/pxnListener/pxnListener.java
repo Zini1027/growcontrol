@@ -10,7 +10,7 @@ public abstract class pxnListener {
 
 
 	// event priority
-	protected void setPriority(EventPriority priority) {
+	public void setPriority(EventPriority priority) {
 		if(priority == null) throw new NullPointerException("priority cannot be null!");
 		this.priority = priority;
 	}
