@@ -1,16 +1,15 @@
 package com.growcontrol.gcServer;
 
-import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
-import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListenerCommand;
 import com.gcCommon.pxnCommand.pxnCommand;
+import com.gcCommon.pxnCommand.pxnCommandEvent;
+import com.gcCommon.pxnCommand.pxnCommandsGroup;
 import com.gcCommon.pxnEvent.pxnEvent.EventPriority;
 
 
-public class ServerCommands extends gcServerListenerCommand {
+public class ServerCommands extends pxnCommandsGroup {
 
 
 	public ServerCommands() {
-		setPriority(EventPriority.LOWEST);
 		// basic commands
 		add("stop")
 			.addAlias("exit")
@@ -46,32 +45,32 @@ public class ServerCommands extends gcServerListenerCommand {
 			.setUsage("");
 		add("threads")
 			.setUsage("Displays number of loaded threads, and optional details.");
+		setAllPriority(EventPriority.LOWEST);
 	}
 
 
 	@Override
-	public boolean onCommand(gcServerEventCommand event) {
+	public boolean onCommand(pxnCommandEvent event) {
 		if(event.isHandled())   return false;
-		if(!event.hasCommand()) return false;
-		pxnCommand command = event.getCommand();
+		pxnCommand command = event.command;
 		// basic commands
-		if(command.hasCommand("stop"))
+		if(command.isCommand("stop"))
 			return _commandStop();
-		else if(command.hasCommand("kill")) {
+		else if(command.isCommand("kill")) {
 			_commandKill();
 			return false;
-		} else if(command.hasCommand("pause"))
+		} else if(command.isCommand("pause"))
 			return _commandPause();
-		else if(command.hasCommand("clear"))
+		else if(command.isCommand("clear"))
 			return _commandClear();
-		else if(command.hasCommand("show"))
-			return _commandShow(event.getArgs());
-		else if(command.hasCommand("version"))
+		else if(command.isCommand("show"))
+			return _commandShow( (String[]) event.args.toArray());
+		else if(command.isCommand("version"))
 			return _commandVersion();
 		// tools
-		else if(command.hasCommand("ping"))
-			return _commandPing(event.getArgs());
-		else if(command.hasCommand("threads"))
+		else if(command.isCommand("ping"))
+			return _commandPing( (String[]) event.args.toArray());
+		else if(command.isCommand("threads"))
 			return _commandThreads();
 		return false;
 	}
@@ -79,7 +78,7 @@ public class ServerCommands extends gcServerListenerCommand {
 
 	// stop command
 	private static boolean _commandStop() {
-		gcServer.Shutdown();
+//		gcServer.Shutdown();
 		return true;
 	}
 
@@ -87,7 +86,7 @@ public class ServerCommands extends gcServerListenerCommand {
 	// kill command
 	private static void _commandKill() {
 		try {
-			gcServer.log.warning("Killing server! (Triggered by console command)");
+//			gcServer.log.warning("Killing server! (Triggered by console command)");
 		} catch(Exception ignore) {}
 		System.exit(0);
 	}
