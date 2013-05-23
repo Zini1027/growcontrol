@@ -16,7 +16,8 @@ public class pxnCommand extends pxnListener {
 
 	// command
 	public pxnCommand(String commandStr) {
-		if(commandStr == null) throw new NullPointerException("commandStr cannot be null");
+		if(commandStr == null)   throw new NullPointerException("commandStr cannot be null!");
+		if(commandStr.isEmpty()) throw new NullPointerException("commandStr cannot be empty!");
 		this.commandStr = commandStr.toLowerCase();
 	}
 	public String get(int index) {
@@ -33,12 +34,12 @@ public class pxnCommand extends pxnListener {
 
 	// aliases
 	public pxnCommand addAlias(String aliasStr) {
-		if(aliasStr == null) throw new NullPointerException("aliasStr cannot be null");
+		if(aliasStr == null || aliasStr.isEmpty()) return this;
 		this.aliases.add(aliasStr.toLowerCase());
 		return this;
 	}
 	public pxnCommand addAliases(List<String> aliases) {
-		if(aliases == null) throw new NullPointerException("aliases list cannot be null");
+		if(aliases == null) return this;
 		for(String alias : aliases)
 			this.addAlias(alias);
 		return this;
@@ -47,16 +48,19 @@ public class pxnCommand extends pxnListener {
 
 	// is command/alias
 	public boolean isCommand(String commandStr) {
-		if(commandStr == null) return false;
+		if(commandStr == null || commandStr.isEmpty()) return false;
 		commandStr = commandStr.toLowerCase();
+		// is command
 		if(commandStr == this.commandStr)
 			return true;
+		// is alias
 		if(this.hasAlias(commandStr))
 			return true;
+		// not a match
 		return false;
 	}
 	public boolean hasAlias(String commandStr) {
-		if(commandStr == null) return false;
+		if(commandStr == null || commandStr.isEmpty()) return false;
 		commandStr = commandStr.toLowerCase();
 		for(String str : this.aliases)
 			if(str == commandStr)
@@ -70,7 +74,7 @@ public class pxnCommand extends pxnListener {
 
 	// command usage
 	public void setUsage(String usage) {
-		if(usage == null)
+		if(usage == null || usage.isEmpty())
 			this.usageMsg = null;
 		else
 			this.usageMsg = usage;

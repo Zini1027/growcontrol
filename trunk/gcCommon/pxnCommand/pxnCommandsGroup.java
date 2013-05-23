@@ -26,6 +26,8 @@ pxnLogger.getLogger().debug("Registered command: "+command.toString());
 	}
 	// new command
 	public pxnCommand addCommand(String commandStr) {
+		if(commandStr == null)   throw new NullPointerException("commandStr cannot be null!");
+		if(commandStr.isEmpty()) throw new NullPointerException("commandStr cannot be empty!");
 		commandStr = commandStr.toLowerCase();
 		// command exists
 		if(commands.containsKey(commandStr))
@@ -35,13 +37,24 @@ pxnLogger.getLogger().debug("Registered command: "+command.toString());
 		this.register(command);
 		return command;
 	}
+	protected pxnCommand add(String commandStr) {
+		return this.addCommand(commandStr);
+	}
 
 
-	// trigger event
+	// priority
+	public void setAllPriority(EventPriority priority) {
+		if(priority == null) priority = EventPriority.NORMAL;
+		for(pxnCommand command : this.commands.values())
+			command.setPriority(priority);
+	}
+
+
+	// trigger command
 	public boolean triggerEvent(pxnCommandEvent event, EventPriority onlyPriority) {
+		if(event        == null) throw new NullPointerException("event cannot be null!");
+		if(onlyPriority == null) throw new NullPointerException("onlyPriority cannot be null!");
 		return false;
-//		if(event        == null) throw new NullPointerException("event cannot be null!");
-//		if(onlyPriority == null) throw new NullPointerException("onlyPriority cannot be null!");
 //		synchronized(listeners) {
 //			// loop listeners
 //			for(pxnListener listener : listeners)
@@ -52,7 +65,11 @@ pxnLogger.getLogger().debug("Registered command: "+command.toString());
 //		}
 	}
 	// do event
-//	public abstract boolean onCommand(gcServerEventCommand event);
+	public boolean onCommand(pxnCommandEvent event) {
+//TODO:
+	}
+
+
 //	public boolean doEvent(gcServerEventCommand event) {
 //		if(event == null) throw new NullPointerException("event cannot be null");
 //System.out.println("ONCOMMAND "+event.toString());
