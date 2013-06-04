@@ -1,4 +1,4 @@
-package com.gcCommon.pxnSocket;
+package com.growcontrol.gcCommon.pxnSocket;
 
 
 public interface pxnSocketProcessorFactory {

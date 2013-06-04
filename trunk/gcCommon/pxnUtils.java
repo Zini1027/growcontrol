@@ -1,4 +1,4 @@
-package com.gcCommon;
+package com.growcontrol.gcCommon;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.regex.Pattern;
 
-import com.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
 public class pxnUtils {

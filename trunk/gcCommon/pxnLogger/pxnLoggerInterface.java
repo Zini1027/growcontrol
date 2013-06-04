@@ -1,6 +1,6 @@
-package com.gcCommon.pxnLogger;
+package com.growcontrol.gcCommon.pxnLogger;
 
-import com.gcCommon.pxnLogger.pxnLevel.LEVEL;
+import com.growcontrol.gcCommon.pxnLogger.pxnLevel.LEVEL;
 
 
 public interface pxnLoggerInterface {

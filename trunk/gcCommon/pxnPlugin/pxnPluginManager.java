@@ -1,4 +1,4 @@
-package com.gcCommon.pxnPlugin;
+package com.growcontrol.gcCommon.pxnPlugin;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import com.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
 public class pxnPluginManager {

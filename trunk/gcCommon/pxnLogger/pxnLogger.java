@@ -1,4 +1,4 @@
-package com.gcCommon.pxnLogger;
+package com.growcontrol.gcCommon.pxnLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import jline.History;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
-import com.gcCommon.pxnLogger.pxnLevel.LEVEL;
+import com.growcontrol.gcCommon.pxnLogger.pxnLevel.LEVEL;
 
 
 public class pxnLogger implements pxnLoggerInterface, pxnLogPrinter {

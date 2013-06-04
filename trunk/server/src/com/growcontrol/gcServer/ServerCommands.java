@@ -1,9 +1,9 @@
 package com.growcontrol.gcServer;
 
-import com.gcCommon.pxnCommand.pxnCommand;
-import com.gcCommon.pxnCommand.pxnCommandEvent;
-import com.gcCommon.pxnCommand.pxnCommandsGroup;
-import com.gcCommon.pxnEvent.pxnEvent.EventPriority;
+import com.growcontrol.gcCommon.pxnCommand.pxnCommand;
+import com.growcontrol.gcCommon.pxnCommand.pxnCommandEvent;
+import com.growcontrol.gcCommon.pxnCommand.pxnCommandsGroup;
+import com.growcontrol.gcCommon.pxnEvent.pxnEvent.EventPriority;
 
 
 public class ServerCommands extends pxnCommandsGroup {

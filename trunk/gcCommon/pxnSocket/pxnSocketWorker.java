@@ -1,11 +1,11 @@
-package com.gcCommon.pxnSocket;
+package com.growcontrol.gcCommon.pxnSocket;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 
-import com.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
 public class pxnSocketWorker {

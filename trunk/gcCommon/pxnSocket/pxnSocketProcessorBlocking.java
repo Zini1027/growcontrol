@@ -1,9 +1,9 @@
-package com.gcCommon.pxnSocket;
+package com.growcontrol.gcCommon.pxnSocket;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import com.gcCommon.pxnParser.pxnParser;
+import com.growcontrol.gcCommon.pxnParser.pxnParser;
 
 
 public abstract class pxnSocketProcessorBlocking implements pxnSocketProcessor {

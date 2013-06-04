@@ -2,8 +2,8 @@ package com.growcontrol.gcServer.serverPlugin.listeners;
 
 import com.growcontrol.gcServer.serverPlugin.events.gcServerEvent;
 import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
-import com.gcCommon.pxnEvent.pxnEvent;
-import com.gcCommon.pxnListener.pxnListener;
+import com.growcontrol.gcCommon.pxnEvent.pxnEvent;
+import com.growcontrol.gcCommon.pxnListener.pxnListener;
 
 
 public class gcServerListener extends pxnListener {

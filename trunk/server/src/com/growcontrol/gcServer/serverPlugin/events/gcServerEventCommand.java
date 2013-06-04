@@ -1,7 +1,7 @@
 package com.growcontrol.gcServer.serverPlugin.events;
 
-import com.gcCommon.pxnCommand.pxnCommand;
-import com.gcCommon.pxnParser.pxnParser;
+import com.growcontrol.gcCommon.pxnCommand.pxnCommand;
+import com.growcontrol.gcCommon.pxnParser.pxnParser;
 
 
 public class gcServerEventCommand extends gcServerEvent {

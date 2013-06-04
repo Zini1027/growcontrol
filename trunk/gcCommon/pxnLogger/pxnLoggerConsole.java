@@ -1,7 +1,6 @@
-package com.gcCommon.pxnLogger;
+package com.growcontrol.gcCommon.pxnLogger;
 
 import java.io.IOException;
-
 
 
 public class pxnLoggerConsole implements pxnLoggerHandler {

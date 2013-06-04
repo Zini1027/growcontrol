@@ -1,4 +1,4 @@
-package com.gcCommon.pxnSocket;
+package com.growcontrol.gcCommon.pxnSocket;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -6,8 +6,8 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
-import com.gcCommon.pxnUtils;
-import com.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnUtils;
+import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
 public class pxnSocketClient implements pxnSocket {

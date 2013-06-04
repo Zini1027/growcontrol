@@ -1,4 +1,4 @@
-package com.gcCommon.pxnConfig;
+package com.growcontrol.gcCommon.pxnConfig;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,8 +12,8 @@ import java.util.jar.JarFile;
 
 import org.yaml.snakeyaml.Yaml;
 
-import com.gcCommon.pxnUtils;
-import com.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnUtils;
+import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
 public class pxnConfig {

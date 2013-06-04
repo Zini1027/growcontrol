@@ -1,10 +1,10 @@
-package com.gcCommon.pxnLogger;
+package com.growcontrol.gcCommon.pxnLogger;
 
 import java.text.SimpleDateFormat;
 
 import org.fusesource.jansi.Ansi;
 
-import com.gcCommon.pxnClock.pxnClock;
+import com.growcontrol.gcCommon.pxnClock.pxnClock;
 
 
 public final class pxnLogRecord {
