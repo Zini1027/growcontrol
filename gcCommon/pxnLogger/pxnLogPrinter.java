@@ -1,4 +1,4 @@
-package com.gcCommon.pxnLogger;
+package com.growcontrol.gcCommon.pxnLogger;
 
 
 public interface pxnLogPrinter {

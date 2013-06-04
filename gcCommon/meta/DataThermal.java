@@ -1,4 +1,4 @@
-package com.gcCommon.meta;
+package com.growcontrol.gcCommon.meta;
 
 
 public class DataThermal implements DataType {

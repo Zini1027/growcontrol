@@ -1,4 +1,4 @@
-package com.gcCommon.pxnClock;
+package com.growcontrol.gcCommon.pxnClock;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -9,7 +9,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
 public class pxnClock {

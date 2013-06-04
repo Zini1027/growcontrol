@@ -12,10 +12,10 @@ import com.growcontrol.gcServer.scheduler.gcTicker;
 import com.growcontrol.gcServer.serverPlugin.gcServerPluginManager;
 import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
 import com.growcontrol.gcServer.socketServer.gcSocketProcessor;
-import com.gcCommon.pxnUtils;
-import com.gcCommon.pxnClock.pxnClock;
-import com.gcCommon.pxnSocket.pxnSocketProcessorFactory;
-import com.gcCommon.pxnSocket.pxnSocketServer;
+import com.growcontrol.gcCommon.pxnUtils;
+import com.growcontrol.gcCommon.pxnClock.pxnClock;
+import com.growcontrol.gcCommon.pxnSocket.pxnSocketProcessorFactory;
+import com.growcontrol.gcCommon.pxnSocket.pxnSocketServer;
 
 
 public class gcServer {

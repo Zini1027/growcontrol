@@ -1,6 +1,6 @@
-package com.gcCommon.pxnPlugin;
+package com.growcontrol.gcCommon.pxnPlugin;
 
-import com.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
 public abstract class pxnPlugin {

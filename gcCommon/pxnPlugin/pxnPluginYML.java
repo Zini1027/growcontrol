@@ -1,10 +1,10 @@
-package com.gcCommon.pxnPlugin;
+package com.growcontrol.gcCommon.pxnPlugin;
 
 import java.io.File;
 import java.io.IOException;
 
-import com.gcCommon.pxnConfig.pxnConfig;
-import com.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnConfig.pxnConfig;
+import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
 public class pxnPluginYML {

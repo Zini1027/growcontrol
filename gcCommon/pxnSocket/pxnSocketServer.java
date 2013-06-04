@@ -1,4 +1,4 @@
-package com.gcCommon.pxnSocket;
+package com.growcontrol.gcCommon.pxnSocket;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.gcCommon.pxnUtils;
-import com.gcCommon.pxnLogger.pxnLogger;
-import com.gcCommon.pxnThreadQueue.pxnThreadQueue;
+import com.growcontrol.gcCommon.pxnUtils;
+import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
 
 
 public class pxnSocketServer implements pxnSocket {

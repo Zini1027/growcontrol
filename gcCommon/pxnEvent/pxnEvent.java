@@ -1,4 +1,4 @@
-package com.gcCommon.pxnEvent;
+package com.growcontrol.gcCommon.pxnEvent;
 
 
 public class pxnEvent {

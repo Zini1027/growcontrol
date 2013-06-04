@@ -1,6 +1,6 @@
-package com.gcCommon.meta;
+package com.growcontrol.gcCommon.meta;
 
-import com.gcCommon.pxnUtils;
+import com.growcontrol.gcCommon.pxnUtils;
 
 
 public class DataVariable implements DataType {

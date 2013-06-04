@@ -3,8 +3,8 @@ package com.growcontrol.gcServer;
 import java.util.Collection;
 
 import com.growcontrol.gcServer.logger.gcLogger;
-import com.gcCommon.pxnUtils;
-import com.gcCommon.pxnConfig.pxnConfig;
+import com.growcontrol.gcCommon.pxnUtils;
+import com.growcontrol.gcCommon.pxnConfig.pxnConfig;
 
 
 public class ServerConfig {

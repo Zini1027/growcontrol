@@ -1,10 +1,10 @@
-package com.gcCommon.pxnThreadQueue;
+package com.growcontrol.gcCommon.pxnThreadQueue;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import com.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
 public class pxnThreadQueue implements Runnable {

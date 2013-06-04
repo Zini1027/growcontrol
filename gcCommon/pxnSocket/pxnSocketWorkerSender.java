@@ -1,4 +1,4 @@
-package com.gcCommon.pxnSocket;
+package com.growcontrol.gcCommon.pxnSocket;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -10,7 +10,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 
-import com.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
 public class pxnSocketWorkerSender extends Thread {

@@ -1,6 +1,6 @@
 package com.growcontrol.gcServer.logger;
 
-import com.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
 public class gcLogger extends pxnLogger {

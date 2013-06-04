@@ -1,4 +1,4 @@
-package com.gcCommon.pxnParser;
+package com.growcontrol.gcCommon.pxnParser;
 
 import java.util.ArrayList;
 import java.util.List;
