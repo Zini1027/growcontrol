@@ -47,12 +47,17 @@ public class pxnConfig {
 		if(jarFile  == null)   throw new NullPointerException("jarFile cannot be null!");
 		if(fileName == null)   throw new NullPointerException("fileName cannot be null!");
 		if(fileName.isEmpty()) throw new NullPointerException("fileName cannot be empty!");
+		pxnConfig config = null;
 		JarFile jar = new JarFile(jarFile);
 		JarEntry entry = jar.getJarEntry(fileName);
-		if(entry == null) return null;
-		InputStream fileStream = jar.getInputStream(entry);
-		if(fileStream == null) return null;
-		return new pxnConfig(fileStream);
+		if(entry != null) {
+			InputStream fileStream = jar.getInputStream(entry);
+			if(fileStream != null) {
+				config = new pxnConfig(fileStream);
+			}
+		}
+		if(jar != null) jar.close();
+		return config;
 	}
 
 

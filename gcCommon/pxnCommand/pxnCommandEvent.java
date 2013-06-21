@@ -1,9 +1,9 @@
-package com.gcCommon.pxnCommand;
+package com.growcontrol.gcCommon.pxnCommand;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.gcCommon.pxnEvent.pxnEvent;
+import com.growcontrol.gcCommon.pxnEvent.pxnEvent;
 
 
 public class pxnCommandEvent extends pxnEvent {

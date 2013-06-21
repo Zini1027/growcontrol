@@ -1,11 +1,11 @@
-package com.gcCommon.pxnCommand;
+package com.growcontrol.gcCommon.pxnCommand;
 
 import java.util.HashMap;
 
-import com.gcCommon.pxnEvent.pxnEvent.EventPriority;
-import com.gcCommon.pxnListener.pxnListener;
-import com.gcCommon.pxnListener.pxnListenerGroup;
-import com.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnEvent.pxnEvent.EventPriority;
+import com.growcontrol.gcCommon.pxnListener.pxnListener;
+import com.growcontrol.gcCommon.pxnListener.pxnListenerGroup;
+import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
 public class pxnCommandsGroup extends pxnListenerGroup {
@@ -66,6 +66,7 @@ pxnLogger.getLogger().debug("Registered command: "+command.toString());
 	}
 	// do event
 	public boolean onCommand(pxnCommandEvent event) {
+return false;
 //TODO:
 	}
 
