@@ -51,6 +51,7 @@ public class pxnPluginManager {
 		if(files == null)
 			throw new IOException(pluginsPath+" (Failed to get plugins list!)");
 		// loop .jar files
+@SuppressWarnings("unused")
 		int successful = 0;
 		int failed     = 0;
 		for(File f : files) {
@@ -239,13 +240,15 @@ public class pxnPluginManager {
 		addURL(file.toURI().toURL());
 		URL url = new File("jar:file://"+file.getAbsolutePath()+"!/").toURI().toURL();
 		URLClassLoader classLoader = new URLClassLoader(new URL[]{url});
+		Class<?> clss = null;
 		try {
-			return classLoader.loadClass(className);
+			clss = classLoader.loadClass(className);
 		} catch (Exception e) {
 			pxnLogger.getLogger().severe("Failed to load plugin class: "+className);
 			pxnLogger.getLogger().exception(e);
 		}
-		return null;
+		if(classLoader != null) classLoader.close();
+		return clss;
 	}
 	private static final Class<?>[] parameters = new Class[]{URL.class};
 	private static void addURL(URL url) throws IOException {
