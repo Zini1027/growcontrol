@@ -32,16 +32,6 @@ public class pxnCommand {
 				return true;
 		return false;
 	}
-//	public String getAlias(int index) {
-//		if(index < 0)
-//			return commandStr;
-//		if(index < aliases.size())
-//			return aliases.get(index);
-//		return null;
-//	}
-//	public String toString() {
-//		return this.getAlias(-1);
-//	}
 
 
 	// command usage

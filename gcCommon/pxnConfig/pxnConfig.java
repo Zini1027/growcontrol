@@ -16,6 +16,7 @@ import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
+// config file loader
 public class pxnConfig {
 
 	protected HashMap<String, Object> data = new HashMap<String, Object>();

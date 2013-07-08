@@ -3,7 +3,7 @@ package com.growcontrol.gcCommon.pxnCommand;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.growcontrol.gcCommon.pxnEvent.pxnEvent;
+import com.growcontrol.gcCommon.pxnListener.pxnEvent;
 
 
 public class pxnCommandEvent extends pxnEvent {
@@ -49,31 +49,11 @@ public class pxnCommandEvent extends pxnEvent {
 			return true;
 		return false;
 	}
-//	public boolean is(String compareStr) {
-//		if(compareStr == null) return false;
-//		String str = compareStr.toLowerCase();
-//Main.getLogger().warning("compareto: "+str);
-//		if(str.equals(this.commandStr))
-//			return true;
-//		if(this.args.contains(compareStr))
-//			return true;
-//		return false;
-//	}
 
 
 	public String[] getArgsArray() {
 		return (String[]) args.toArray();
 	}
-//	public String getAlias(int index) {
-//		if(index < 0)
-//			return commandStr;
-//		if(index < args.size())
-//			return args.get(index);
-//		return null;
-//	}
-//	public String toString() {
-//		return this.getAlias(-1);
-//	}
 
 
 }
