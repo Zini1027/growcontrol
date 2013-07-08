@@ -21,7 +21,7 @@ public abstract class pxnListener {
 	}
 
 
-	public abstract boolean doEvent(pxnEvent event);
+	public abstract boolean onEvent(pxnEvent event);
 
 
 }
