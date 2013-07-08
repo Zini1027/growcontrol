@@ -1,7 +1,6 @@
 package com.growcontrol.gcCommon.pxnListener;
 
-import com.growcontrol.gcCommon.pxnEvent.pxnEvent;
-import com.growcontrol.gcCommon.pxnEvent.pxnEvent.EventPriority;
+import com.growcontrol.gcCommon.pxnListener.pxnEvent.EventPriority;
 
 
 public abstract class pxnListener {

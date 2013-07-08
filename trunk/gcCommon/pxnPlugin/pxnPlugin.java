@@ -1,15 +1,18 @@
 package com.growcontrol.gcCommon.pxnPlugin;
 
+import com.growcontrol.gcCommon.pxnCommand.pxnCommandsHolder;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
 public abstract class pxnPlugin {
 
+	private pxnPluginManager pluginManager;
 
 	// load/unload plugin
 	public abstract String getPluginName();
 	public abstract void onEnable();
 	public abstract void onDisable();
+	public abstract void registerCommandsHolder(pxnCommandsHolder listener);
 
 
 	// plugin is enabled
@@ -23,8 +26,8 @@ public abstract class pxnPlugin {
 
 
 	// plugin manager
-	private pxnPluginManager pluginManager;
 	public pxnPluginManager getPluginManager() {
+		if(pluginManager == null) throw new NullPointerException("pluginManager not set!");
 		return pluginManager;
 	}
 	public void setPluginManager(pxnPluginManager pluginManager) {
@@ -35,10 +38,7 @@ public abstract class pxnPlugin {
 
 	// plugin logger
 	public pxnLogger getLogger() {
-		return getLogger(getPluginName());
-	}
-	public static pxnLogger getLogger(String pluginName) {
-		return pxnLogger.getLogger(pluginName);
+		return pxnLogger.getLogger(getPluginName());
 	}
 
 
