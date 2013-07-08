@@ -8,41 +8,71 @@ import com.growcontrol.gcCommon.pxnEvent.pxnEvent;
 
 public class pxnCommandEvent extends pxnEvent {
 
-	public final pxnCommand command;
 	public final String commandRaw;
 	public final String commandStr;
 	public final List<String> args = new ArrayList<String>();
 
 
-	public pxnCommandEvent(pxnCommand command, String commandRaw) {
-		if(command    == null) throw new NullPointerException("command cannot be null!");
-		if(commandRaw == null) throw new NullPointerException("commandRaw cannot be null!");
+	// new command event
+	public static pxnCommandEvent newEvent(String commandRaw, pxnCommandsHolder commandListener) {
+		if(commandRaw == null)      throw new NullPointerException("commandRaw cannot be null!");
+		if(commandRaw.isEmpty())    throw new NullPointerException("commandRaw cannot be empty!");
+		if(commandListener == null) throw new NullPointerException("commandListener cannot be null!");
+		// check for alias, return command
+		String commandStr = commandListener.getCommand(commandRaw);
+		// not found
+		if(commandStr == null) return null;
+		// new event
+		return new pxnCommandEvent(commandRaw, commandStr);
+	}
+	protected pxnCommandEvent(String commandRaw, String commandStr) {
+		if(commandStr == null)   throw new NullPointerException("commandStr cannot be null!");
+		if(commandStr.isEmpty()) throw new NullPointerException("commandStr cannot be empty!");
+		if(commandRaw == null)   throw new NullPointerException("commandRaw cannot be null!");
 		if(commandRaw.isEmpty()) throw new NullPointerException("commandRaw cannot be empty!");
-		this.command = command;
 		this.commandRaw = commandRaw;
+		this.commandStr = commandStr.trim().toLowerCase();
 		String[] tmp = commandRaw.split(" ");
-		if(tmp.length == 1) {
-			this.commandStr = commandRaw.trim().toLowerCase();
-		} else {
-			this.commandStr = tmp[0].trim().toLowerCase();
-			for(int i = 1; i < tmp.length; i++)
+		// args
+		if(tmp.length > 1) {
+			for(int i = 1; i < tmp.length; i++) {
+				if(tmp[i].isEmpty()) continue;
 				this.args.add(tmp[i]);
+			}
 		}
 	}
 
 
-//	public String getRaw() {
-//		return commandRaw;
+	public boolean equals(String compareStr) {
+		if(compareStr == null) return false;
+		if(compareStr.trim().toLowerCase() == commandStr)
+			return true;
+		return false;
+	}
+//	public boolean is(String compareStr) {
+//		if(compareStr == null) return false;
+//		String str = compareStr.toLowerCase();
+//Main.getLogger().warning("compareto: "+str);
+//		if(str.equals(this.commandStr))
+//			return true;
+//		if(this.args.contains(compareStr))
+//			return true;
+//		return false;
 //	}
-//	public String get(int index) {
-//		if(index <= -1)
+
+
+	public String[] getArgsArray() {
+		return (String[]) args.toArray();
+	}
+//	public String getAlias(int index) {
+//		if(index < 0)
 //			return commandStr;
 //		if(index < args.size())
 //			return args.get(index);
 //		return null;
 //	}
 //	public String toString() {
-//		return this.get(-1);
+//		return this.getAlias(-1);
 //	}
 
 
