@@ -1,10 +1,10 @@
 package com.growcontrol.gcCommon.meta;
 
 
-public class DataCommand {
+public class DataCommand implements DataType {
 
-	private String label;
-	private String[] args;
+	protected String label;
+	protected String[] args;
 
 
 	public DataCommand() {
@@ -13,6 +13,16 @@ public class DataCommand {
 	public DataCommand(String commandStr) {
 		this.label = commandStr;
 		this.args = commandStr.split(" ");
+	}
+
+
+	@Override
+	public String toString() {
+		return toString(null);
+	}
+	@Override
+	public String toString(String arg) {
+		return label;
 	}
 
 

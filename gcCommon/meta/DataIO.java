@@ -3,11 +3,16 @@ package com.growcontrol.gcCommon.meta;
 
 public class DataIO implements DataType {
 
-	private Boolean value = null;
+	protected Boolean value = null;
 
 
-	public Boolean get() {
-		return this.value;
+	@Override
+	public String toString() {
+		return toString(null);
+	}
+	@Override
+	public String toString(String arg) {
+		return Boolean.toString(this.value);
 	}
 
 

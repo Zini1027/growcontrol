@@ -5,16 +5,24 @@ import com.growcontrol.gcCommon.pxnUtils;
 
 public class DataVariable implements DataType {
 
-	private Integer value = null;
-	private int min = 0;
-	private int max = 1;
-	private int disabled = -1;
+	protected Integer value = null;
+	protected int min = 0;
+	protected int max = 1;
+	protected int disabled = -1;
 
 
-	public int get() {
+	public int getValue() {
 		if(this.value == null)
 			return this.disabled;
 		return pxnUtils.MinMax((int) this.value, this.min, this.max);
+	}
+	@Override
+	public String toString() {
+		return toString(null);
+	}
+	@Override
+	public String toString(String arg) {
+		return Integer.toString(getValue());
 	}
 
 
