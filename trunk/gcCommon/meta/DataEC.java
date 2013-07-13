@@ -3,11 +3,16 @@ package com.growcontrol.gcCommon.meta;
 
 public class DataEC implements DataType {
 
-	private long value;
+	protected long value;
 
 
-	public long get() {
-		return this.value;
+	@Override
+	public String toString() {
+		return toString(null);
+	}
+	@Override
+	public String toString(String arg) {
+		return Long.toString(this.value);
 	}
 
 
