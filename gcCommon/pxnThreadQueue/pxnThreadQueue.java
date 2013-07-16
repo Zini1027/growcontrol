@@ -127,10 +127,11 @@ public class pxnThreadQueue implements Runnable {
 			count++;
 			threadNames.add(t.getName());
 		}
-		log.severe("Threads still running: ("+count+")");
-		//Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
-		for(String t : threadNames)
-			log.printRaw(t);
+		if(count > 0) {
+			log.severe("Threads still running: ("+count+")");
+			for(String t : threadNames)
+				log.printRaw(t);
+		}
 	}
 
 
