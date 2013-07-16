@@ -52,13 +52,13 @@ public class pxnPluginManager {
 			throw new IOException(pluginsPath+" (Failed to get plugins list!)");
 		pxnLogger log = pxnLogger.get();
 		// loop .jar files
-@SuppressWarnings("unused")
-		int successful = 0;
+		//@SuppressWarnings("unused")
+		//int successful = 0;
 		int failed     = 0;
 		for(File f : files) {
 			try {
 				LoadPlugin(f);
-				successful++;
+				//successful++;
 			} catch(Exception e) {
 				// non-interrupted exception
 				log.exception(f.toString()+" (Failed to load plugin)", e);

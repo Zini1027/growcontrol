@@ -24,11 +24,6 @@ public class triggerCron implements Trigger {
 	public void setTrigger(String value) {
 		this.rawValue = value;
 	}
-//	@Override
-//	public void setTrigger(long value, TimeUnit unit) {
-//		this.value = TimeUnit.MILLISECONDS.convert(value, unit);
-//		this.rawValue = this.getTriggerStr();
-//	}
 	@Override
 	public String getTriggerOriginal() {
 		return this.rawValue;
@@ -44,12 +39,7 @@ public class triggerCron implements Trigger {
 	@Override
 	public TimeUnitTime UntilNext() {
 		return null;
-//		return UntilNext(time.get(TimeUnit.MILLISECONDS), TimeUnit.MILLISECONDS);
 	}
-//	@Override
-//	public long UntilNext(long timeLast, TimeUnit unit) {
-//		return 0;
-//	}
 	@Override
 	public void onTrigger() {
 		timeLast = getTime();

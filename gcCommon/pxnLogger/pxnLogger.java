@@ -31,7 +31,6 @@ public class pxnLogger implements pxnLoggerInterface, pxnLogPrinter {
 	protected static ConsoleReader reader = null;
 	// jAnsi
 	protected static PrintWriter out = new PrintWriter(AnsiConsole.out);
-//	protected PrintStream system;
 
 
 	// get logger
@@ -81,16 +80,6 @@ public class pxnLogger implements pxnLoggerInterface, pxnLogPrinter {
 				e.printStackTrace();
 			}
 		}
-//TODO:
-//		// intercept system output stream
-//		system = System.out;
-//		Ansi.
-//		System.setOut();
-//moved to gcServer
-//		// log to console
-//		logHandlers.add(new gcLoggerConsole(reader, logLevel));
-//		// log to file
-//		logHandlers.add(new gcLoggerFile().setStrip(true));
 	}
 	protected static boolean isInited() {
 		return inited;

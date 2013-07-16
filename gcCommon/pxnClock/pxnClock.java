@@ -13,9 +13,6 @@ import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
 public class pxnClock {
-//TODO: this needs to be made thread safe!
-//need to block or throw exception if time-server query hasn't finished
-
 	// instance
 	private static pxnClock clock = null;
 
@@ -48,16 +45,6 @@ public class pxnClock {
 	// new instance
 	protected pxnClock() {
 	}
-//	public static pxnClock getClock(boolean threaded) {
-//		if(pxnClock.clock == null) {
-//			pxnClock.clock = new pxnClock();
-//			pxnClock.clock.update(threaded);
-//		}
-//		return pxnClock.clock;
-//	}
-//	protected static void setClock(pxnClock clock) {
-//		pxnClock.clock = clock;
-//	}
 
 
 	// static update
@@ -146,14 +133,10 @@ socket.setSoTimeout(1000);
 //System.out.println("Dest. timestamp:     " + NtpMessage.timestampToString(destinationTimestamp));
 //System.out.println("Round-trip delay: " + new DecimalFormat("0.00").format(roundTripDelay*1000) + " ms");
 //System.out.println("Local clock offset: " + new DecimalFormat("0.00").format(localClockOffset*1000) + " ms");
-			} catch (UnknownHostException e) {
+			} catch (UnknownHostException | SocketTimeoutException e) {
 				log.exception(e);
-			} catch (SocketTimeoutException e) {
+			} catch (SocketException | IOException e) {
 				log.exception(e);
-//			} catch (SocketException e) {
-//				GrowControl.log.exception(e);
-//			} catch (IOException e) {
-//				GrowControl.log.exception(e);
 			} catch (Exception e) {
 				log.exception(e);
 			}

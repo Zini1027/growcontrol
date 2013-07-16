@@ -11,7 +11,7 @@ public class gcSocketProcessor extends pxnSocketProcessorThreaded {
 
 
 	public gcSocketProcessor() {
-//		// in/out queue size
+		// in/out queue size
 		super(1000, 1000);
 	}
 
@@ -41,12 +41,9 @@ pxnLogger.get().exception(e);
 //			sendData("SENDFILE: test.txt");
 pxnLogger.get().severe("SENDING FILE");
 			return;
-
-		// unknown packet
-		} else {
-			System.out.println("Unknown packet: "+line.getOriginal());
 		}
-//		pxnLogger.log().warning("Unknown Packet: "+line.getOriginal());
+		// unknown packet
+		pxnLogger.get().warning("Unknown Packet: "+line.getOriginal());
 	}
 
 

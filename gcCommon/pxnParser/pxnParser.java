@@ -82,11 +82,6 @@ public class pxnParser {
 	// get rest of string
 	public String getRest() {
 		return temp.trim();
-//		String str = "";
-//		String part;
-//		while((part = getNext()) != null)
-//			str += part;
-//		return str;
 	}
 
 

@@ -38,9 +38,9 @@ public class pxnSocketClient implements pxnSocket {
 		this.port = port;
 		// start connecting
 //		try {
-			pxnLogger.get().info("Connecting to: "+host+":"+Integer.toString(port));
-			socket = new Socket(host, port);
-			worker = new pxnSocketWorker(socket, processor);
+		pxnLogger.get().info("Connecting to: "+host+":"+Integer.toString(port));
+		socket = new Socket(host, port);
+		worker = new pxnSocketWorker(socket, processor);
 //		} catch(UnknownHostException e) {
 //			// unknown host
 //			pxnLogger.log().exception(e);
@@ -66,14 +66,7 @@ public class pxnSocketClient implements pxnSocket {
 //		} finally {
 //gcClient.setConnectState(ConnectState.READY);
 //		}
-//TODO: remove this
 	}
-
-
-//	@Override
-//	public void flushClosed() {
-//TODO: not needed?
-//	}
 
 
 	// close socket
@@ -85,12 +78,6 @@ public class pxnSocketClient implements pxnSocket {
 	public void forceCloseAll() {
 		close();
 	}
-//	public void close() throws IOException {
-//		if(socket == null) return;
-//		if(socket.isConnected() || !socket.isClosed())
-//			socket.close();
-//		socket = null;
-//	}
 	@Override
 	public void stop() {
 		close();

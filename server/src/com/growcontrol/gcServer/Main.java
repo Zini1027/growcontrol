@@ -13,12 +13,6 @@ import com.growcontrol.gcCommon.pxnLogger.pxnLoggerConsole;
 
 public class Main {
 
-//	// server instance
-//	private static gcServer server = null;
-
-//	// logger
-//	private static final gcLogger log = gcLogger.getLogger();
-
 	// command line arguments
 	private static String argsMsgStr = "";
 
@@ -118,24 +112,6 @@ public class Main {
 		System.out.println();
 		System.exit(0);
 	}
-
-
-//	// get server instance
-//	public static gcServer getServer() {
-//		return server;
-//	}
-
-
-	// shutdown server
-	public static void Shutdown() {
-		gcServer.get().Shutdown();
-	}
-
-
-//	// get main logger
-//	public static pxnLogger getLogger() {
-//		return pxnLogger.get();
-//	}
 
 
 	// ascii header

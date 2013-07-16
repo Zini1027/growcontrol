@@ -22,14 +22,10 @@ public abstract class pxnSchedulerTask implements Runnable {
 	private volatile int runCount = 0;
 
 //	private volatile boolean active = false;
-	private volatile long execTime = 0;
+//	private volatile long execTime = 0;
 
 
-//	// new task (multi-threaded) repeating
-//	public pxnSchedulerTask(boolean multiThreaded) {
-//		this(multiThreaded, true);
-//	}
-	// new task (multi-threaded, repeat)
+	// new task (multi-threaded, repeating)
 	public pxnSchedulerTask(boolean multiThreaded, boolean repeat) {
 		this.multiThreaded = multiThreaded;
 		this.repeat = repeat;
@@ -97,16 +93,7 @@ public abstract class pxnSchedulerTask implements Runnable {
 			}
 		}
 		runCount++;
-//gcServer.log.printRaw("Run Count: "+Integer.toString(runCount));
-//		run();
-//		if(runCount >= maxRunCount)
-//			paused = true;
 	}
-//	public void triggerThread() {
-//		if(thread == null && multiThreaded) start();
-//		if(thread == null) throw new NullPointerException();
-//		thread.start();
-//	}
 
 
 	// task name
@@ -134,8 +121,9 @@ public abstract class pxnSchedulerTask implements Runnable {
 		return runCount;
 	}
 	public long getAverageExecTime() {
-		if(runCount < 1) return -1;
-		return execTime / ((long) runCount);
+//		if(runCount < 1) return -1;
+//		return execTime / ((long) runCount);
+		return -1;
 	}
 
 

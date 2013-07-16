@@ -8,8 +8,6 @@ import com.growcontrol.gcServer.gcServer;
 
 public abstract class gcServerPlugin extends pxnPlugin {
 
-//	private pxnCommandsHolder commandsHolder = null;
-
 
 	// get plugin manager
 	@Override

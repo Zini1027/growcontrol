@@ -35,16 +35,9 @@ public class gcServer {
 	private boolean stopping = false;
 	protected String configsPath = null;
 
-//	// logger
-//	private final gcLogger log;
-
 	// server plugin manager
 	private final gcServerPluginManager pluginManager = new gcServerPluginManager();
 //	public final gcServerDeviceLoader deviceLoader = new gcServerDeviceLoader();
-
-//	// server scheduler
-//	private pxnScheduler scheduler = null;
-//	private gcTicker ticker = null;
 
 	// server socket pool
 	private pxnSocketServer socket = null;
@@ -55,7 +48,6 @@ public class gcServer {
 
 	// server instance
 	public gcServer() {
-//		log = Main.getLogger();
 	}
 	public static gcServer get() {
 		return server;
@@ -123,7 +115,7 @@ System.out.println(startTime);
 		}
 
 		// load scheduler
-		getScheduler().start();
+		pxnScheduler.get().start();
 		// load ticker
 		gcTicker.get();
 
@@ -176,7 +168,7 @@ pxnSchedulerTask task = new pxnSchedulerTask(true, true) {
 	}
 };
 task.addTrigger(new triggerInterval("3s"));
-getScheduler().newTask(task);
+pxnScheduler.get().newTask(task);
 
 //System.out.println("next run: "+task.UntilNextTrigger().get(TimeU.MS));
 
@@ -262,7 +254,7 @@ getScheduler().newTask(task);
 		addMainThread("Reload", new Runnable() {
 			@Override
 			public void run() {
-//TODO:
+//TODO:reload
 			}
 		});
 	}
@@ -301,17 +293,12 @@ getScheduler().newTask(task);
 		// trigger event
 		if(!listeners.triggerCommand(line)) {
 			// command not found
-//			for(String arg : args) commandStr += " "+arg;
-//			log.warning("Command not processed: "+commandStr);
 			pxnLogger.get().warning("Unknown command: "+line);
 		}
 	}
 
 
 	// main thread
-//	public static void addMainThread(Runnable runnable) {
-//		getMainThread().addQueue(runnable);
-//	}
 	public static void addMainThread(String name, Runnable runnable) {
 		getMainThread().addQueue(name, runnable);
 	}
@@ -339,29 +326,16 @@ getScheduler().newTask(task);
 		return this.startTime;
 	}
 	public long getUptime() {
-		return pxnUtils.getCurrentMillis() - getStartTime();
+		return pxnClock.get().Millis() - getStartTime();
 	}
 	public String getUptimeString() {
 		return Long.toString(getUptime());
 	}
 
 
-//	// get main logger
-//	public pxnLogger getLogger() {
-//		return pxnLogger.get();
-//	}
 	// get plugin manager
 	public gcServerPluginManager getPluginManager() {
 		return pluginManager;
-	}
-
-
-	// schedulers
-	public pxnScheduler getScheduler() {
-		return pxnScheduler.getScheduler("gcServer");
-//		if(scheduler == null)
-//			scheduler = pxnScheduler.getScheduler("gcServer");
-//		return scheduler;
 	}
 
 

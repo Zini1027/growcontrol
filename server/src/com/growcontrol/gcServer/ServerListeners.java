@@ -27,10 +27,6 @@ public class ServerListeners {
 	public boolean triggerCommand(String line) {
 		return commandListener.triggerCommandEvent(line);
 	}
-//	public boolean triggerCommand(pxnCommandEvent event) {
-//		if(event == null) throw new NullPointerException("event can't be null!");
-//		return commandListener.triggerCommandEvent(event);
-//	}
 
 
 }

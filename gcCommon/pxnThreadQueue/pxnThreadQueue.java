@@ -16,7 +16,6 @@ public class pxnThreadQueue implements Runnable {
 	protected final String queueName;
 	protected final BlockingQueue<pxnRunnable> queue = new ArrayBlockingQueue<pxnRunnable>(10);
 
-//	protected volatile boolean running  = false;
 	protected volatile boolean stopping = false;
 	protected volatile int active = 0;
 	protected volatile int maxThreads = 1;
@@ -54,14 +53,10 @@ public class pxnThreadQueue implements Runnable {
 	// run state
 	public boolean isRunning() {
 		return active > 0;
-//		return running;
 	}
 	public boolean isStopping() {
 		return stopping;
 	}
-//	public boolean isActive() {
-//		return (active>0);
-//	}
 	public int activeCount() {
 		return active;
 	}
@@ -70,7 +65,6 @@ public class pxnThreadQueue implements Runnable {
 	// run thread queue
 	@Override
 	public void run() {
-//		running = true;
 		while(!stopping) {
 			pxnRunnable run = null;
 			try {
@@ -79,6 +73,7 @@ public class pxnThreadQueue implements Runnable {
 				pxnLogger.get().exception(e);
 				break;
 			}
+			if(active < 0) active = 0;
 			if(run != null) {
 				active += 1;
 				try {
@@ -89,7 +84,6 @@ public class pxnThreadQueue implements Runnable {
 				active -= 1;
 			}
 		}
-//		running = false;
 		pxnLogger.get().info("("+queueName+") Stopped thread queue");
 	}
 
@@ -141,9 +135,6 @@ public class pxnThreadQueue implements Runnable {
 
 
 	// add to queue
-//	public void addQueue(Runnable runnable) {
-//		addQueue(null, runnable);
-//	}
 	public void addQueue(String name, Runnable runnable) {
 		if(runnable == null) throw new NullPointerException("("+queueName+") runnable can't be null!");
 		try {
