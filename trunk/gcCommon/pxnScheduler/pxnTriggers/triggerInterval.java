@@ -1,8 +1,8 @@
 package com.growcontrol.gcCommon.pxnScheduler.pxnTriggers;
 
-import java.util.concurrent.TimeUnit;
-
+import com.growcontrol.gcCommon.TimeU;
 import com.growcontrol.gcCommon.TimeUnitTime;
+import com.growcontrol.gcCommon.pxnClock.pxnClock;
 
 
 // interval trigger
@@ -10,7 +10,8 @@ import com.growcontrol.gcCommon.TimeUnitTime;
 public class triggerInterval implements Trigger {
 
 	protected String rawValue;
-	protected long value; // ms interval
+	protected TimeUnitTime interval = new TimeUnitTime();
+	protected volatile long timeLast = 0;
 
 
 	public triggerInterval(String value) {
@@ -20,36 +21,58 @@ public class triggerInterval implements Trigger {
 
 	// set/get value string
 	@Override
-	public void setTrigger(String value) {
-		if(value == null) value = "";
-		this.rawValue = value.trim().toLowerCase();
-		this.value = TimeUnitTime.ParseDuration(this.rawValue, TimeUnit.MILLISECONDS);
+	public void setTrigger(String interval) {
+		if(interval == null) interval = "";
+		this.rawValue = interval.trim().toLowerCase();
+		this.interval.set(
+			TimeUnitTime.ParseDuration(this.rawValue)
+		);
 	}
-	@Override
-	public void setTrigger(long value, TimeUnit unit) {
-		if(unit == null) throw new NullPointerException("unit cannot be null!");
-		this.value = TimeUnit.MILLISECONDS.convert(value, unit);
+//	@Override
+	public void setTrigger(TimeUnitTime interval) {
+		if(interval == null) throw new NullPointerException("interval cannot be null!");
+		this.interval.set(interval);
 		this.rawValue = this.getTriggerStr();
 	}
 	@Override
 	public String getTriggerOriginal() {
-		return this.rawValue;
+		return rawValue;
 	}
 	@Override
 	public String getTriggerStr() {
 //TODO: generate new string
-		return this.rawValue;
+		return rawValue;
 	}
 
 
 	// time until next trigger
 	@Override
-	public long UntilNext(TimeUnitTime time) {
-		return UntilNext(time.get(TimeUnit.MILLISECONDS), TimeUnit.MILLISECONDS);
+	public TimeUnitTime UntilNext() {
+		long timeNow = getTime();
+		if(timeLast == 0) timeLast = timeNow;
+		long timeSinceLast = timeNow - timeLast;
+//System.out.println("timeNow:"+timeNow+" timeLast:"+timeLast+" timeSinceLast:"+timeSinceLast+" timeUntil:"+(interval.get(TimeU.MS) - timeSinceLast) );
+		return new TimeUnitTime(
+			(interval.get(TimeU.MS) - timeSinceLast),
+			TimeU.MS);
+//		return UntilNext(time.get(TimeUnit.MILLISECONDS), TimeUnit.MILLISECONDS);
+	}
+//	@Override
+//	public long UntilNext(long timeLast, TimeUnit unit) {
+//		return unit.convert(timeLast % this.value, TimeUnit.MILLISECONDS);
+//	}
+	@Override
+	public void onTrigger() {
+		timeLast = getTime();
 	}
 	@Override
-	public long UntilNext(long timeLast, TimeUnit unit) {
-		return unit.convert(timeLast % this.value, TimeUnit.MILLISECONDS);
+	public void onTrigger(long time) {
+		timeLast = time;
+	}
+
+
+	protected static long getTime() {
+		return pxnClock.get().Millis();
 	}
 
 

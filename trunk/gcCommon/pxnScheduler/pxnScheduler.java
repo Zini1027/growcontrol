@@ -1,56 +1,171 @@
-package com.growcontrol.gcServer.scheduler;
+package com.growcontrol.gcCommon.pxnScheduler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import com.growcontrol.gcCommon.TimeU;
+import com.growcontrol.gcCommon.TimeUnitTime;
+import com.growcontrol.gcCommon.pxnUtils;
+import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
 import com.growcontrol.gcServer.Main;
+import com.growcontrol.gcServer.gcServer;
 import com.growcontrol.gcServer.logger.gcLogger;
 
 
-public class gcSchedulerManager {
+public class pxnScheduler extends Thread {
 
 	private final gcLogger log = Main.getLogger();
 
-//	protected Timer timerSingleThread = new Timer();
+	// scheduler manager
+//	protected final Timer timer;
+	protected final pxnThreadQueue threadPool;
+
+	protected volatile boolean running  = false;
+	protected volatile boolean stopping = false;
+	protected TimeUnitTime sleepTime = new TimeUnitTime();
+//	protected volatile int sleepCount = 0;
 
 	// schedulers by name
-	protected static HashMap<String, gcSchedulerManager> schedulers = new HashMap<String, gcSchedulerManager>();
+	protected static HashMap<String, pxnScheduler> schedulers = new HashMap<String, pxnScheduler>();
 
 	// scheduler instances
 	protected final String schedulerName;
-	protected final List<gcSchedulerTask> tasks = new ArrayList<gcSchedulerTask>();
+	protected final List<pxnSchedulerTask> tasks = new ArrayList<pxnSchedulerTask>();
 
 
-	public static gcSchedulerManager getScheduler(String schedulerName) {
-		gcSchedulerManager sched = null;
+	// get scheduler
+	public static pxnScheduler getScheduler() {
+		return getScheduler(null);
+	}
+	public static pxnScheduler getScheduler(String name) {
+		pxnScheduler sched = null;
 		synchronized(schedulers) {
-			if(schedulers.containsKey(schedulerName)) {
-				sched = schedulers.get(schedulerName);
+			if(schedulers.containsKey(name)) {
+				sched = schedulers.get(name);
 			} else {
 				// generate unique task name
-				if(schedulerName == null)
-					schedulerName = generateRandomName();
-				sched = new gcSchedulerManager(schedulerName);
-				schedulers.put(schedulerName, sched);
+				if(name == null)
+					name = generateRandomName();
+				sched = new pxnScheduler(name);
+				schedulers.put(name, sched);
 			}
 		}
 		return sched;
 	}
-	private gcSchedulerManager(String schedulerName) {
-		if(schedulerName == null) throw new NullPointerException("schedulerName cannot be null");
-		this.schedulerName = schedulerName;
-		log.debug("New scheduler created: "+schedulerName);
+
+
+	// new scheduler
+	protected pxnScheduler(String name) {
+		if(name == null) throw new NullPointerException("schedulerName cannot be null!");
+		this.schedulerName = name;
+//		this.timer = new Timer();
+		this.threadPool = new pxnThreadQueue("scheduler_"+name);
+		log.debug("("+name+") New scheduler created");
+	}
+
+
+	// start
+//	public void Start() {
+//		timer.schedule(this, 100, 100);
+//		running = true;
+//	}
+	// stop/pause
+	public void Pause() {
+		stopping = true;
+	}
+	// shutdown
+	public void Shutdown() {
+		Pause();
+		threadPool.Shutdown();
+//		timer.cancel();
+	}
+	// all schedulers
+	public static void PauseAll() {
+		synchronized(schedulers) {
+			for(pxnScheduler sched : schedulers.values())
+				sched.Pause();
+		}
+	}
+	public static void ShutdownAll() {
+		synchronized(schedulers) {
+			for(pxnScheduler sched : schedulers.values())
+				sched.Shutdown();
+		}
+	}
+
+
+	@Override
+	public void run() {
+		running = true;
+		while(!stopping) {
+			// tasks to run
+			List<pxnSchedulerTask> tasksToRun = getTasksToRun();
+			// run tasks
+			if(tasksToRun != null)
+				for(pxnSchedulerTask task : tasksToRun)
+					RunTask(task);
+			// sleep max 1 second
+			long sleepMS = this.sleepTime.get(TimeU.MS);
+//TODO: set back to 1
+			pxnUtils.Sleep(pxnUtils.MinMax(sleepMS, 100, 950));
+		}
+		running = false;
+	}
+	// check tasks to run (at least once a second)
+	private List<pxnSchedulerTask> getTasksToRun() {
+		List<pxnSchedulerTask> tasksToRun = new ArrayList<pxnSchedulerTask>();
+		synchronized(this.tasks){ 
+			for(pxnSchedulerTask task : this.tasks){
+				// sleeping task
+				if(task.isSleeping > 0) {
+					task.isSleeping -= 1;
+					continue;
+				}
+				TimeUnitTime untilNext = task.UntilNextTrigger();
+				if(untilNext == null) {
+					task.isSleeping = 5;
+					continue;
+				}
+//System.out.println(task.getTaskName()+" "+"untilNext:"+untilNext.get(TimeU.MS));
+				if(untilNext.get(TimeU.MS) > 0) {
+					// thread sleep time
+					if(untilNext.get(TimeU.MS) < this.sleepTime.get(TimeU.MS))
+						this.sleepTime.set(untilNext);
+					// set task sleeping
+					if(untilNext.get(TimeU.S) > 60)
+						task.isSleeping = 60;
+					if(untilNext.get(TimeU.S) > 5)
+						task.isSleeping = 5;
+					continue;
+				}
+				// add to list
+				tasksToRun.add(task);
+				task.preRun();
+			}
+		}
+//System.out.println();
+		if(tasksToRun.size() == 0)
+			return null;
+		return tasksToRun;
+	}
+	private void RunTask(pxnSchedulerTask task) {
+		String taskName = "SchedulerTask-"+schedulerName+"-"+task.getTaskName();
+		task.onTrigger();
+		if(task.multiThreaded)
+			threadPool.addQueue(taskName, task);
+		else
+			gcServer.addMainThread(taskName, task);
 	}
 
 
 	// new task
-	public void newTask(gcSchedulerTask task) {
-		if(task == null) throw new NullPointerException("task cannot be null");
+	public void newTask(pxnSchedulerTask task) {
+		if(task == null) throw new NullPointerException("task cannot be null!");
 		synchronized(tasks) {
 			this.tasks.add(task);
-			log.debug("Created new task: "+task.getTaskName());
+			log.debug("("+task.getTaskName()+") New task created");
 		}
 	}
 
@@ -62,26 +177,10 @@ public class gcSchedulerManager {
 			name = UUID.randomUUID().toString();
 			if(name == null) throw new NullPointerException();
 			name = name.substring(0, 6);
-			if(!schedulers.containsKey(name)) break;
+			if(!schedulers.containsKey(name))
+				break;
 		}
 		return name;
-	}
-
-
-	// start
-	public static void StartAll() {
-	}
-	public void Start() {
-	}
-	// stop
-	public static void StopAll() {
-	}
-	public void Stop() {
-	}
-	// shutdown scheduler
-	public static void ShutdownAll() {
-	}
-	public void Shutdown() {
 	}
 
 

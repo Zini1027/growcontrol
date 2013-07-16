@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 public class TimeUnitTime {
 
-	long value = 0;
+	protected volatile long value = 0;
 
 
 	// new time holder
