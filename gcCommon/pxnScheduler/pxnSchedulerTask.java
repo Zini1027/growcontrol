@@ -1,74 +1,112 @@
-package com.growcontrol.gcServer.scheduler;
+package com.growcontrol.gcCommon.pxnScheduler;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.growcontrol.gcCommon.TimeU;
+import com.growcontrol.gcCommon.TimeUnitTime;
+import com.growcontrol.gcCommon.pxnClock.pxnClock;
+import com.growcontrol.gcCommon.pxnScheduler.pxnTriggers.Trigger;
 
 
-public abstract class gcSchedulerTask {
+public abstract class pxnSchedulerTask implements Runnable {
 
-	// multi-threaded
-	protected final boolean multiThreaded;
-	protected Timer timer = null;
-
-	private boolean paused = false;
+	protected List<Trigger> triggers = new ArrayList<Trigger>();
+	protected volatile boolean multiThreaded;
+	protected volatile boolean paused = false;
+	protected volatile long timeLast = 0;
+	public volatile int isSleeping = 0;
+	// run count
 	protected final boolean repeat;
-	private int runCount = 0;
-	private int maxRunCount = 0;
-	private long execTime = 0;
+	protected final int maxRunCount;
+	private volatile int runCount = 0;
+
+//	private volatile boolean active = false;
+	private volatile long execTime = 0;
 
 
-	public gcSchedulerTask(boolean multiThreaded) {
-		this(multiThreaded, true);
-	}
-	public gcSchedulerTask(boolean multiThreaded, boolean repeat) {
+//	// new task (multi-threaded) repeating
+//	public pxnSchedulerTask(boolean multiThreaded) {
+//		this(multiThreaded, true);
+//	}
+	// new task (multi-threaded, repeat)
+	public pxnSchedulerTask(boolean multiThreaded, boolean repeat) {
 		this.multiThreaded = multiThreaded;
 		this.repeat = repeat;
-		start();
+		this.maxRunCount = -1;
+		init();
 	}
-	public gcSchedulerTask(boolean multiThreaded, int maxRunCount) {
+	// new task (multi-threaded, repeat count)
+	public pxnSchedulerTask(boolean multiThreaded, int maxRunCount) {
 		this.multiThreaded = multiThreaded;
-		this.maxRunCount = maxRunCount;
 		this.repeat = true;
-		start();
+		if(maxRunCount < 0) maxRunCount = -1;
+		this.maxRunCount = maxRunCount;
+		init();
+	}
+	// init task
+	protected void init() {
 	}
 
 
-	// start scheduler task
-	private void start() {
-		if(multiThreaded) {
-			timer = new Timer();
-			timer.schedule(new TimerTask() {
-				@Override
-				public void run() {
-					doTrigger();
+	public pxnSchedulerTask addTrigger(Trigger trigger) {
+		if(trigger == null) return null;
+		this.triggers.add(trigger);
+		return this;
+	}
+	public void clearTriggers() {
+		this.triggers.clear();
+	}
+
+
+	public TimeUnitTime UntilNextTrigger() {
+		if(paused) return null;
+		TimeUnitTime untilNext = null;
+		synchronized(this.triggers) {
+			for(Trigger trigger : this.triggers) {
+				TimeUnitTime u = trigger.UntilNext();
+				if(untilNext == null) {
+					untilNext = u;
+					continue;
 				}
-			}, 1000L, 1000L);
+				if(u.get(TimeU.MS) < untilNext.get(TimeU.MS))
+					untilNext.set(u);
+			}
 		}
+		return untilNext;
 	}
 
 
-	// trigger tick
-	public abstract void trigger();
-	public void doTrigger() {
+	// run task
+	public void preRun() {}
+	public void onTrigger() {
 		if(paused) return;
 		// run count
+		if(maxRunCount != -1 && runCount >= maxRunCount) {
+			paused = true;
+			return;
+		}
+		// set timeLast
+		long time = getTime();
+		this.timeLast = time;
+		synchronized(this.triggers) {
+			for(Trigger trigger : this.triggers) {
+				TimeUnitTime untilNext = trigger.UntilNext();
+				if(untilNext.get(TimeU.MS) <= 0)
+					trigger.onTrigger(time);
+			}
+		}
 		runCount++;
-		if(checkMaxRunCount()) return;
 //gcServer.log.printRaw("Run Count: "+Integer.toString(runCount));
-		trigger();
+//		run();
+//		if(runCount >= maxRunCount)
+//			paused = true;
 	}
 //	public void triggerThread() {
 //		if(thread == null && multiThreaded) start();
 //		if(thread == null) throw new NullPointerException();
 //		thread.start();
 //	}
-	public boolean checkMaxRunCount() {
-		if(maxRunCount >= runCount) {
-			paused = true;
-			return true;
-		}
-		return false;
-	}
 
 
 	// task name
@@ -98,6 +136,11 @@ public abstract class gcSchedulerTask {
 	public long getAverageExecTime() {
 		if(runCount < 1) return -1;
 		return execTime / ((long) runCount);
+	}
+
+
+	protected static long getTime() {
+		return pxnClock.get().Millis();
 	}
 
 
