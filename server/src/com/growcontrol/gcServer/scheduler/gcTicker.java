@@ -33,10 +33,8 @@ public class gcTicker extends pxnSchedulerTask {
 		long tickInterval = ServerConfig.get().TickInterval();
 		setInterval(new TimeUnitTime(tickInterval, TimeU.MS));
 		// add scheduler
-		pxnScheduler.get().newTask(this);
+		pxnScheduler.get("gcServer").newTask(this);
 	}
-
-
 	@Override
 	public String getTaskName() {
 		return "gcTicker";

@@ -1,5 +1,6 @@
 package com.growcontrol.gcCommon.pxnClock;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -135,7 +136,7 @@ socket.setSoTimeout(1000);
 //System.out.println("Local clock offset: " + new DecimalFormat("0.00").format(localClockOffset*1000) + " ms");
 			} catch (UnknownHostException | SocketTimeoutException e) {
 				log.exception(e);
-			} catch (SocketException | IOException e) {
+			} catch (IOException e) {
 				log.exception(e);
 			} catch (Exception e) {
 				log.exception(e);
