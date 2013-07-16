@@ -129,6 +129,7 @@ e.printStackTrace();
 	// close socket
 	@Override
 	public void close() {
+		stop();
 	}
 //	public void close(int socketId) {
 //	}
