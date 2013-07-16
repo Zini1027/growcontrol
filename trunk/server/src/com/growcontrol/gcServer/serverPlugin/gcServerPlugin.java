@@ -1,9 +1,9 @@
 package com.growcontrol.gcServer.serverPlugin;
 
-import com.growcontrol.gcServer.gcServer;
-import com.growcontrol.gcServer.logger.gcLogger;
 import com.growcontrol.gcCommon.pxnCommand.pxnCommandsHolder;
+import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 import com.growcontrol.gcCommon.pxnPlugin.pxnPlugin;
+import com.growcontrol.gcServer.gcServer;
 
 
 public abstract class gcServerPlugin extends pxnPlugin {
@@ -19,8 +19,8 @@ public abstract class gcServerPlugin extends pxnPlugin {
 
 
 	// get logger
-	public static gcLogger getLogger(String pluginName) {
-		return gcLogger.getLogger(pluginName);
+	public static pxnLogger getLogger(String pluginName) {
+		return pxnLogger.get(pluginName);
 	}
 
 

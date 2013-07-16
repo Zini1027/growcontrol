@@ -2,9 +2,9 @@ package com.growcontrol.gcServer;
 
 import java.util.Collection;
 
-import com.growcontrol.gcServer.logger.gcLogger;
 import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnConfig.pxnConfig;
+import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
 public class ServerConfig {
@@ -36,7 +36,7 @@ public class ServerConfig {
 		try {
 			config = pxnConfig.loadFile(configsPath, "config.yml");
 		} catch (Exception e) {
-			Main.getLogger().exception(e);
+			pxnLogger.get().exception(e);
 		}
 	}
 
@@ -84,7 +84,7 @@ public class ServerConfig {
 //			zones.addAll( pxnUtils.castList(String.class, config.get("Zones")) );
 //			zones.addAll((Collection<? extends String>) config.get("Zones"));
 		} catch(Exception ignore) {
-			gcLogger.getLogger().debug(ignore);
+pxnLogger.get().exception(ignore);
 			return;
 		}
 	}

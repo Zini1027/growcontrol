@@ -2,6 +2,7 @@ package com.growcontrol.gcServer;
 
 import com.growcontrol.gcCommon.pxnCommand.pxnCommandEvent;
 import com.growcontrol.gcCommon.pxnCommand.pxnCommandsHolder;
+import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
 public class ServerCommands extends pxnCommandsHolder {
@@ -100,7 +101,7 @@ public class ServerCommands extends pxnCommandsHolder {
 	// kill command
 	private static boolean _kill() {
 		try {
-			Main.getLogger().warning("Killing server! (Triggered by console command)");
+			pxnLogger.get().warning("Killing server! (Triggered by console command)");
 		} catch(Exception ignore) {}
 		System.out.println();
 		System.out.println();
@@ -139,7 +140,7 @@ public class ServerCommands extends pxnCommandsHolder {
 
 	// version command
 	private static boolean _version() {
-		Main.getLogger().info("Version: "+gcServer.version);
+		pxnLogger.get().info("Version: "+gcServer.version);
 		return true;
 	}
 
@@ -147,7 +148,7 @@ public class ServerCommands extends pxnCommandsHolder {
 	// say command
 	private static boolean _say(String msg) {
 		msg = "(console) "+msg;
-		Main.getLogger().printRaw(msg);
+		pxnLogger.get().printRaw(msg);
 		return true;
 	}
 
