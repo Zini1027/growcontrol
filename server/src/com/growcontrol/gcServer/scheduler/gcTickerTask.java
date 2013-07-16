@@ -1,22 +1,20 @@
 package com.growcontrol.gcServer.scheduler;
 
-import com.growcontrol.gcServer.gcServer;
-
 
 public abstract class gcTickerTask {
 
 
-	public gcTickerTask() {
-		gcServer.getTicker().newTickerTask(this);
-	}
+//	public gcTickerTask() {
+//		gcServer.get().getTicker().newTickerTask(this);
+//	}
 
 
 	public abstract void tick();
 
 
-	protected int getTickCount() {
-		return gcServer.getTicker().getRunCount();
-	}
+//	protected int getTickCount() {
+//		return gcServer.get().getTicker().getRunCount();
+//	}
 
 
 }
