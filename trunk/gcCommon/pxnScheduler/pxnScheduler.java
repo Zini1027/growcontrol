@@ -31,9 +31,9 @@ public class pxnScheduler extends Thread {
 
 
 	// get scheduler
-	public static pxnScheduler get() {
-		return get(null);
-	}
+//	public static pxnScheduler get() {
+//		return get(null);
+//	}
 	public static pxnScheduler get(String name) {
 		pxnScheduler sched = null;
 		synchronized(schedulers) {
@@ -49,8 +49,6 @@ public class pxnScheduler extends Thread {
 		}
 		return sched;
 	}
-
-
 	// new scheduler
 	protected pxnScheduler(String name) {
 		if(name == null) throw new NullPointerException("schedulerName cannot be null!");

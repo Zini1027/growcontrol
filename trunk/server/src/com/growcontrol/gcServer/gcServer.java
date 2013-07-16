@@ -115,7 +115,7 @@ System.out.println(startTime);
 		}
 
 		// load scheduler
-		pxnScheduler.get().start();
+		pxnScheduler.get("gcServer").start();
 		// load ticker
 		gcTicker.get();
 
@@ -168,7 +168,7 @@ pxnSchedulerTask task = new pxnSchedulerTask(true, true) {
 	}
 };
 task.addTrigger(new triggerInterval("3s"));
-pxnScheduler.get().newTask(task);
+pxnScheduler.get("gcServer").newTask(task);
 
 //System.out.println("next run: "+task.UntilNextTrigger().get(TimeU.MS));
 

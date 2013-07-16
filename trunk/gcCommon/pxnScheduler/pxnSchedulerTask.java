@@ -43,6 +43,8 @@ public abstract class pxnSchedulerTask implements Runnable {
 	// init task
 	protected void init() {
 	}
+	// task name
+	public abstract String getTaskName();
 
 
 	public pxnSchedulerTask addTrigger(Trigger trigger) {
@@ -94,10 +96,6 @@ public abstract class pxnSchedulerTask implements Runnable {
 		}
 		runCount++;
 	}
-
-
-	// task name
-	public abstract String getTaskName();
 
 
 	// single/multi-threaded
