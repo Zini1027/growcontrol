@@ -4,10 +4,10 @@ import java.io.File;
 import java.util.List;
 import java.util.Map.Entry;
 
-import com.growcontrol.gcServer.Main;
+import com.growcontrol.gcCommon.pxnSocket.pxnSocketProcessor;
+import com.growcontrol.gcServer.gcServer;
 import com.growcontrol.gcServer.logger.gcLogger;
 import com.growcontrol.gcServer.serverPlugin.gcPluginYML;
-import com.growcontrol.gcCommon.pxnSocket.pxnSocketProcessor;
 
 
 public class sendServerPackets {
@@ -25,7 +25,7 @@ gcLogger.getLogger().severe("Sent HEY packet!");
 	// LIST zones
 	// (list loaded zones)
 	public static void sendLISTZones(pxnSocketProcessor processor) throws Exception {
-		List<String> zones = Main.getServer().getZones();
+		List<String> zones = gcServer.get().getZones();
 		for(String zoneName : zones)
 			sendZONE(processor, zoneName);
 gcLogger.getLogger().severe("Sent ZONE packets!");

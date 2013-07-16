@@ -74,7 +74,7 @@ public class pxnSocketServer implements pxnSocket {
 		// loop for new connections
 		while(!stopping) {
 			// queue flushing closed sockets
-			pxnThreadQueue.getMainThread().addQueue(new Runnable() {
+			pxnThreadQueue.getMainThread().addQueue("SocketServer-Flush-"+Integer.toString(this.port), new Runnable() {
 				@Override
 				public void run() {
 					flushClosed();

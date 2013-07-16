@@ -39,11 +39,11 @@ public class pxnLogger implements pxnLoggerInterface, pxnLogPrinter {
 		return get(null);
 	}
 	public static pxnLogger get(String loggerName) {
-		synchronized(this.loggers) {
-			if(this.loggers.containsKey(loggerName))
-				return this.loggers.get(loggerName);
+		synchronized(loggers) {
+			if(loggers.containsKey(loggerName))
+				return loggers.get(loggerName);
 			pxnLogger log = new pxnLogger(loggerName);
-			this.loggers.put(loggerName, log);
+			loggers.put(loggerName, log);
 			return log;
 		}
 	}
