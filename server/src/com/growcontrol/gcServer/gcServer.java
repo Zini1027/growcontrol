@@ -1,51 +1,50 @@
 package com.growcontrol.gcServer;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.fusesource.jansi.AnsiConsole;
 
-import com.growcontrol.gcServer.logger.gcLogger;
-import com.growcontrol.gcServer.scheduler.gcSchedulerManager;
-import com.growcontrol.gcServer.scheduler.gcTicker;
-import com.growcontrol.gcServer.serverPlugin.gcServerPluginManager;
-import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
-import com.growcontrol.gcServer.socketServer.gcSocketProcessor;
 import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnClock.pxnClock;
+import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnScheduler.pxnScheduler;
+import com.growcontrol.gcCommon.pxnScheduler.pxnSchedulerTask;
+import com.growcontrol.gcCommon.pxnScheduler.pxnTriggers.triggerInterval;
 import com.growcontrol.gcCommon.pxnSocket.pxnSocketProcessorFactory;
 import com.growcontrol.gcCommon.pxnSocket.pxnSocketServer;
+import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
+import com.growcontrol.gcServer.scheduler.gcTicker;
+import com.growcontrol.gcServer.serverPlugin.gcServerPluginManager;
+import com.growcontrol.gcServer.socketServer.gcSocketProcessor;
 
 
 public class gcServer {
-	public static final String version = "3.0.4";
+	public static final String version = "3.0.5";
 	public static final String defaultPrompt = ">";
+
+	protected static gcServer server = null;
+	private static ServerListeners listeners;
+	private Thread consoleInputThread = null;
 
 	// runtime args
 	protected boolean consoleEnabled = true;
 	protected boolean forceDebug = false;
-	private final long startTime;
+	private long startTime = -1;
 	private boolean stopping = false;
+	protected String configsPath = null;
 
-	// logger
-	private final gcLogger log;
-	private Thread consoleInputThread = null;
+//	// logger
+//	private final gcLogger log;
 
 	// server plugin manager
 	private final gcServerPluginManager pluginManager = new gcServerPluginManager();
 //	public final gcServerDeviceLoader deviceLoader = new gcServerDeviceLoader();
 
-	// config files
-	private ServerConfig config = null;
-	protected String configsPath = null;
-
-	// server scheduler
-	private gcSchedulerManager scheduler = null;
-	private gcTicker ticker = null;
-
-	// clock
-	private pxnClock clock = null;
+//	// server scheduler
+//	private pxnScheduler scheduler = null;
+//	private gcTicker ticker = null;
 
 	// server socket pool
 	private pxnSocketServer socket = null;
@@ -56,13 +55,16 @@ public class gcServer {
 
 	// server instance
 	public gcServer() {
-		log = Main.getLogger();
-		startTime = pxnUtils.getCurrentMillis();
+//		log = Main.getLogger();
+	}
+	public static gcServer get() {
+		return server;
 	}
 
 
 	// init server
 	public void Start() {
+		pxnLogger log = pxnLogger.get();
 //		if(noconsole)
 //			gcLogger.setLevel("console", pxnLevel.LEVEL.WARNING);
 		// single instance lock
@@ -77,27 +79,31 @@ System.exit(0);
 		pxnUtils.addLibraryPath("lib");
 
 		// query time server
-		clock = pxnClock.getClock(true);
+		pxnClock clock = pxnClock.getBlocking();
+		startTime = clock.Millis();
+System.out.println(startTime);
 
 		// load configs
-		config = new ServerConfig(configsPath);
+		ServerConfig config = ServerConfig.get(configsPath);
 		if(config==null || config.config==null) {
-			log.severe("Failed to load config.yml");
+			log.severe("Failed to load config.yml, exiting..");
 			System.exit(1);
+			return;
 		}
 
 		// set log level
 		if(!forceDebug && consoleEnabled) {
-			String logLevel = config.getLogLevel();
+			String logLevel = config.LogLevel();
 			if(logLevel != null && !logLevel.isEmpty()) {
 				log.info("Set log level: "+logLevel.toString());
-				gcLogger.setLevel("console", logLevel);
+				pxnLogger.setLevel("console", logLevel);
 			}
 		}
 //		gcLogger.setLevel("file",    logLevel);
 
-		// command listener
-		pluginManager.registerCommandListener(new ServerCommands());
+		// init listeners
+		listeners = new ServerListeners();
+
 		// start console input thread
 		if(consoleEnabled) {
 			consoleInputThread = new Thread("ConsoleInput") {
@@ -112,14 +118,14 @@ System.exit(0);
 		// zones
 		if(zones == null) zones = new ArrayList<String>();
 		synchronized(zones) {
-			config.getZones(zones);
+			config.ZonesList(zones);
 			log.info("Loaded [ "+Integer.toString(zones.size())+" ] zones.");
 		}
 
-		// load scheduler (paused)
-		scheduler = gcSchedulerManager.getScheduler("gcServer");
+		// load scheduler
+		getScheduler().start();
 		// load ticker
-		ticker = new gcTicker();
+		gcTicker.get();
 
 		// load plugins
 		try {
@@ -135,30 +141,53 @@ System.exit(0);
 //		deviceLoader.LoadDevices(Arrays.asList(new String[] {"Lamp"}));
 
 		// start socket listener
-//		socket = new pxnSocketServer(config.getListenPort(), new gcSocketProcessorFactory() );
-		socket = new pxnSocketServer(config.getListenPort(), new pxnSocketProcessorFactory(){
-			@Override
-			public gcSocketProcessor newProcessor() {
-				return new gcSocketProcessor();
-			}
-		});
+		try {
+			socket = new pxnSocketServer(config.ListenPort(), new pxnSocketProcessorFactory() {
+				@Override
+				public gcSocketProcessor newProcessor() {
+					return new gcSocketProcessor();
+				}
+			});
+		} catch (IOException e) {
+			log.exception(e);
+		}
 
-		// start schedulers
-		log.info("Starting schedulers..");
-		gcSchedulerManager.StartAll();
+//		// start schedulers
+//		log.info("Starting schedulers..");
+//		gcSchedulerManager.StartAll();
 
 //TODO: remove this
 //log.severe("Listing Com Ports:");
 //for(Map.Entry<String, String> entry : Serial.listPorts().entrySet())
 //log.severe(entry.getKey()+" - "+entry.getValue());
 		log.printRaw("[[ GC Server Running! ]]");
+
+
+//TODO: remove temp scheduled task
+// new task (multi-threaded / repeat)
+pxnSchedulerTask task = new pxnSchedulerTask(true, true) {
+	@Override
+	public void run() {
+		System.out.println("333333333 tick");
+	}
+	@Override
+	public String getTaskName() {
+		return "333tickname";
+	}
+};
+task.addTrigger(new triggerInterval("3s"));
+getScheduler().newTask(task);
+
+//System.out.println("next run: "+task.UntilNextTrigger().get(TimeU.MS));
+
+
 	}
 
 
 	// stop server
 	public void Shutdown() {
 		// queue shutdown
-		Main.getMainThread().addQueue(new Thread() {
+		addMainThread("BeginShutdown", new Runnable() {
 			@Override
 			public void run() {
 				doShutdown();
@@ -166,51 +195,76 @@ System.exit(0);
 		});
 	}
 	private void doShutdown() {
-//TODO: display total time running
+		pxnLogger log = pxnLogger.get();
 		stopping = true;
 		log.printRaw("[[ Stopping GC Server ]]");
-		log.warning("Stopping GC Server..");
-		// close socket listener
-		socket.stop();
-		// pause scheduler
-		gcSchedulerManager.StopAll();
-		// shutdown event
-//TODO: trigger shutdown event here
+		log.info("Stopping GC Server..");
 		// sleep
-		log.debug("Waiting 200ms..");
-		pxnUtils.Sleep(200L);
-		// close sockets
-		socket.forceCloseAll();
-		// plugins
-		pluginManager.UnloadPlugins();
-		// end schedulers
-		gcSchedulerManager.ShutdownAll();
-		// sleep
-		log.debug("Waiting 200ms..");
-		pxnUtils.Sleep(200L);
-		// loggers
-		consoleInputThread.interrupt(); // doesn't do much of anything
-		AnsiConsole.systemUninstall();
-
-// display threads still running
-log.severe("Threads still running:");
-Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
-//Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
-for(Thread t : threadSet)
-	log.printRaw(t.getName());
-
-		// queue exit
-		Main.getMainThread().exit();
+		log.info("Waiting for things to finish..");
+		final int inter = 50;
+		final int maxWait = 1000;
+		for(int ms=maxWait; ms>0; ms-=inter) {
+			pxnUtils.Sleep(inter);
+			if((ms % 500)==0)
+				log.debug("Waiting "+ms+"ms..");
+			switch(ms) {
+			// first
+			case maxWait:
+				// close socket listener
+				socket.stop();
+				// pause scheduler
+				pxnScheduler.PauseAll();
+				break;
+			// 500ms
+			case 500:
+				// end schedulers
+				pxnScheduler.ShutdownAll();
+				break;
+			// 450ms
+			case 450:
+				break;
+			// 400ms
+			case 400:
+				break;
+			// 350ms
+			case 350:
+				// unload plugins
+				pluginManager.UnloadPlugins();
+				break;
+			// 300ms
+			case 300:
+				break;
+			// 250ms
+			case 250:
+				// close sockets
+				socket.forceCloseAll();
+				// stop console
+				consoleInputThread.interrupt(); // doesn't do much of anything
+				AnsiConsole.systemUninstall();
+				break;
+			// 200ms
+			case 200:
+				break;
+			// last
+			case inter:
+//TODO: display total time running
+				break;
+			default:
+				break;
+			}
+		}
+		// stop process
+//		getMainThread().Shutdown();
+		getMainThread().Exit();
 	}
 	// reload server
 	public void Reload() {
-		Thread reloadThread = new Thread() {
+		addMainThread("Reload", new Runnable() {
 			@Override
 			public void run() {
 //TODO:
 			}
-		};
-		reloadThread.start();
+		});
 	}
 
 
@@ -227,12 +281,13 @@ for(Thread t : threadSet)
 			if(consoleInputThread.isInterrupted()) break;
 			try {
 				// wait for commands
-				String line = gcLogger.readLine();
+				String line = pxnLogger.readLine();
 				if(line == null) break;
 				if(line.isEmpty()) continue;
 				processCommand(line);
 			} catch(Exception e) {
-				log.exception(e);
+				pxnLogger.get().exception(e);
+				break;
 			}
 		}
 		System.out.println();
@@ -243,29 +298,35 @@ for(Thread t : threadSet)
 		if(line == null) throw new NullPointerException("line cannot be null");
 		line = line.trim();
 		if(line.isEmpty()) return;
-//		String commandStr;
-//		String[] args;
-//		// get args list
-//		if(line.contains(" ")) {
-//			int index = line.indexOf(" ");
-//			commandStr = line.substring(0, index);
-//			List<String> argsList = new ArrayList<String>();
-//			for(String arg : line.substring(index+1).split(" "))
-//				if(!arg.isEmpty())
-//					argsList.add(arg);
-//			args = (String[]) argsList.toArray(new String[argsList.size()]);
-//			argsList = null;
-//		} else {
-//			commandStr = new String(line);
-//			args = new String[0];
-//		}
 		// trigger event
-		if(pluginManager.triggerEvent(new gcServerEventCommand(line)))
-			return;
-		// command not found
-//		for(String arg : args) commandStr += " "+arg;
-//		log.warning("Command not processed: "+commandStr);
-		log.warning("Unknown command: "+line);
+		if(!listeners.triggerCommand(line)) {
+			// command not found
+//			for(String arg : args) commandStr += " "+arg;
+//			log.warning("Command not processed: "+commandStr);
+			pxnLogger.get().warning("Unknown command: "+line);
+		}
+	}
+
+
+	// main thread
+//	public static void addMainThread(Runnable runnable) {
+//		getMainThread().addQueue(runnable);
+//	}
+	public static void addMainThread(String name, Runnable runnable) {
+		getMainThread().addQueue(name, runnable);
+	}
+	protected static void startMainThread() {
+		pxnThreadQueue mainThread = getMainThread();
+		if(mainThread.isRunning() || mainThread.isStopping()) return;
+		mainThread.run();
+	}
+	public static pxnThreadQueue getMainThread() {
+		return pxnThreadQueue.getMainThread();
+	}
+
+
+	public static ServerListeners getListeners() {
+		return listeners;
 	}
 
 
@@ -285,10 +346,10 @@ for(Thread t : threadSet)
 	}
 
 
-	// get main logger
-	public gcLogger getLogger() {
-		return log;
-	}
+//	// get main logger
+//	public pxnLogger getLogger() {
+//		return pxnLogger.get();
+//	}
 	// get plugin manager
 	public gcServerPluginManager getPluginManager() {
 		return pluginManager;
@@ -296,14 +357,11 @@ for(Thread t : threadSet)
 
 
 	// schedulers
-	public gcSchedulerManager getScheduler() {
-		return scheduler;
-	}
-	public gcTicker getTicker() {
-		return ticker;
-	}
-	public pxnClock getClock() {
-		return clock;
+	public pxnScheduler getScheduler() {
+		return pxnScheduler.getScheduler("gcServer");
+//		if(scheduler == null)
+//			scheduler = pxnScheduler.getScheduler("gcServer");
+//		return scheduler;
 	}
 
 

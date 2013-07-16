@@ -1,24 +1,26 @@
 package com.growcontrol.gcServer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
-import com.growcontrol.gcServer.logger.gcLogger;
 import com.growcontrol.gcCommon.pxnLogger.pxnLevel;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 import com.growcontrol.gcCommon.pxnLogger.pxnLoggerConsole;
-import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
 
 
 public class Main {
 
-	// server instance
-	private static gcServer server = null;
-	private static pxnThreadQueue mainThread = pxnThreadQueue.getMainThread();
+//	// server instance
+//	private static gcServer server = null;
 
-	// logger
-	private static final gcLogger log = gcLogger.getLogger();
+//	// logger
+//	private static final gcLogger log = gcLogger.getLogger();
 
+	// command line arguments
+	private static String argsMsgStr = "";
 
 
 	// app startup
@@ -26,14 +28,13 @@ public class Main {
 		AnsiConsole.systemInstall();
 		Thread.currentThread().setName("Main-Server-Thread");
 		System.out.println();
-		if(server != null) throw new UnsupportedOperationException("Cannot redefine singleton gcServer; already running");
+		if(gcServer.server != null) throw new UnsupportedOperationException("Cannot redefine singleton gcServer; already running");
 		pxnLogger.addLogHandler(
 			"console",
 			new pxnLoggerConsole(pxnLogger.getReader(),
-				new pxnLevel(pxnLevel.LEVEL.DEBUG)) );
-		server = new gcServer();
-		displayLogoHeader();
-		displayStartupVars();
+			new pxnLevel(pxnLevel.LEVEL.DEBUG))
+		);
+
 //		pluginManager.setMainClassYmlName("Server Main");
 //doesn't log anything
 //try {
@@ -46,6 +47,10 @@ public class Main {
 //			"file",
 //			new pxnLoggerFile(
 //				new pxnLevel(pxnLevel.LEVEL.DEBUG)) );
+
+		// start gc server
+		gcServer.server = new gcServer();
+		List<String> argsMsgList = new ArrayList<String>();
 		// process args
 		for(int i=0; i<args.length; i++) {
 			String arg = args[i];
@@ -55,73 +60,82 @@ public class Main {
 				System.exit(0);
 			// no console
 			} else if(arg.equalsIgnoreCase("--no-console")) {
-				server.consoleEnabled = false;
+				gcServer.server.consoleEnabled = false;
+				argsMsgList.add("no-console");
 			// debug mode
 			} else if(arg.equalsIgnoreCase("--debug")) {
-				server.forceDebug = true;
-				gcLogger.setForceDebug("console", true);
-//				forceDebug = true;
-//				try {
-//					gcLogger.setLevel("console", pxnLevel.LEVEL.DEBUG);
-//				} catch (NullPointerException ignore) {
-//ignore.printStackTrace();
-//				}
-//				try {
-//					gcLogger.setLevel("file",    pxnLevel.LEVEL.DEBUG);
-//				} catch (NullPointerException ignore) {
-//ignore.printStackTrace();
-//				}
+				gcServer.server.forceDebug = true;
+				pxnLogger.setForceDebug("console", true);
+				argsMsgList.add("debug");
 			// configs path
 			} else if(arg.equalsIgnoreCase("--configs-path")) {
 				i++; if(i <= args.length) {
-					System.out.println("Incomplete --configs-path argument!");
+					System.out.println("Incomplete! --configs-path argument");
 					break;
 				}
-				server.configsPath = args[i];
-				System.out.println("Set configs path to: "+server.configsPath);
+				gcServer.server.configsPath = args[i];
+				System.out.println("Set configs path to: "+gcServer.server.configsPath);
+				argsMsgList.add("configs-path");
 			// plugins path
 			} else if(arg.equalsIgnoreCase("--plugins-path")) {
 				i++; if(i <= args.length) {
-					System.out.println("Incomplete --plugins-path argument!");
+					System.out.println("Incomplete! --plugins-path argument");
 					break;
 				}
-				server.getPluginManager().setPath(args[i]);
-				System.out.println("Set plugins path to: "+server.getPluginManager().getPath());
+				gcServer.server.getPluginManager().setPath(args[i]);
+				System.out.println("Set plugins path to: "+gcServer.server.getPluginManager().getPath());
+				argsMsgList.add("plugins-path");
 			} else {
 				System.out.println("Unknown argument: "+arg);
 			}
 		}
+		// build argsMsgStr
+		argsMsgStr = "";
+		if(argsMsgList.size() > 0) {
+			for(String argStr : argsMsgList) {
+				if(argStr == null || argStr.isEmpty()) continue;
+				if(!argsMsgStr.isEmpty()) argsMsgStr += " ";
+				argsMsgStr += argStr.replace(" ", "_");
+			}
+		}
+
+		displayLogoHeader();
+		displayStartupVars();
 		System.out.flush();
 		// queue startup in main thread
-		mainThread.addQueue(new Runnable() {
+		gcServer.addMainThread("StartServer", new Runnable() {
 			@Override
 			public void run() {
 				// start server
-				server.Start();
+				gcServer.get().Start();
 			}
 		});
 		// hand-off thread to queue
-		mainThread.run();
+		gcServer.startMainThread();
+		// main thread ended
+		pxnLogger.get().warning("Main process ended (this shouldn't happen)");
+		System.out.println();
+		System.out.println();
+		System.exit(0);
 	}
 
 
-	// get server
-	public static gcServer getServer() {
-		return server;
-	}
-	public static pxnThreadQueue getMainThread() {
-		return mainThread;
-	}
+//	// get server instance
+//	public static gcServer getServer() {
+//		return server;
+//	}
+
+
 	// shutdown server
 	public static void Shutdown() {
-		server.Shutdown();
+		gcServer.get().Shutdown();
 	}
 
 
-	// get main logger
-	public static gcLogger getLogger() {
-		return log;
-	}
+//	// get main logger
+//	public static pxnLogger getLogger() {
+//		return pxnLogger.get();
+//	}
 
 
 	// ascii header
@@ -130,8 +144,9 @@ public class Main {
 		AnsiConsole.out.println(" Running as: "+System.getProperty("user.name"));
 		AnsiConsole.out.println(" Current dir: "+System.getProperty("user.dir"));
 		AnsiConsole.out.println(" java home: "+System.getProperty("java.home"));
-		if(server.forceDebug)
+		if(gcServer.get().forceDebug)
 			AnsiConsole.out.println(" Force Debug: true");
+		AnsiConsole.out.println(" args: [ "+argsMsgStr+" ]");
 		AnsiConsole.out.println();
 		AnsiConsole.out.flush();
 	}
@@ -242,7 +257,8 @@ public class Main {
 		AnsiConsole.out.println(" Copyright (C) 2007-2013 PoiXson, Mattsoft");
 		AnsiConsole.out.println(" This program comes with absolutely no warranty. This is free software,");
 		AnsiConsole.out.println(" and you are welcome to redistribute it under certain conditions.");
-		AnsiConsole.out.println(" For details type 'show w' for warranty, or 'show c' for conditions.");
+//		AnsiConsole.out.println(" For details type 'show w' for warranty, or 'show c' for conditions.");
+		AnsiConsole.out.println(" Type 'show license' for license details.");
 		AnsiConsole.out.println();
 		AnsiConsole.out.flush();
 	}
