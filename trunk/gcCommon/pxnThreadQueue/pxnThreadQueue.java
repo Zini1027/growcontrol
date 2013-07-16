@@ -14,7 +14,7 @@ public class pxnThreadQueue implements Runnable {
 
 	protected final List<Thread> threads;
 	protected final String queueName;
-	protected final BlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(10);
+	protected final BlockingQueue<pxnRunnable> queue = new ArrayBlockingQueue<pxnRunnable>(10);
 
 //	protected volatile boolean running  = false;
 	protected volatile boolean stopping = false;
@@ -32,19 +32,22 @@ public class pxnThreadQueue implements Runnable {
 
 
 	public pxnThreadQueue(String name) {
-		queue.add(new Runnable() {
+		this.queueName = name;
+		// main thread (single)
+		if(name == "main") {
+			threads = null;
+		// thread pool (multi)
+		} else {
+			threads = new ArrayList<Thread>();
+			addThread();
+		}
+		// thread queue started
+		addQueue("Thread-Startup", new Runnable() {
 			@Override
 			public void run() {
 				pxnLogger.get().debug("("+queueName+") Started thread queue..");
 			}
 		});
-		this.queueName = name;
-		if(name == "main") {
-			threads = null;
-		} else {
-			threads = new ArrayList<Thread>();
-			addThread();
-		}
 	}
 
 
@@ -69,7 +72,7 @@ public class pxnThreadQueue implements Runnable {
 	public void run() {
 //		running = true;
 		while(!stopping) {
-			Runnable run = null;
+			pxnRunnable run = null;
 			try {
 				run = queue.take();
 			} catch (InterruptedException e) {
@@ -93,7 +96,7 @@ public class pxnThreadQueue implements Runnable {
 
 	// queue thread shutdown
 	public void Shutdown() {
-		addQueue(new Runnable() {
+		addQueue("Thread-Queue-Stopping", new Runnable() {
 			@Override
 			public void run() {
 				pxnLogger.get().info("("+queueName+") Stopping thread queue..");
@@ -103,20 +106,16 @@ public class pxnThreadQueue implements Runnable {
 	}
 	// exit program
 	public void Exit() {
-		mainThread.addQueue(new Runnable() {
+		mainThread.addQueue("Exit", new Runnable() {
 			@Override
 			public void run() {
 				// threads still running
 				displayStillRunning();
+				System.out.println();
+				System.out.println();
 				System.exit(0);
 			}
 		});
-//		addQueue(new Runnable() {
-//			@Override
-//			public void run() {
-//				System.exit(0);
-//			}
-//		});
 	}
 	// display threads still running
 	public void displayStillRunning() {
@@ -142,11 +141,21 @@ public class pxnThreadQueue implements Runnable {
 
 
 	// add to queue
-	public void addQueue(Runnable runnable) {
+//	public void addQueue(Runnable runnable) {
+//		addQueue(null, runnable);
+//	}
+	public void addQueue(String name, Runnable runnable) {
 		if(runnable == null) throw new NullPointerException("("+queueName+") runnable can't be null!");
 		try {
-			if(!queue.offer(runnable, 1, TimeU.S))
+			pxnRunnable run = new pxnRunnable(name, runnable);
+			if(queue.offer(run, 1, TimeU.S)) {
+//				String msg = "("+queueName+") Thread task queued";
+//				if(run.getTaskName() != null && !run.getTaskName().equals(""))
+//					msg += ": "+run.getTaskName();
+//				pxnLogger.get().debug(msg);
+			} else {
 				pxnLogger.get().severe("("+queueName+") Thread queue is full!");
+			}
 		} catch (InterruptedException e) {
 			pxnLogger.get().exception(e);
 		}
