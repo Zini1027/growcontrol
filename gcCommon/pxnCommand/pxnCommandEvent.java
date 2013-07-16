@@ -45,9 +45,12 @@ public class pxnCommandEvent extends pxnEvent {
 
 	public boolean equals(String compareStr) {
 		if(compareStr == null) return false;
-		if(compareStr.trim().toLowerCase() == commandStr)
+		if(compareStr.trim().toLowerCase() == getCommandStr())
 			return true;
 		return false;
+	}
+	public String getCommandStr() {
+		return this.commandStr;
 	}
 
 
