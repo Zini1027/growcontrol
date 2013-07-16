@@ -32,10 +32,11 @@ public class pxnSocketServer implements pxnSocket {
 
 
 	// new socket server
-	public pxnSocketServer(int port, pxnSocketProcessorFactory processorFactory) {
+	public pxnSocketServer(int port, pxnSocketProcessorFactory processorFactory) throws IOException {
 		this(null, port, processorFactory);
 	}
-	public pxnSocketServer(String bindHost, int port, pxnSocketProcessorFactory processorFactory) {
+	public pxnSocketServer(String bindHost, int port, pxnSocketProcessorFactory processorFactory) throws IOException {
+		pxnLogger log = pxnLogger.get();
 		this.processorFactory = processorFactory;
 		// bind to host
 		if(bindHost != null && !bindHost.isEmpty()) {
@@ -43,19 +44,19 @@ public class pxnSocketServer implements pxnSocket {
 		}
 		// port
 		if(port < 1 || port > 65536) {
-			pxnLogger.getLogger().severe("Invalid port "+Integer.toString(port)+" is not valid! Out of range!");
+			log.severe("Invalid port "+Integer.toString(port)+" is not valid! Out of range!");
 			throw new IllegalArgumentException("Invalid port "+Integer.toString(port));
 		}
 		this.port = port;
 		// start listening
-		try {
-			listenerSocket = new ServerSocket(port, 8);
-			pxnLogger.getLogger().info("Listening on port: "+Integer.toString(port));
-		} catch (IOException e) {
-			pxnLogger.getLogger().severe("Failed to listen on port: "+Integer.toString(port));
-			pxnLogger.getLogger().exception(e);
-			return;
-		}
+//		try {
+		listenerSocket = new ServerSocket(port, 8);
+		log.info("Listening on port: "+Integer.toString(port));
+//		} catch (IOException e) {
+//			log.severe("Failed to listen on port: "+Integer.toString(port));
+//			log.exception(e);
+//			return;
+//		}
 		// socket listener thread
 		threadListener = new Thread("Socket-Server-Listener-"+Integer.toString(port)) {
 			@Override
@@ -88,7 +89,7 @@ public class pxnSocketServer implements pxnSocket {
 				stopping = true;
 				break;
 			} catch (IOException e) {
-				pxnLogger.getLogger().exception(e);
+				pxnLogger.get().exception(e);
 			}
 			// add socket to pool
 			if(socket != null) {
@@ -98,7 +99,7 @@ public class pxnSocketServer implements pxnSocket {
 			}
 		}
 		// stopping socket listener
-		pxnLogger.getLogger().info("Stopping socket listener..");
+		pxnLogger.get().info("Stopping socket listener..");
 		if(listenerSocket != null && !listenerSocket.isClosed()) {
 			try {
 				listenerSocket.close();
@@ -120,9 +121,9 @@ e.printStackTrace();
 				}
 			}
 		}
-		pxnLogger.getLogger().debug("Sockets loaded: "+Integer.toString(socketWorkers.size()));
+		pxnLogger.get().debug("Sockets loaded: "+Integer.toString(socketWorkers.size()));
 		if(flushCount > 0)
-			pxnLogger.getLogger().info("Flushed [ "+Integer.toString(flushCount)+" ] closed sockets.");
+			pxnLogger.get().info("Flushed [ "+Integer.toString(flushCount)+" ] closed sockets.");
 	}
 
 
@@ -149,7 +150,7 @@ e.printStackTrace();
 			try {
 				listenerSocket.close();
 			} catch (IOException e) {
-pxnLogger.getLogger().exception(e);
+pxnLogger.get().exception(e);
 			}
 		}
 	}

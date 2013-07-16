@@ -21,7 +21,7 @@ public class pxnSocketWorkerReader extends Thread {
 		try {
 			in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		} catch (IOException e) {
-			pxnLogger.getLogger().exception(e);
+			pxnLogger.get().exception(e);
 		}
 	}
 
@@ -29,7 +29,7 @@ public class pxnSocketWorkerReader extends Thread {
 	// reader thread
 	@Override
 	public void run() {
-		pxnLogger.getLogger().info("Connected: "+worker.getIPString());
+		pxnLogger.get().info("Connected: "+worker.getIPString());
 		String line = "";
 		while(!worker.closed) {
 			try {
@@ -38,15 +38,15 @@ public class pxnSocketWorkerReader extends Thread {
 				// socket closed
 				break;
 			} catch (IOException e) {
-e.printStackTrace();
-break;
+				pxnLogger.get().exception(e);
+				break;
 			}
 			if(line == null) break;
 			if(line.isEmpty()) continue;
 			try {
 				worker.processor.processData(line);
 			} catch (Exception e) {
-e.printStackTrace();
+				pxnLogger.get().exception(e);
 			}
 		}
 		worker.close();

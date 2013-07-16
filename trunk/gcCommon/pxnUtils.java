@@ -30,7 +30,7 @@ public class pxnUtils {
 		// get current paths
 		String currentPaths = System.getProperty("java.library.path");
 		if(currentPaths == null) return;
-		pxnLogger.getLogger().debug("Adding lib path: "+libDir);
+		pxnLogger.get().debug("Adding lib path: "+libDir);
 		// set library paths
 		if(currentPaths.isEmpty()) {
 			System.setProperty("java.library.path", libPath);
@@ -44,14 +44,16 @@ public class pxnUtils {
 			fieldSysPath = ClassLoader.class.getDeclaredField("sys_paths");
 			fieldSysPath.setAccessible(true);
 			fieldSysPath.set(null, null);
-		} catch (SecurityException e) {
-			pxnLogger.getLogger().exception(e);
-		} catch (NoSuchFieldException e) {
-			pxnLogger.getLogger().exception(e);
-		} catch (IllegalArgumentException e) {
-			pxnLogger.getLogger().exception(e);
-		} catch (IllegalAccessException e) {
-			pxnLogger.getLogger().exception(e);
+		} catch (SecurityException | NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+			pxnLogger.get().exception(e);
+//		} catch (SecurityException e) {
+//			pxnLogger.get().exception(e);
+//		} catch (NoSuchFieldException e) {
+//			pxnLogger.get().exception(e);
+//		} catch (IllegalArgumentException e) {
+//			pxnLogger.get().exception(e);
+//		} catch (IllegalAccessException e) {
+//			pxnLogger.get().exception(e);
 		}
 	}
 
@@ -73,16 +75,16 @@ public class pxnUtils {
 							randomAccessFile.close();
 							file.delete();
 						} catch (Exception e) {
-							pxnLogger.getLogger().severe("Unable to remove lock file: "+lockFile);
-							pxnLogger.getLogger().exception(e);
+							pxnLogger.get().severe("Unable to remove lock file: "+lockFile);
+							pxnLogger.get().exception(e);
 						}
 					}
 				});
 				return true;
 			}
 		} catch (Exception e) {
-			pxnLogger.getLogger().severe("Unable to create and/or lock file: "+lockFile);
-			pxnLogger.getLogger().exception(e);
+			pxnLogger.get().severe("Unable to create and/or lock file: "+lockFile);
+			pxnLogger.get().exception(e);
 		}
 		return false;
 	}
@@ -91,10 +93,12 @@ public class pxnUtils {
 		int pid = -1;
 		try {
 			pid = Integer.parseInt( ( new File("/proc/self")).getCanonicalFile().getName() );
-		} catch (NumberFormatException e) {
-			pxnLogger.getLogger().exception(e);
-		} catch (IOException e) {
-			pxnLogger.getLogger().exception(e);
+		} catch (NumberFormatException | IOException e) {
+			pxnLogger.get().exception(e);
+//		} catch (NumberFormatException e) {
+//			pxnLogger.get().exception(e);
+//		} catch (IOException e) {
+//			pxnLogger.get().exception(e);
 		}
 		return pid;
 	}
@@ -106,7 +110,7 @@ public class pxnUtils {
 		try {
 			Thread.sleep(millis);
 		} catch (InterruptedException e) {
-			pxnLogger.getLogger().exception(e);
+			pxnLogger.get().exception(e);
 		}
 	}
 	// current time ms

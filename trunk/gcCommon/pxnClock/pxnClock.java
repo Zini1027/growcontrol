@@ -18,7 +18,6 @@ public class pxnClock {
 
 	// instance
 	private static pxnClock clock = null;
-	protected pxnLogger log;
 
 	protected boolean enableNTP  = true;
 	protected volatile boolean active = false;
@@ -47,11 +46,7 @@ public class pxnClock {
 		return get(true);
 	}
 	// new instance
-	protected pxnClock(pxnLogger log) {
-		this.log = log;
-	}
 	protected pxnClock() {
-		log = pxnLogger.getLogger();
 	}
 //	public static pxnClock getClock(boolean threaded) {
 //		if(pxnClock.clock == null) {
@@ -114,6 +109,7 @@ public class pxnClock {
 	protected void doUpdate() {
 		if(!enableNTP) return;
 		synchronized(threadLock) {
+			pxnLogger log = pxnLogger.get();
 			double time = System.currentTimeMillis();
 			if(lastChecked != 0.0 && ((time-lastChecked)/1000.0) < 60.0) return;
 			lastChecked = time;

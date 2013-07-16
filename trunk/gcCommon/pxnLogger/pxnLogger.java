@@ -35,15 +35,15 @@ public class pxnLogger implements pxnLoggerInterface, pxnLogPrinter {
 
 
 	// get logger
-	public static pxnLogger getLogger() {
-		return getLogger(null);
+	public static pxnLogger get() {
+		return get(null);
 	}
-	public static pxnLogger getLogger(String loggerName) {
-		synchronized(loggers) {
-			if(loggers.containsKey(loggerName))
-				return loggers.get(loggerName);
+	public static pxnLogger get(String loggerName) {
+		synchronized(this.loggers) {
+			if(this.loggers.containsKey(loggerName))
+				return this.loggers.get(loggerName);
 			pxnLogger log = new pxnLogger(loggerName);
-			loggers.put(loggerName, log);
+			this.loggers.put(loggerName, log);
 			return log;
 		}
 	}

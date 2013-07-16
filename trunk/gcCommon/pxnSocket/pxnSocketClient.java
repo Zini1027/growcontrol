@@ -32,13 +32,13 @@ public class pxnSocketClient implements pxnSocket {
 		this.host = host;
 		// port
 		if(port < 1 || port > 65536) {
-			pxnLogger.getLogger().severe("Invalid port "+Integer.toString(port)+" is not valid! Out of range!");
+			pxnLogger.get().severe("Invalid port "+Integer.toString(port)+" is not valid! Out of range!");
 			throw new IllegalArgumentException("Invalid port "+Integer.toString(port));
 		}
 		this.port = port;
 		// start connecting
 //		try {
-			pxnLogger.getLogger().info("Connecting to: "+host+":"+Integer.toString(port));
+			pxnLogger.get().info("Connecting to: "+host+":"+Integer.toString(port));
 			socket = new Socket(host, port);
 			worker = new pxnSocketWorker(socket, processor);
 //		} catch(UnknownHostException e) {

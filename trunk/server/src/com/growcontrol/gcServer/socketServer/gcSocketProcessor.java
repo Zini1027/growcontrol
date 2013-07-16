@@ -1,6 +1,7 @@
 package com.growcontrol.gcServer.socketServer;
 
 import com.growcontrol.gcServer.gcServer;
+import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 import com.growcontrol.gcCommon.pxnParser.pxnParser;
 import com.growcontrol.gcCommon.pxnSocket.pxnSocketProcessor;
 import com.growcontrol.gcCommon.pxnSocket.pxnSocketProcessorThreaded;
@@ -22,11 +23,11 @@ public class gcSocketProcessor extends pxnSocketProcessorThreaded {
 
 		// HEY packet
 		if(first.equalsIgnoreCase("HELLO")) {
-gcServer.getLogger().severe("Got HELLO packet!");
+pxnLogger.get().severe("Got HELLO packet!");
 			try {
 				sendServerPackets.sendHEY(processor, gcServer.version);
 			} catch (Exception e) {
-e.printStackTrace();
+pxnLogger.get().exception(e);
 			}
 		} else
 
@@ -38,7 +39,7 @@ e.printStackTrace();
 		// FILE request
 		if(first.equalsIgnoreCase("FILE")) {
 //			sendData("SENDFILE: test.txt");
-gcServer.getLogger().severe("SENDING FILE");
+pxnLogger.get().severe("SENDING FILE");
 			return;
 
 		// unknown packet
@@ -59,7 +60,7 @@ gcServer.getLogger().severe("SENDING FILE");
 			try {
 				sendServerPackets.sendLISTZones(processor);
 			} catch (Exception e) {
-e.printStackTrace();
+pxnLogger.get().exception(e);
 			}
 		} else
 
@@ -72,7 +73,7 @@ e.printStackTrace();
 				try {
 					sendServerPackets.sendLISTPluginsClient(processor);
 				} catch (Exception e) {
-e.printStackTrace();
+pxnLogger.get().exception(e);
 				}
 			} else {
 System.out.println("Invalid 'LIST plugins' packet!");

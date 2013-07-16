@@ -30,7 +30,7 @@ public class pxnSocketWorkerSender extends Thread {
 			out = new PrintWriter(socket.getOutputStream());
 			out.flush();
 		} catch (IOException e) {
-			pxnLogger.getLogger().exception(e);
+			pxnLogger.get().exception(e);
 		}
 		this.queueOut = worker.processor.getOutputQueue();
 	}
@@ -60,7 +60,8 @@ public class pxnSocketWorkerSender extends Thread {
 
 	// send file
 	public void sendFileNow(String fileName) {
-		pxnLogger.getLogger().info("Sending file: "+fileName);
+		pxnLogger log = pxnLogger.get();
+		log.info("Sending file: "+fileName);
 		File file = new File(fileName);
 		final int bufferSize = 1000;
 		byte[] buffer = new byte[bufferSize];
@@ -70,7 +71,7 @@ public class pxnSocketWorkerSender extends Thread {
 			BufferedOutputStream outputStream = new BufferedOutputStream(socket.getOutputStream());
 			long fileSize = file.length();
 			long bytesSent = 0;
-System.out.println("Sending file size: "+Long.toString(fileSize));
+log.debug("Sending file size: "+Long.toString(fileSize));
 			while(fileSize > bytesSent) {
 //				pxnUtils.Sleep(100);
 				// chunk size
@@ -79,24 +80,24 @@ System.out.println("Sending file size: "+Long.toString(fileSize));
 						buffer.length :
 						fileSize - bytesSent
 					);
-//System.out.println("Sending [ "+Long.toString(size)+" ] bytes!");
+//log.debug("Sending [ "+Long.toString(size)+" ] bytes!");
 				// get chunk from file
 				inputStream.read(buffer, 0, size);
 				// send chunk
 				outputStream.write(buffer, 0, size);
 				outputStream.flush();
 				bytesSent += buffer.length;
-System.out.println("Sent [ "+Long.toString(bytesSent)+" ] bytes!");
+log.debug("Sent [ "+Long.toString(bytesSent)+" ] bytes!");
 			}
-System.out.println("Finished [ "+Long.toString(bytesSent)+" ] bytes!");
+log.debug("Finished [ "+Long.toString(bytesSent)+" ] bytes!");
 			inputStream.close();
 			inputStream = null;
 			fileStream = null;
 			file = null;
 		} catch (FileNotFoundException e) {
-			pxnLogger.getLogger().exception(e);
+			log.exception(e);
 		} catch (IOException e) {
-			pxnLogger.getLogger().exception(e);
+			log.exception(e);
 		}
 	}
 

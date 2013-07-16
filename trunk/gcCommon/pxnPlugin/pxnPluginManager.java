@@ -50,6 +50,7 @@ public class pxnPluginManager {
 		File[] files = dir.listFiles(new fileFilterJar());
 		if(files == null)
 			throw new IOException(pluginsPath+" (Failed to get plugins list!)");
+		pxnLogger log = pxnLogger.get();
 		// loop .jar files
 @SuppressWarnings("unused")
 		int successful = 0;
@@ -60,12 +61,12 @@ public class pxnPluginManager {
 				successful++;
 			} catch(Exception e) {
 				// non-interrupted exception
-				pxnLogger.getLogger().exception(f.toString()+" (Failed to load plugin)", e);
+				log.exception(f.toString()+" (Failed to load plugin)", e);
 				failed++;
 			}
 		}
-		pxnLogger.getLogger().info("Loaded [ "+Integer.toString(plugins.size())+" ] plugins.");
-		if(failed > 0) pxnLogger.getLogger().warning("Failed to load [ "+Integer.toString(failed)+" ] plugins!");
+		log.info("Loaded [ "+Integer.toString(plugins.size())+" ] plugins.");
+		if(failed > 0) log.warning("Failed to load [ "+Integer.toString(failed)+" ] plugins!");
 	}
 	// file filter .jar
 	protected final class fileFilterJar implements FileFilter {
@@ -78,24 +79,25 @@ public class pxnPluginManager {
 
 	// load plugin jar
 	public void LoadPlugin(File f) throws Exception {
+		pxnLogger log = pxnLogger.get();
 		// load plugin.yml from jar
 		pxnPluginYML yml = getPluginYML(f);
 		// get server main class
 		String mainClassValue = yml.getMainClassValue();
 		if(mainClassValue == null || mainClassValue.isEmpty()) {
 			// non-interrupted exception
-			pxnLogger.getLogger().exception(new FileNotFoundException(f.toString()+" : plugin.yml (File not found in jar!)"));
+			log.exception(new FileNotFoundException(f.toString()+" : plugin.yml (File not found in jar!)"));
 			return;
 		}
 		// find classes
 		Class<pxnPlugin> clss = getClassWithMethods(f, mainClassValue,
 			Arrays.asList("onEnable", "onDisable") );
 		if(clss == null) {
-			pxnLogger.getLogger().severe(f.toString()+" : "+mainClassValue+" (Plugin main class not found with required methods!)");
+			log.severe(f.toString()+" : "+mainClassValue+" (Plugin main class not found with required methods!)");
 			return;
 		}
 		// found plugin
-		pxnLogger.getLogger().debug("Loading plugin: "+mainClassValue);
+		log.debug("Loading plugin: "+mainClassValue);
 		pxnPlugin plugin = clss.newInstance();
 		plugin.setPluginManager(this);
 		plugins.put(mainClassValue, plugin);
@@ -108,6 +110,7 @@ public class pxnPluginManager {
 
 	// enable plugins
 	public void EnablePlugins() {
+		pxnLogger log = pxnLogger.get();
 		int successful = 0;
 		int failed     = 0;
 		for(pxnPlugin plugin : plugins.values()) {
@@ -116,13 +119,13 @@ public class pxnPluginManager {
 					EnablePlugin(plugin);
 					successful++;
 				} catch (Exception e) {
-					pxnLogger.getLogger().exception(e);
+					log.exception(e);
 					failed++;
 				}
 			}
 		}
-		if(successful > 0) pxnLogger.getLogger().info("Successfully enabled [ "+Integer.toString(successful)+" ] plugins.");
-		if(failed     > 0) pxnLogger.getLogger().warning("Failed to enable [ "+Integer.toString(failed)+" ] plugins!");
+		if(successful > 0) log.info("Successfully enabled [ "+Integer.toString(successful)+" ] plugins.");
+		if(failed     > 0) log.warning("Failed to enable [ "+Integer.toString(failed)+" ] plugins!");
 	}
 	public void EnablePlugin(String pluginName) throws Exception {
 		if(plugins.containsKey(pluginName))
@@ -143,6 +146,7 @@ public class pxnPluginManager {
 		plugins.clear();
 	}
 	public void DisablePlugins() {
+		pxnLogger log = pxnLogger.get();
 		int successful = 0;
 		int failed     = 0;
 		for(pxnPlugin plugin : plugins.values()) {
@@ -150,13 +154,13 @@ public class pxnPluginManager {
 				DisablePlugin(plugin);
 				successful++;
 			} catch (Exception e) {
-				pxnLogger.getLogger().exception(e);
+				log.exception(e);
 				failed++;
 			}
 		}
 
-		if(successful > 0) pxnLogger.getLogger().info("Successfully unloaded [ "+Integer.toString(successful)+" ] plugins.");
-		if(failed     > 0) pxnLogger.getLogger().warning("Failed to unload [ "+Integer.toString(failed)+" ] plugins!");
+		if(successful > 0) log.info("Successfully unloaded [ "+Integer.toString(successful)+" ] plugins.");
+		if(failed     > 0) log.warning("Failed to unload [ "+Integer.toString(failed)+" ] plugins!");
 	}
 	public void DisablePlugin(String pluginName) {
 		if(plugins.containsKey(pluginName))
@@ -244,8 +248,8 @@ public class pxnPluginManager {
 		try {
 			clss = classLoader.loadClass(className);
 		} catch (Exception e) {
-			pxnLogger.getLogger().severe("Failed to load plugin class: "+className);
-			pxnLogger.getLogger().exception(e);
+			pxnLogger.get().severe("Failed to load plugin class: "+className);
+			pxnLogger.get().exception(e);
 		}
 		if(classLoader != null) classLoader.close();
 		return clss;
@@ -265,7 +269,7 @@ public class pxnPluginManager {
 			method.setAccessible(true);
 			method.invoke(sysLoader, new Object[]{url});
 		} catch (Throwable e) {
-			pxnLogger.getLogger().exception(e);
+			pxnLogger.get().exception(e);
 			throw new IOException("Error, could not add URL to system classloader");
 		}
 	}
