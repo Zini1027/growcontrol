@@ -16,7 +16,7 @@ import com.growcontrol.gcCommon.pxnLogger.pxnLevel.LEVEL;
 
 public class pxnLogger implements pxnLoggerInterface, pxnLogPrinter {
 
-	protected static Boolean inited = false;
+	protected static volatile Boolean inited = false;
 
 	protected String loggerName;
 
@@ -92,7 +92,7 @@ public class pxnLogger implements pxnLoggerInterface, pxnLogPrinter {
 //		// log to file
 //		logHandlers.add(new gcLoggerFile().setStrip(true));
 	}
-	protected boolean isInited() {
+	protected static boolean isInited() {
 		return inited;
 	}
 
@@ -124,6 +124,7 @@ public class pxnLogger implements pxnLoggerInterface, pxnLogPrinter {
 		reader.flushConsole();
 	}
 	public static ConsoleReader getReader() {
+		if(!isInited()) get().init();
 		return reader;
 	}
 

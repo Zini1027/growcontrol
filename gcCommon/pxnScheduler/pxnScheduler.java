@@ -8,15 +8,14 @@ import java.util.UUID;
 import com.growcontrol.gcCommon.TimeU;
 import com.growcontrol.gcCommon.TimeUnitTime;
 import com.growcontrol.gcCommon.pxnUtils;
+import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
-import com.growcontrol.gcServer.Main;
 import com.growcontrol.gcServer.gcServer;
-import com.growcontrol.gcServer.logger.gcLogger;
 
 
 public class pxnScheduler extends Thread {
 
-	private final gcLogger log = Main.getLogger();
+//	private final gcLogger log = Main.getLogger();
 
 	// scheduler manager
 //	protected final Timer timer;
@@ -62,7 +61,7 @@ public class pxnScheduler extends Thread {
 		this.schedulerName = name;
 //		this.timer = new Timer();
 		this.threadPool = new pxnThreadQueue("scheduler_"+name);
-		log.debug("("+name+") New scheduler created");
+		pxnLogger.get().debug("("+name+") New scheduler created");
 	}
 
 
@@ -165,7 +164,7 @@ public class pxnScheduler extends Thread {
 		if(task == null) throw new NullPointerException("task cannot be null!");
 		synchronized(tasks) {
 			this.tasks.add(task);
-			log.debug("("+task.getTaskName()+") New task created");
+			pxnLogger.get().debug("("+task.getTaskName()+") New task created");
 		}
 	}
 

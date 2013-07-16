@@ -4,9 +4,9 @@ import java.io.File;
 import java.util.List;
 import java.util.Map.Entry;
 
+import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 import com.growcontrol.gcCommon.pxnSocket.pxnSocketProcessor;
 import com.growcontrol.gcServer.gcServer;
-import com.growcontrol.gcServer.logger.gcLogger;
 import com.growcontrol.gcServer.serverPlugin.gcPluginYML;
 
 
@@ -18,7 +18,7 @@ public class sendServerPackets {
 	public static void sendHEY(pxnSocketProcessor processor, String serverVersion) throws Exception {
 		if(serverVersion == null) throw new NullPointerException("serverVersion can't be null!");
 		processor.sendData("HEY "+serverVersion);
-gcLogger.getLogger().severe("Sent HEY packet!");
+pxnLogger.get().severe("Sent HEY packet!");
 	}
 
 
@@ -28,7 +28,7 @@ gcLogger.getLogger().severe("Sent HEY packet!");
 		List<String> zones = gcServer.get().getZones();
 		for(String zoneName : zones)
 			sendZONE(processor, zoneName);
-gcLogger.getLogger().severe("Sent ZONE packets!");
+pxnLogger.get().severe("Sent ZONE packets!");
 	}
 	// ZONE
 	// (send a zone)
@@ -43,7 +43,7 @@ gcLogger.getLogger().severe("Sent ZONE packets!");
 		for(Entry<String, File> entry : gcPluginYML.clientMainClasses.entrySet()) {
 			sendPLUGIN(processor, entry.getValue().getName() );
 		}
-gcLogger.getLogger().severe("Sent PLUGIN packets!");
+pxnLogger.get().severe("Sent PLUGIN packets!");
 	}
 	// PLUGIN
 	// (send a plugin)
