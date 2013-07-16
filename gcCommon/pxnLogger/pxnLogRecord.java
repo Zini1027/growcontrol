@@ -26,7 +26,7 @@ public final class pxnLogRecord {
 			this.msg = Ansi.ansi().render(msg).toString();
 		this.level = level;
 		this.loggerName = loggerName;
-		this.millis = pxnClock.getClock().getTimeMillis();
+		this.millis = pxnClock.get().Millis();
 	}
 
 

@@ -93,6 +93,7 @@ public class pxnSocketClient implements pxnSocket {
 //	}
 	@Override
 	public void stop() {
+		close();
 	}
 
 
