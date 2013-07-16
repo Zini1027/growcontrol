@@ -16,42 +16,53 @@ public class pxnClock {
 //TODO: this needs to be made thread safe!
 //need to block or throw exception if time-server query hasn't finished
 
-	protected boolean enabled  = true;
+	// instance
+	private static pxnClock clock = null;
+	protected pxnLogger log;
+
+	protected boolean enableNTP  = true;
+	protected volatile boolean active = false;
 	protected String timeServer = "pool.ntp.org";
 
 	protected double localOffset = 0.0;
-	protected double lastChecked = 0.0;
+	protected double lastChecked = 0.0; // system time
 
 	// instance lock
 	protected final Object threadLock = new Object();
 	protected Thread updateThread = null;
 
 
-	// logger
-	protected pxnLogger log;
-	public pxnClock(pxnLogger log) {
+	// get clock
+	public static pxnClock get(boolean blocking) {
+		if(clock == null) {
+			clock = new pxnClock();
+			clock.update(blocking);
+		}
+		return clock;
+	}
+	public static pxnClock getBlocking() {
+		return get(true);
+	}
+	public static pxnClock get() {
+		return get(true);
+	}
+	// new instance
+	protected pxnClock(pxnLogger log) {
 		this.log = log;
 	}
-	public pxnClock() {
+	protected pxnClock() {
 		log = pxnLogger.getLogger();
 	}
-
-
-	// get static clock
-	protected static pxnClock clock = null;
-	public static pxnClock getClock() {
-		return getClock(false);
-	}
-	public static pxnClock getClock(boolean threaded) {
-		if(pxnClock.clock == null) {
-			pxnClock.clock = new pxnClock();
-			pxnClock.clock.update(threaded);
-		}
-		return pxnClock.clock;
-	}
-	protected static void setClock(pxnClock clock) {
-		pxnClock.clock = clock;
-	}
+//	public static pxnClock getClock(boolean threaded) {
+//		if(pxnClock.clock == null) {
+//			pxnClock.clock = new pxnClock();
+//			pxnClock.clock.update(threaded);
+//		}
+//		return pxnClock.clock;
+//	}
+//	protected static void setClock(pxnClock clock) {
+//		pxnClock.clock = clock;
+//	}
 
 
 	// static update
@@ -69,20 +80,20 @@ public class pxnClock {
 
 	// update from time server
 	public void update(boolean enabled, boolean threaded) {
-		setEnabled(enabled);
+		setNTP(enabled);
 		update(threaded);
 	}
 	public void update(String timeServer, boolean threaded) {
 		setTimeServer(timeServer);
 		update(threaded);
 	}
-	public synchronized void update(boolean threaded) {
-		if(!enabled) return;
-		double time = System.currentTimeMillis();
-		if(lastChecked != 0.0 && ((time-lastChecked)/1000.0) < 60.0) return;
-		lastChecked = time;
-		// run threaded
-		if(threaded) {
+	public synchronized void update(boolean blocking) {
+		if(!enableNTP) return;
+		if(blocking) {
+			// run blocking
+			doUpdate();
+		} else {
+			// run threaded
 			if(updateThread == null) {
 				updateThread = new Thread() {
 					@Override
@@ -91,23 +102,22 @@ public class pxnClock {
 					}
 				};
 			} else {
-				// already running
-				if(updateThread.isAlive()) return;
+				// start thread
+				if(!updateThread.isAlive())
+					updateThread.start();
 			}
-			// start thread
-			updateThread.start();
-			return;
-		} else {
-			// run blocking
-			doUpdate();
 		}
 	}
 
 
 	// run time query
 	protected void doUpdate() {
-		if(!enabled) return;
+		if(!enableNTP) return;
 		synchronized(threadLock) {
+			double time = System.currentTimeMillis();
+			if(lastChecked != 0.0 && ((time-lastChecked)/1000.0) < 60.0) return;
+			lastChecked = time;
+			active = true;
 			try {
 				DatagramSocket socket;
 				socket = new DatagramSocket();
@@ -120,17 +130,18 @@ socket.setSoTimeout(1000);
 				socket.receive(packet);
 				ntpMessage msg = new ntpMessage(packet.getData());
 				// calculate local offset
-				double time = System.currentTimeMillis();
+				time = System.currentTimeMillis();
 				localOffset = ((msg.receiveTimestamp - msg.originateTimestamp) + (msg.transmitTimestamp - fromUnixTimestamp(time))) / 2.0;
 				log.info("Internal time adjusted by "+ (localOffset>0?"+":"") + new DecimalFormat("0.000").format(localOffset) +" seconds");
 				log.debug("System time:   "+timestampToString(time/1000.0));
-				log.debug("Adjusted time: "+getTimeString());
+				log.debug("Adjusted time: "+getString());
 				// clean up
 				socket.close();
 				msg = null;
 				packet = null;
 				socket = null;
 				address = null;
+				active = false;
 				return;
 //double destinationTimestamp = fromUnixTimestamp();
 //double roundTripDelay = (destinationTimestamp-msg.originateTimestamp) - (msg.transmitTimestamp-msg.receiveTimestamp);
@@ -150,12 +161,16 @@ socket.setSoTimeout(1000);
 			} catch (Exception e) {
 				log.exception(e);
 			}
+			active = false;
 		}
 	}
 	// has update run?
 	public boolean hasUpdated() {
-		if(!enabled) return true;
+		if(!enableNTP) return true;
 		return (localOffset != 0.0) && (lastChecked != 0.0);
+	}
+	public boolean isUpdating() {
+		return active;
 	}
 
 
@@ -180,23 +195,23 @@ socket.setSoTimeout(1000);
 	public double getLocalOffset() {
 		return localOffset;
 	}
-	public double getTimeSeconds() {
-		return getTimeMillis() / 1000.0;
+	public double Seconds() {
+		return Millis() / 1000.0;
 	}
-	public long getTimeMillis() {
+	public long Millis() {
 		return System.currentTimeMillis() + (long)(localOffset * 1000.0);
 	}
-	public String getTimeString() {
-		return timestampToString(getTimeSeconds());
+	public String getString() {
+		return timestampToString(Seconds());
 	}
 
 
 	// enable/disable NTP
 	public boolean isEnabled() {
-		return enabled;
+		return enableNTP;
 	}
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
+	public void setNTP(boolean enabled) {
+		this.enableNTP = enabled;
 		if(!enabled) {
 			localOffset = 0.0;
 			lastChecked = 0.0;
