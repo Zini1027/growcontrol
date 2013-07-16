@@ -1,131 +1,175 @@
 package com.growcontrol.gcServer;
 
-import com.growcontrol.gcCommon.pxnCommand.pxnCommand;
 import com.growcontrol.gcCommon.pxnCommand.pxnCommandEvent;
-import com.growcontrol.gcCommon.pxnCommand.pxnCommandsGroup;
-import com.growcontrol.gcCommon.pxnEvent.pxnEvent.EventPriority;
+import com.growcontrol.gcCommon.pxnCommand.pxnCommandsHolder;
 
 
-public class ServerCommands extends pxnCommandsGroup {
+public class ServerCommands extends pxnCommandsHolder {
 
 
-	public ServerCommands() {
-		// basic commands
-		add("stop")
+	@Override
+	public void initCommands() {
+		// server control
+		addCommand("stop")
 			.addAlias("exit")
 			.addAlias("quit")
 			.addAlias("shutdown")
+//TODO: remove this
+.addAlias("s")
 			.setUsage("Stops and closes the server.");
-		add("kill")
+		addCommand("kill")
 //TODO: remove this
 .addAlias("k")
 			.setUsage("Emergency shutdown, no saves or power-downs. Don't use this unless you need to.");
-//		add("start")
-		add("pause")
+		addCommand("start")
+			.addAlias("resume")
+			.setUsage("Starts or resumes server tasks and schedulers.");
+		addCommand("pause")
 			.setUsage("Pauses or resumes the scheduler and some plugin tasks. Optional argument: [on/off/true/false/1/0]");
-		add("clear")
+		addCommand("clear")
 			.addAlias("cls")
 			.setUsage("Clears the console screen.");
-//		add("help")
-//			.addAlias("?")
-		add("show")
+		addCommand("help")
+			.addAlias("?");
+		addCommand("show")
 			.setUsage("Displays additional information.");
-		add("version")
+		addCommand("version")
 			.setUsage("Displays the current running version, and the latest available (if enabled)");
-//		add("say")
-//			.addAlias("broadcast")
-//			.setUsage("");
-//		add("list")
-//		// input / output
-//		add("set")
-//		add("get")
-//		add("watch")
-		// tools
-		add("ping")
+		addCommand("say")
+			.addAlias("broadcast")
+			.addAlias("wall")
 			.setUsage("");
-		add("threads")
+//		addCommand("list")
+//		// input / output
+//		addCommand("set")
+//		addCommand("get")
+//		addCommand("watch")
+//		// tools
+//		addCommand("ping")
+//			.setUsage("");
+		addCommand("threads")
 			.setUsage("Displays number of loaded threads, and optional details.");
-		setAllPriority(EventPriority.LOWEST);
+//		setAllPriority(EventPriority.LOWEST);
 	}
 
 
 	@Override
-	public boolean onCommand(pxnCommandEvent event) {
-		if(event.isHandled())   return false;
-		pxnCommand command = event.command;
-		// basic commands
-		if(command.isCommand("stop"))
-			return _commandStop();
-		else if(command.isCommand("kill")) {
-			_commandKill();
-			return false;
-		} else if(command.isCommand("pause"))
-			return _commandPause();
-		else if(command.isCommand("clear"))
-			return _commandClear();
-		else if(command.isCommand("show"))
-			return _commandShow( (String[]) event.args.toArray());
-		else if(command.isCommand("version"))
-			return _commandVersion();
-		// tools
-		else if(command.isCommand("ping"))
-			return _commandPing( (String[]) event.args.toArray());
-		else if(command.isCommand("threads"))
-			return _commandThreads();
+	public boolean onCommand(pxnCommandEvent commandEvent) {
+		if(commandEvent.isHandled()) return false;
+		switch(commandEvent.getCommandStr()) {
+		// server control
+		case "stop":
+			return ServerCommands._stop();
+		case "kill":
+			return _kill();
+		case "start":
+			return _start();
+		case "pause":
+			return _pause();
+		case "clear":
+			return _clear();
+		case "help":
+			return _help(commandEvent.getArgsArray());
+		case "show":
+			return _show(commandEvent.getArgsArray());
+		case "version":
+			return _version();
+		case "say":
+			String msg = commandEvent.commandRaw;
+			if(msg.contains(" ")) msg = msg.substring(msg.indexOf(" ") + 1);
+			return _say(msg);
+//		// tools
+//		case "ping":
+//			return _ping( (String[]) event.args.toArray());
+		case "threads":
+			return _threads();
+		default:
+			break;
+		}
 		return false;
 	}
 
 
 	// stop command
-	private static boolean _commandStop() {
-//		gcServer.Shutdown();
+	private static boolean _stop() {
+		Main.Shutdown();
 		return true;
 	}
 
 
 	// kill command
-	private static void _commandKill() {
+	private static boolean _kill() {
 		try {
-//			gcServer.log.warning("Killing server! (Triggered by console command)");
+			Main.getLogger().warning("Killing server! (Triggered by console command)");
 		} catch(Exception ignore) {}
+		System.out.println();
+		System.out.println();
 		System.exit(0);
+		return true;
 	}
 
 
+	// start command
+	private static boolean _start() {
+		return true;
+	}
 	// pause command
-	private static boolean _commandPause() {
+	private static boolean _pause() {
 		return true;
 	}
 
 
 	// clear command
-	private static boolean _commandClear() {
+	private static boolean _clear() {
+		return true;
+	}
+
+
+	// help command
+	private static boolean _help(String[] args) {
 		return true;
 	}
 
 
 	// show command
-	private static boolean _commandShow(String[] args) {
+	private static boolean _show(String[] args) {
 		return true;
 	}
 
 
 	// version command
-	private static boolean _commandVersion() {
+	private static boolean _version() {
+		Main.getLogger().info("Version: "+gcServer.version);
 		return true;
 	}
 
 
-	// ping command
-	private static boolean _commandPing(String[] args) {
+	// say command
+	private static boolean _say(String msg) {
+		msg = "(console) "+msg;
+		Main.getLogger().printRaw(msg);
 		return true;
 	}
+
+
+//	// ping command
+//	private static boolean _ping(String[] args) {
+//		return true;
+//	}
 
 
 	// threads command
-	private static boolean _commandThreads() {
+	private static boolean _threads() {
 		return true;
 	}
+
+
+
+
+//	@Override
+//	public boolean doEvent(pxnEvent event) {
+//		return false;
+//	}
 
 
 //		// start

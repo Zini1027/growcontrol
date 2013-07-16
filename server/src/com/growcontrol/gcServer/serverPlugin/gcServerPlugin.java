@@ -1,10 +1,14 @@
 package com.growcontrol.gcServer.serverPlugin;
 
+import com.growcontrol.gcServer.gcServer;
 import com.growcontrol.gcServer.logger.gcLogger;
+import com.growcontrol.gcCommon.pxnCommand.pxnCommandsHolder;
 import com.growcontrol.gcCommon.pxnPlugin.pxnPlugin;
 
 
 public abstract class gcServerPlugin extends pxnPlugin {
+
+//	private pxnCommandsHolder commandsHolder = null;
 
 
 	// get plugin manager
@@ -21,11 +25,12 @@ public abstract class gcServerPlugin extends pxnPlugin {
 
 
 	// register listeners
-	public void registerCommandListener(gcServerListenerCommand listener) {
+	@Override
+	public void registerCommandsHolder(pxnCommandsHolder listener) {
 		if(listener == null) throw new NullPointerException("listener can't be null!");
 		gcServerPluginManager pluginManager = getPluginManager();
 		if(pluginManager == null) throw new NullPointerException("pluginManager hasn't been set!");
-		pluginManager.registerCommandListener(listener);
+		gcServer.getListeners().registerCommandListener(listener);
 	}
 
 

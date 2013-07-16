@@ -9,16 +9,30 @@ import com.growcontrol.gcCommon.pxnConfig.pxnConfig;
 
 public class ServerConfig {
 
+	// path to config files
+	protected String configsPath = null;
+	// config loader
 	protected pxnConfig config = null;
-	protected String configsPath = "";
+	// instance of this
+	protected static ServerConfig serverConfig = null;
+
+
+	public static ServerConfig get() {
+		if(serverConfig == null)
+			serverConfig = new ServerConfig(null);
+		return serverConfig;
+	}
+	protected static ServerConfig get(String dirPath) {
+		if(serverConfig == null)
+			serverConfig = new ServerConfig(dirPath);
+		return serverConfig;
+	}
 
 
 	// load config.yml
-	public ServerConfig() {
-		this(null);
-	}
-	public ServerConfig(String path) {
-		if(path != null) configsPath = path;
+	protected ServerConfig(String dirPath) {
+		if(dirPath != null)
+			configsPath = dirPath;
 		try {
 			config = pxnConfig.loadFile(configsPath, "config.yml");
 		} catch (Exception e) {
@@ -28,21 +42,21 @@ public class ServerConfig {
 
 
 	// version
-	public String getVersion() {
+	public String Version() {
 		if(config == null) return null;
 		return config.getString("Version");
 	}
 
 
 	// log level
-	public String getLogLevel() {
+	public String LogLevel() {
 		if(config == null) return null;
 		return config.getString("Log Level");
 	}
 
 
 	// tick interval
-	public long getTickInterval() {
+	public long TickInterval() {
 		if(config == null) return 1000;
 		return pxnUtils.MinMax(
 			config.getLong("Tick Interval"),
@@ -52,7 +66,7 @@ public class ServerConfig {
 
 
 	// listen port
-	public int getListenPort() {
+	public int ListenPort() {
 		if(config == null) return 1142;
 		return pxnUtils.MinMax(
 			config.getInt("Listen Port"),
@@ -62,7 +76,7 @@ public class ServerConfig {
 
 
 	// zones (rooms)
-	public void getZones(Collection<String> zones) {
+	public void ZonesList(Collection<String> zones) {
 		if(config == null) return;
 		if(zones  == null) throw new NullPointerException("zones list can't be null!");
 		try {

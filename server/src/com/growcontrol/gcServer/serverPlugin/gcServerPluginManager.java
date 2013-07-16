@@ -2,11 +2,6 @@ package com.growcontrol.gcServer.serverPlugin;
 
 import java.io.File;
 
-import com.growcontrol.gcServer.Main;
-import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
-import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListenerGroup;
-import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListenerGroup.ListenerType;
-import com.growcontrol.gcCommon.pxnEvent.pxnEvent.EventPriority;
 import com.growcontrol.gcCommon.pxnPlugin.pxnPluginManager;
 import com.growcontrol.gcCommon.pxnPlugin.pxnPluginYML;
 
@@ -14,7 +9,7 @@ import com.growcontrol.gcCommon.pxnPlugin.pxnPluginYML;
 public class gcServerPluginManager extends pxnPluginManager {
 
 	// listeners
-	protected final gcServerListenerGroup commandListenerGroup = new gcServerListenerGroup(ListenerType.COMMAND);
+//	protected final gcServerListenerGroup commandListenerGroup = new gcServerListenerGroup(ListenerType.COMMAND);
 //	protected static HashMap<String, gcServerPluginListenerCommand>	listenersCommand	= new HashMap<String, gcServerPluginListenerCommand>();
 //	protected static HashMap<String, gcServerPluginListenerTick>	listenersTick		= new HashMap<String, gcServerPluginListenerTick>();
 //	protected static HashMap<String, gcServerPluginListenerOutput>	listenersOutput		= new HashMap<String, gcServerPluginListenerOutput>();
@@ -40,21 +35,21 @@ public class gcServerPluginManager extends pxnPluginManager {
 	}
 
 
-	// register listeners
-	public void registerCommandListener(gcServerListenerCommand listener) {
-		commandListenerGroup.register(listener);
-	}
-//	public gcServerListenerGroup getCommandListenerGroup() {
-//		return commandListenerGroup;
+//	// register listeners
+//	public void registerCommandListener(gcServerListenerCommand listener) {
+//		commandListenerGroup.register(listener);
 //	}
-	public boolean triggerEvent(gcServerEventCommand event) {
-		Main.getLogger().debug("Triggering event: "+event.getLine().getFirst());
-		for(EventPriority priority : EventPriority.values()) {
-			if(commandListenerGroup.triggerEvent(event, priority))
-				event.setHandled();
-		}
-		return event.isHandled();
-	}
+////	public gcServerListenerGroup getCommandListenerGroup() {
+////		return commandListenerGroup;
+////	}
+//	public boolean triggerEvent(gcServerEventCommand event) {
+//		Main.getLogger().debug("Triggering event: "+event.getLine().getFirst());
+//		for(EventPriority priority : EventPriority.values()) {
+//			if(commandListenerGroup.triggerEvent(event, priority))
+//				event.setHandled();
+//		}
+//		return event.isHandled();
+//	}
 
 
 //	// register listeners
