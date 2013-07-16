@@ -29,7 +29,7 @@ public class pxnSocketWorker {
 		try {
 			socket.setKeepAlive(true);
 		} catch (SocketException e) {
-			pxnLogger.getLogger().exception(e);
+			pxnLogger.get().exception(e);
 		}
 		// reader thread
 		threadReader = new pxnSocketWorkerReader(this, socket);
@@ -70,12 +70,12 @@ public class pxnSocketWorker {
 			try {
 				socket.close();
 			} catch (IOException e) {
-pxnLogger.getLogger().exception(e);
+				pxnLogger.get().exception(e);
 			}
 		}
 		// stop processor
 		processor.interrupt();
-		pxnLogger.getLogger().info("Disconnected: "+getIPString());
+		pxnLogger.get().info("Disconnected: "+getIPString());
 		// stop input/output threads
 		threadReader.interrupt();
 		threadSender.interrupt();

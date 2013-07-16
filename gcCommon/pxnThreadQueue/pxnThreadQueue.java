@@ -35,7 +35,7 @@ public class pxnThreadQueue implements Runnable {
 		queue.add(new Runnable() {
 			@Override
 			public void run() {
-				pxnLogger.getLogger().debug("("+queueName+") Started thread queue..");
+				pxnLogger.get().debug("("+queueName+") Started thread queue..");
 			}
 		});
 		this.queueName = name;
@@ -73,20 +73,21 @@ public class pxnThreadQueue implements Runnable {
 			try {
 				run = queue.take();
 			} catch (InterruptedException e) {
-				pxnLogger.getLogger().exception(e);
+				pxnLogger.get().exception(e);
+				break;
 			}
 			if(run != null) {
 				active += 1;
 				try {
 					run.run();
 				} catch (Exception e) {
-					pxnLogger.getLogger().exception(e);
+					pxnLogger.get().exception(e);
 				}
 				active -= 1;
 			}
 		}
 //		running = false;
-		pxnLogger.getLogger().info("("+queueName+") Stopped thread queue");
+		pxnLogger.get().info("("+queueName+") Stopped thread queue");
 	}
 
 
@@ -95,7 +96,7 @@ public class pxnThreadQueue implements Runnable {
 		addQueue(new Runnable() {
 			@Override
 			public void run() {
-				pxnLogger.getLogger().info("("+queueName+") Stopping thread queue..");
+				pxnLogger.get().info("("+queueName+") Stopping thread queue..");
 				stopping = true;
 			}
 		});
@@ -119,7 +120,7 @@ public class pxnThreadQueue implements Runnable {
 	}
 	// display threads still running
 	public void displayStillRunning() {
-		pxnLogger log = pxnLogger.getLogger();
+		pxnLogger log = pxnLogger.get();
 		Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
 		List<String> threadNames = new ArrayList<String>();
 		int count = 0;
@@ -145,9 +146,9 @@ public class pxnThreadQueue implements Runnable {
 		if(runnable == null) throw new NullPointerException("("+queueName+") runnable can't be null!");
 		try {
 			if(!queue.offer(runnable, 1, TimeU.S))
-				pxnLogger.getLogger().severe("("+queueName+") Thread queue is full!");
+				pxnLogger.get().severe("("+queueName+") Thread queue is full!");
 		} catch (InterruptedException e) {
-			pxnLogger.getLogger().exception(e);
+			pxnLogger.get().exception(e);
 		}
 		addThread();
 	}
@@ -167,7 +168,7 @@ public class pxnThreadQueue implements Runnable {
 		thread.setName("pxnThreadQueue_"+queueName);
 		this.threads.add(thread);
 		thread.start();
-		pxnLogger.getLogger().info("("+queueName+") threads: "+count+" active: "+active+" max: "+maxThreads);
+		pxnLogger.get().info("("+queueName+") threads: "+count+" active: "+active+" max: "+maxThreads);
 	}
 
 

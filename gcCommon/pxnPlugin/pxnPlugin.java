@@ -38,7 +38,7 @@ public abstract class pxnPlugin {
 
 	// plugin logger
 	public pxnLogger getLogger() {
-		return pxnLogger.getLogger(getPluginName());
+		return pxnLogger.get("plugin-"+getPluginName());
 	}
 
 

@@ -18,7 +18,7 @@ public class pxnPluginYML {
 		try {
 			config = pxnConfig.loadJarResource(file, fileName);
 		} catch (IOException e) {
-			pxnLogger.getLogger().exception(e);
+			pxnLogger.get().exception(e);
 		}
 	}
 
