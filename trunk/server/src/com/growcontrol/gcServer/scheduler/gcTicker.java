@@ -6,10 +6,10 @@ import java.util.List;
 import com.growcontrol.gcCommon.TimeU;
 import com.growcontrol.gcCommon.TimeUnitTime;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnScheduler.pxnScheduler;
 import com.growcontrol.gcCommon.pxnScheduler.pxnSchedulerTask;
 import com.growcontrol.gcCommon.pxnScheduler.pxnTriggers.triggerInterval;
 import com.growcontrol.gcServer.ServerConfig;
-import com.growcontrol.gcServer.gcServer;
 
 
 public class gcTicker extends pxnSchedulerTask {
@@ -32,9 +32,8 @@ public class gcTicker extends pxnSchedulerTask {
 		super(true, true);
 		long tickInterval = ServerConfig.get().TickInterval();
 		setInterval(new TimeUnitTime(tickInterval, TimeU.MS));
-//		gcServer.get().getScheduler().newTask(this);
-//		gcScheduler.newTriggerSeconds(1, true);
-		gcServer.get().getScheduler().newTask(this);
+		// add scheduler
+		pxnScheduler.get().newTask(this);
 	}
 
 
@@ -71,26 +70,17 @@ pxnLogger.get().debug("Time since last tick: "+Long.toString(timeSinceLast));
 	@Override
 	public void run() {
 System.out.println("TICK run()");
-boolean b=true;if(b)return;
-//		long timeSinceLast = 0;
-//		if(timeLast != 0) {
-//			timeSinceLast = time - timeLast;
-
-//		}
-//		// trigger tick
-//		timeLast = time;
-////		super.run();
 //		Main.getLogger().debug("Tick "+Integer.toString(getRunCount()));
 //		synchronized(tasks) {
 //			for(gcTickerTask task : tasks) {
 //				task.tick();
 //			}
 //		}
+//		// tick devices
+//		gcDeviceLoader.doTick();
+//		// tick plugins
+//		gcServerPluginLoader.doTick();
 	}
-//	// tick devices
-//	gcDeviceLoader.doTick();
-//	// tick plugins
-//	gcServerPluginLoader.doTick();
 
 
 	public void newTickerTask(gcTickerTask task) {

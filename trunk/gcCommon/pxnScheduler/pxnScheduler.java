@@ -15,17 +15,6 @@ import com.growcontrol.gcServer.gcServer;
 
 public class pxnScheduler extends Thread {
 
-//	private final gcLogger log = Main.getLogger();
-
-	// scheduler manager
-//	protected final Timer timer;
-	protected final pxnThreadQueue threadPool;
-
-	protected volatile boolean running  = false;
-	protected volatile boolean stopping = false;
-	protected TimeUnitTime sleepTime = new TimeUnitTime();
-//	protected volatile int sleepCount = 0;
-
 	// schedulers by name
 	protected static HashMap<String, pxnScheduler> schedulers = new HashMap<String, pxnScheduler>();
 
@@ -33,12 +22,19 @@ public class pxnScheduler extends Thread {
 	protected final String schedulerName;
 	protected final List<pxnSchedulerTask> tasks = new ArrayList<pxnSchedulerTask>();
 
+	// thread pool
+	protected final pxnThreadQueue threadPool;
+
+	protected volatile boolean running  = false;
+	protected volatile boolean stopping = false;
+	protected TimeUnitTime sleepTime = new TimeUnitTime();
+
 
 	// get scheduler
-	public static pxnScheduler getScheduler() {
-		return getScheduler(null);
+	public static pxnScheduler get() {
+		return get(null);
 	}
-	public static pxnScheduler getScheduler(String name) {
+	public static pxnScheduler get(String name) {
 		pxnScheduler sched = null;
 		synchronized(schedulers) {
 			if(schedulers.containsKey(name)) {
@@ -59,17 +55,11 @@ public class pxnScheduler extends Thread {
 	protected pxnScheduler(String name) {
 		if(name == null) throw new NullPointerException("schedulerName cannot be null!");
 		this.schedulerName = name;
-//		this.timer = new Timer();
 		this.threadPool = new pxnThreadQueue("scheduler_"+name);
 		pxnLogger.get().debug("("+name+") New scheduler created");
 	}
 
 
-	// start
-//	public void Start() {
-//		timer.schedule(this, 100, 100);
-//		running = true;
-//	}
 	// stop/pause
 	public void Pause() {
 		stopping = true;
@@ -78,7 +68,6 @@ public class pxnScheduler extends Thread {
 	public void Shutdown() {
 		Pause();
 		threadPool.Shutdown();
-//		timer.cancel();
 	}
 	// all schedulers
 	public static void PauseAll() {
@@ -107,8 +96,7 @@ public class pxnScheduler extends Thread {
 					RunTask(task);
 			// sleep max 1 second
 			long sleepMS = this.sleepTime.get(TimeU.MS);
-//TODO: set back to 1
-			pxnUtils.Sleep(pxnUtils.MinMax(sleepMS, 100, 950));
+			pxnUtils.Sleep(pxnUtils.MinMax(sleepMS, 1, 950));
 		}
 		running = false;
 	}
@@ -144,7 +132,6 @@ public class pxnScheduler extends Thread {
 				task.preRun();
 			}
 		}
-//System.out.println();
 		if(tasksToRun.size() == 0)
 			return null;
 		return tasksToRun;

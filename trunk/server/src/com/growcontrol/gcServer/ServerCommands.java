@@ -93,7 +93,7 @@ public class ServerCommands extends pxnCommandsHolder {
 
 	// stop command
 	private static boolean _stop() {
-		Main.Shutdown();
+		gcServer.get().Shutdown();
 		return true;
 	}
 
@@ -165,34 +165,6 @@ public class ServerCommands extends pxnCommandsHolder {
 	}
 
 
-
-
-//	@Override
-//	public boolean doEvent(pxnEvent event) {
-//		return false;
-//	}
-
-
-//		// start
-//		if(command.equals("start")) {
-//			gcScheduler.pauseAll(false);
-//			return true;
-//		}
-//		// stop
-//		if(command.equals("stop")) {
-//			gcScheduler.pauseAll(true);
-//			return true;
-//		}
-//		// pause
-//		if(command.equals("pause")) {
-//			gcScheduler.pauseAll();
-//			return true;
-//		}
-//		// clear
-//		if(command.equals("clear")) {
-//			gcServer.log.clear();
-//			return true;
-//		}
 //		// help
 //		if(command.equals("help")) {
 //			//TODO:

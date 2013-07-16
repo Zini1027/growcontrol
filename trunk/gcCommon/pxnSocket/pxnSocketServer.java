@@ -104,7 +104,7 @@ public class pxnSocketServer implements pxnSocket {
 			try {
 				listenerSocket.close();
 			} catch (IOException e) {
-e.printStackTrace();
+				pxnLogger.get().exception(e);
 			}
 		}
 	}
@@ -150,7 +150,7 @@ e.printStackTrace();
 			try {
 				listenerSocket.close();
 			} catch (IOException e) {
-pxnLogger.get().exception(e);
+				pxnLogger.get().exception(e);
 			}
 		}
 	}

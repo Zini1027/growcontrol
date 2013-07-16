@@ -28,7 +28,6 @@ public class triggerInterval implements Trigger {
 			TimeUnitTime.ParseDuration(this.rawValue)
 		);
 	}
-//	@Override
 	public void setTrigger(TimeUnitTime interval) {
 		if(interval == null) throw new NullPointerException("interval cannot be null!");
 		this.interval.set(interval);
@@ -55,12 +54,7 @@ public class triggerInterval implements Trigger {
 		return new TimeUnitTime(
 			(interval.get(TimeU.MS) - timeSinceLast),
 			TimeU.MS);
-//		return UntilNext(time.get(TimeUnit.MILLISECONDS), TimeUnit.MILLISECONDS);
 	}
-//	@Override
-//	public long UntilNext(long timeLast, TimeUnit unit) {
-//		return unit.convert(timeLast % this.value, TimeUnit.MILLISECONDS);
-//	}
 	@Override
 	public void onTrigger() {
 		timeLast = getTime();

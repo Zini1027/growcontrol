@@ -28,10 +28,8 @@ public class triggerFixedTime implements Trigger {
 		this.rawValue = value;
 //TODO: parse calendar value
 	}
-//	@Override
 	public void setTrigger(Calendar cal) {
 		this.cal = cal;
-//		this.value = TimeUnit.MILLISECONDS.convert(value, unit);
 		this.rawValue = this.getTriggerStr();
 	}
 	@Override
@@ -49,12 +47,7 @@ public class triggerFixedTime implements Trigger {
 	@Override
 	public TimeUnitTime UntilNext() {
 		return null;
-//		return UntilNext(time.get(TimeU.MS), TimeU.MS);
 	}
-//	@Override
-//	public long UntilNext(long timeLast, TimeUnit unit) {
-//		return 0;
-//	}
 	@Override
 	public void onTrigger() {
 		timeLast = getTime();

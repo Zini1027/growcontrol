@@ -46,14 +46,6 @@ public class pxnUtils {
 			fieldSysPath.set(null, null);
 		} catch (SecurityException | NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
 			pxnLogger.get().exception(e);
-//		} catch (SecurityException e) {
-//			pxnLogger.get().exception(e);
-//		} catch (NoSuchFieldException e) {
-//			pxnLogger.get().exception(e);
-//		} catch (IllegalArgumentException e) {
-//			pxnLogger.get().exception(e);
-//		} catch (IllegalAccessException e) {
-//			pxnLogger.get().exception(e);
 		}
 	}
 
@@ -95,17 +87,12 @@ public class pxnUtils {
 			pid = Integer.parseInt( ( new File("/proc/self")).getCanonicalFile().getName() );
 		} catch (NumberFormatException | IOException e) {
 			pxnLogger.get().exception(e);
-//		} catch (NumberFormatException e) {
-//			pxnLogger.get().exception(e);
-//		} catch (IOException e) {
-//			pxnLogger.get().exception(e);
 		}
 		return pid;
 	}
 
 
 	// sleep thread
-//TODO: add TimeUnit variant
 	public static void Sleep(long millis) {
 		try {
 			Thread.sleep(millis);
@@ -113,8 +100,11 @@ public class pxnUtils {
 			pxnLogger.get().exception(e);
 		}
 	}
+	public static void Sleep(TimeUnitTime time) {
+		Sleep(time.get(TimeU.MS));
+	}
 	// current time ms
-	public static long getCurrentMillis() {
+	public static long getSystemMillis() {
 		return System.currentTimeMillis();
 	}
 
@@ -183,7 +173,7 @@ public class pxnUtils {
 
 	// random number (unique)
 	public static int getRandom(int minNumber, int maxNumber) {
-		Random randomGen = new Random(getCurrentMillis());
+		Random randomGen = new Random(getSystemMillis());
 		return randomGen.nextInt(maxNumber) + minNumber;
 	}
 	public static int getNewRandom(int minNumber, int maxNumber, int oldNumber) {
