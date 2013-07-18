@@ -179,7 +179,7 @@ pxnScheduler.get("gcServer").newTask(task);
 	// stop server
 	public void Shutdown() {
 		// queue shutdown
-		addMainThread("BeginShutdown", new Runnable() {
+		pxnThreadQueue.addToMain("BeginShutdown", new Runnable() {
 			@Override
 			public void run() {
 				doShutdown();
@@ -247,11 +247,11 @@ pxnScheduler.get("gcServer").newTask(task);
 		}
 		// stop process
 //		getMainThread().Shutdown();
-		getMainThread().Exit();
+		pxnThreadQueue.getMain().Exit();
 	}
 	// reload server
 	public void Reload() {
-		addMainThread("Reload", new Runnable() {
+		pxnThreadQueue.addToMain("Reload", new Runnable() {
 			@Override
 			public void run() {
 //TODO:reload
@@ -295,20 +295,6 @@ pxnScheduler.get("gcServer").newTask(task);
 			// command not found
 			pxnLogger.get().warning("Unknown command: "+line);
 		}
-	}
-
-
-	// main thread
-	public static void addMainThread(String name, Runnable runnable) {
-		getMainThread().addQueue(name, runnable);
-	}
-	protected static void startMainThread() {
-		pxnThreadQueue mainThread = getMainThread();
-		if(mainThread.isRunning() || mainThread.isStopping()) return;
-		mainThread.run();
-	}
-	public static pxnThreadQueue getMainThread() {
-		return pxnThreadQueue.getMainThread();
 	}
 
 

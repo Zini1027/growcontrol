@@ -9,6 +9,7 @@ import org.fusesource.jansi.AnsiConsole;
 import com.growcontrol.gcCommon.pxnLogger.pxnLevel;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 import com.growcontrol.gcCommon.pxnLogger.pxnLoggerConsole;
+import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
 
 
 public class Main {
@@ -97,15 +98,15 @@ public class Main {
 		displayStartupVars();
 		System.out.flush();
 		// queue startup in main thread
-		gcServer.addMainThread("StartServer", new Runnable() {
+		pxnThreadQueue.addToMain("StartServer", new Runnable() {
 			@Override
 			public void run() {
 				// start server
 				gcServer.get().Start();
 			}
 		});
-		// hand-off thread to queue
-		gcServer.startMainThread();
+		// start/hand-off thread to main queue
+		pxnThreadQueue.getMain().run();
 		// main thread ended
 		pxnLogger.get().warning("Main process ended (this shouldn't happen)");
 		System.out.println();
