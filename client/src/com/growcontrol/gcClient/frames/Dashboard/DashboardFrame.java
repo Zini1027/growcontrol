@@ -1,4 +1,4 @@
-package com.growcontrol.gcClient.frames;
+package com.growcontrol.gcClient.frames.Dashboard;
 
 import it.cnr.imaa.essi.lablib.gui.checkboxtree.CheckboxTree;
 
@@ -18,15 +18,18 @@ import javax.swing.JToggleButton;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import com.growcontrol.gcClient.gcClient;
+import com.growcontrol.gcClient.frames.gcFrameInterface;
 
 
-public class DashboardFrame extends JFrame {
+public class DashboardFrame extends JFrame implements gcFrameInterface {
 	private static final long serialVersionUID = 1L;
+	private final DashboardHandler handler;
 
 //	private JPanel contentPane;
 
 
-	public DashboardFrame() {
+	public DashboardFrame(DashboardHandler handler) {
+		this.handler = handler;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Grow Control "+gcClient.version);
 		setBounds(100, 100, 600, 600);
