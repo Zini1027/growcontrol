@@ -1,8 +1,12 @@
 package com.growcontrol.gcClient.frames.Dashboard;
 
+import java.lang.reflect.InvocationTargetException;
+
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import com.growcontrol.gcClient.frames.gcFrameHandlerInterface;
+import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
 public class DashboardHandler implements gcFrameHandlerInterface {
@@ -25,16 +29,36 @@ public class DashboardHandler implements gcFrameHandlerInterface {
 
 	@Override
 	public void Show() {
-		frame = new DashboardFrame(this);
+		try {
+			SwingUtilities.invokeAndWait(new Runnable() {
+				@Override
+				public void run() {
+					synchronized(frame) {
+						frame = new DashboardFrame(handler);
+					}
+				}
+			});
+		} catch (InvocationTargetException e) {
+			pxnLogger.get().exception(e);
+		} catch (InterruptedException ignore) {}
 	}
 	@Override
 	public void Close() {
-		frame.dispose();
-		frame = null;
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				synchronized(frame) {
+					frame.dispose();
+					frame = null;
+				}
+			}
+		});
 	}
 	@Override
 	public JFrame getFrame() {
-		return frame;
+		synchronized(frame) {
+			return frame;
+		}
 	}
 
 
