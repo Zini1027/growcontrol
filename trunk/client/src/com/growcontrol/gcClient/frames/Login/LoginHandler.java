@@ -1,4 +1,4 @@
-package com.growcontrol.gcClient.frames;
+package com.growcontrol.gcClient.frames.Login;
 
 import java.awt.KeyEventDispatcher;
 import java.awt.event.ActionEvent;
@@ -16,24 +16,38 @@ import javax.swing.SwingUtilities;
 
 import com.growcontrol.gcClient.Main;
 import com.growcontrol.gcClient.gcClient;
-import com.growcontrol.gcClient.frames.LoginFrame.LoginWindows;
+import com.growcontrol.gcClient.frames.gcFrameHandlerInterface;
+import com.growcontrol.gcClient.frames.Login.LoginFrame.LoginWindows;
 import com.growcontrol.gcClient.socketClient.gcSocketProcessor;
 import com.growcontrol.gcClient.socketClient.sendClientPackets;
-import com.gcCommon.pxnUtils;
-import com.gcCommon.pxnSocket.pxnSocketClient;
+import com.growcontrol.gcCommon.pxnSocket.pxnSocketClient;
 
 
-public class LoginHandler implements gcFrameHandler, ActionListener, KeyEventDispatcher {
+public class LoginHandler implements gcFrameHandlerInterface, ActionListener, KeyEventDispatcher {
 
-	protected LoginFrame frame;
+	protected static LoginHandler handler = null;
+	protected LoginFrame frame = null;
 	protected LoginWindows currentCard = LoginWindows.LOGIN;
 
 
+	// login frame handler
+	public static LoginHandler get() {
+		synchronized(handler) {
+			if(handler == null)
+				handler = new LoginHandler();
+		}
+		return handler;
+	}
 	public LoginHandler() {
+	}
+
+
+	@Override
+	public void Show() {
 		frame = new LoginFrame(this);
 	}
 	@Override
-	public void close() {
+	public void Close() {
 		frame.dispose();
 		frame = null;
 	}

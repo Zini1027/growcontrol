@@ -1,4 +1,4 @@
-package com.growcontrol.gcClient.frames;
+package com.growcontrol.gcClient.frames.Login;
 
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -25,16 +25,17 @@ import javax.swing.SwingUtilities;
 import net.miginfocom.swing.MigLayout;
 
 import com.growcontrol.gcClient.Main;
+import com.growcontrol.gcClient.frames.gcFrameInterface;
 
 
-public class LoginFrame extends JFrame {
+public class LoginFrame extends JFrame implements gcFrameInterface {
 	private static final long serialVersionUID = 1L;
+	private final LoginHandler handler;
 
 	public static enum LoginWindows {LOGIN, CONNECTING};
 	protected CardLayout cardLayout = new CardLayout();
 
 	protected HashMap<String, JPanel> panels = new HashMap<String, JPanel>();
-	protected LoginHandler handler;
 
 //	public static final String LOGIN_WINDOW_NAME = "login";
 //	public static final String CONNECTING_WINDOW_NAME = "connecting";
@@ -53,7 +54,6 @@ public class LoginFrame extends JFrame {
 
 	public LoginFrame(LoginHandler handler) {
 		super("Connect to server..");
-		if(handler == null) throw new NullPointerException("login class is null!");
 		this.handler = handler;
 //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		enableEvents(java.awt.AWTEvent.WINDOW_EVENT_MASK);

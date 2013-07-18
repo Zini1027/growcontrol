@@ -1,18 +1,34 @@
-package com.growcontrol.gcClient.frames;
+package com.growcontrol.gcClient.frames.Dashboard;
 
 import javax.swing.JFrame;
 
-
-public class DashboardHandler implements gcFrameHandler {
-
-	protected DashboardFrame frame;
+import com.growcontrol.gcClient.frames.gcFrameHandlerInterface;
 
 
+public class DashboardHandler implements gcFrameHandlerInterface {
+
+	protected static DashboardHandler handler = null;
+	protected DashboardFrame frame = null;
+
+
+	// dash frame handler
+	public static DashboardHandler get() {
+		synchronized(handler) {
+			if(handler == null)
+				handler = new DashboardHandler();
+		}
+		return handler;
+	}
 	public DashboardHandler() {
-		frame = new DashboardFrame(); 
+	}
+
+
+	@Override
+	public void Show() {
+		frame = new DashboardFrame(this);
 	}
 	@Override
-	public void close() {
+	public void Close() {
 		frame.dispose();
 		frame = null;
 	}
