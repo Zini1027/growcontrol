@@ -10,7 +10,6 @@ import com.growcontrol.gcCommon.TimeUnitTime;
 import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
-import com.growcontrol.gcServer.gcServer;
 
 
 public class pxnScheduler extends Thread {
@@ -140,7 +139,7 @@ public class pxnScheduler extends Thread {
 		if(task.multiThreaded)
 			threadPool.addQueue(taskName, task);
 		else
-			gcServer.addMainThread(taskName, task);
+			pxnThreadQueue.addToMain(taskName, task);
 	}
 
 

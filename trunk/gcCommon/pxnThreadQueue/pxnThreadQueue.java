@@ -23,10 +23,13 @@ public class pxnThreadQueue implements Runnable {
 
 	// main thread
 	protected static pxnThreadQueue mainThread = null;
-	public static pxnThreadQueue getMainThread() {
+	public static pxnThreadQueue getMain() {
 		if(mainThread == null)
 			mainThread = new pxnThreadQueue("main");
 		return mainThread;
+	}
+	public static void addToMain(String name, Runnable runnable) {
+		getMain().addQueue(name, runnable);
 	}
 
 
@@ -65,6 +68,10 @@ public class pxnThreadQueue implements Runnable {
 	// run thread queue
 	@Override
 	public void run() {
+		// main thread
+		if(threads == null)
+			if(isRunning() || isStopping())
+				return;
 		while(!stopping) {
 			pxnRunnable run = null;
 			try {
