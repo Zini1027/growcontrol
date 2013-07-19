@@ -181,26 +181,37 @@ public class pxnLogger implements pxnLoggerInterface, pxnLogPrinter {
 //		print(msg, LEVEL.INFO);
 //	}
 	@Override
-	public synchronized void print(LEVEL level, String msg) {
-		if(msg   == null) throw new NullPointerException("msg cannot be null");
+	public void print(LEVEL level, String msg) {
+		if(msg == null) msg = "[null]";
 		if(level == null) throw new NullPointerException("level cannot be null");
-		printRaw(newRecord(msg, level, loggerName) );
+		printRaw(
+			newRecord(msg, level, loggerName)
+		);
 	}
 	@Override
-	public synchronized void printRaw(pxnLogRecord logRecord) {
-		if(logRecord == null) throw new NullPointerException("logRecord cannot be null");
-		if(logHandlers.size() == 0) {
-			System.out.println(logRecord.toString());
-			return;
+	public void printRaw(pxnLogRecord logRecord) {
+		if(logRecord == null) return;
+		synchronized(logHandlers) {
+			if(logHandlers.size() == 0) {
+				System.out.println(logRecord.toString());
+			} else {
+				for(pxnLoggerHandler handler : logHandlers.values())
+					handler.print(logRecord);
+			}
 		}
-		for(pxnLoggerHandler handler : logHandlers.values())
-			handler.print(logRecord);
 	}
 	@Override
-	public synchronized void printRaw(String msg) {
-		if(msg == null) throw new NullPointerException("msg cannot be null");
-		for(pxnLoggerHandler handler : logHandlers.values())
-			handler.print(msg);
+	public void printRaw(String msg) {
+		if(msg == null) msg = "[null]";
+		synchronized(logHandlers) {
+			for(pxnLoggerHandler handler : logHandlers.values())
+				handler.print(msg);
+		}
+	}
+	@Override
+	public void printMajor(String msg) {
+		if(msg == null) msg = "[null]";
+		printRaw("[[ "+msg+" ]]");
 	}
 
 

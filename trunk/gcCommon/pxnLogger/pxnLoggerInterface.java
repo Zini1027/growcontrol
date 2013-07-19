@@ -22,5 +22,6 @@ public interface pxnLoggerInterface {
 	public void print(LEVEL level, String msg);
 	public void printRaw(pxnLogRecord logRecord);
 	public void printRaw(String msg);
+	public void printMajor(String msg);
 
 }
