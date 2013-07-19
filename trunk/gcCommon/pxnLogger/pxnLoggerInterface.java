@@ -19,7 +19,7 @@ public interface pxnLoggerInterface {
 
 	// print to handlers
 //	public void print(String msg);
-	public void print(String msg, LEVEL level);
+	public void print(LEVEL level, String msg);
 	public void printRaw(pxnLogRecord logRecord);
 	public void printRaw(String msg);
 

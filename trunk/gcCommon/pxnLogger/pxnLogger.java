@@ -181,7 +181,7 @@ public class pxnLogger implements pxnLoggerInterface, pxnLogPrinter {
 //		print(msg, LEVEL.INFO);
 //	}
 	@Override
-	public synchronized void print(String msg, LEVEL level) {
+	public synchronized void print(LEVEL level, String msg) {
 		if(msg   == null) throw new NullPointerException("msg cannot be null");
 		if(level == null) throw new NullPointerException("level cannot be null");
 		printRaw(newRecord(msg, level, loggerName) );
@@ -207,27 +207,27 @@ public class pxnLogger implements pxnLoggerInterface, pxnLogPrinter {
 	// debug
 	@Override
 	public void debug(String msg) {
-		print(msg, LEVEL.DEBUG);
+		print(LEVEL.DEBUG, msg);
 	}
 	// info
 	@Override
 	public void info(String msg) {
-		print(msg, LEVEL.INFO);
+		print(LEVEL.INFO, msg);
 	}
 	// warning
 	@Override
 	public void warning(String msg) {
-		print(msg, LEVEL.WARNING);
+		print(LEVEL.WARNING, msg);
 	}
 	// severe
 	@Override
 	public void severe(String msg) {
-		print(msg, LEVEL.SEVERE);
+		print(LEVEL.SEVERE, msg);
 	}
 	// fatal error
 	@Override
 	public void fatal(String msg) {
-		print(msg, LEVEL.FATAL);
+		print(LEVEL.FATAL, msg);
 		System.exit(1);
 	}
 

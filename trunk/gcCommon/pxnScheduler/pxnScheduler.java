@@ -30,9 +30,6 @@ public class pxnScheduler extends Thread {
 
 
 	// get scheduler
-//	public static pxnScheduler get() {
-//		return get(null);
-//	}
 	public static pxnScheduler get(String name) {
 		pxnScheduler sched = null;
 		synchronized(schedulers) {
@@ -83,6 +80,10 @@ public class pxnScheduler extends Thread {
 
 	@Override
 	public void run() {
+		if(running) {
+			pxnLogger.get().severe("("+schedulerName+") Scheduler already running!");
+			return;
+		}
 		running = true;
 		while(!stopping) {
 			// tasks to run
@@ -146,7 +147,7 @@ public class pxnScheduler extends Thread {
 	// new task
 	public void newTask(pxnSchedulerTask task) {
 		if(task == null) throw new NullPointerException("task cannot be null!");
-		synchronized(tasks) {
+		synchronized(this.tasks) {
 			this.tasks.add(task);
 			pxnLogger.get().debug("("+task.getTaskName()+") New task created");
 		}

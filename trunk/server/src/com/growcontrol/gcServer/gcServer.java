@@ -8,6 +8,8 @@ import org.fusesource.jansi.AnsiConsole;
 
 import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnClock.pxnClock;
+import com.growcontrol.gcCommon.pxnLogger.pxnLevel;
+import com.growcontrol.gcCommon.pxnLogger.pxnLevel.LEVEL;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 import com.growcontrol.gcCommon.pxnScheduler.pxnScheduler;
 import com.growcontrol.gcCommon.pxnScheduler.pxnSchedulerTask;
@@ -57,8 +59,6 @@ public class gcServer {
 	// init server
 	public void Start() {
 		pxnLogger log = pxnLogger.get();
-//		if(noconsole)
-//			gcLogger.setLevel("console", pxnLevel.LEVEL.WARNING);
 		// single instance lock
 		pxnUtils.lockInstance("gcServer.lock");
 		if(!consoleEnabled) {
@@ -84,14 +84,7 @@ System.out.println(startTime);
 		}
 
 		// set log level
-		if(!forceDebug && consoleEnabled) {
-			String logLevel = config.LogLevel();
-			if(logLevel != null && !logLevel.isEmpty()) {
-				log.info("Set log level: "+logLevel.toString());
-				pxnLogger.setLevel("console", logLevel);
-			}
-		}
-//		gcLogger.setLevel("file",    logLevel);
+		updateLogLevel();
 
 		// init listeners
 		listeners = new ServerListeners();
@@ -300,6 +293,23 @@ pxnScheduler.get("gcServer").newTask(task);
 
 	public static ServerListeners getListeners() {
 		return listeners;
+	}
+
+
+	public void updateLogLevel() {
+		String levelStr;
+		if(forceDebug) {
+			levelStr = "debug";
+		} else {
+			ServerConfig config = ServerConfig.get(configsPath);
+			levelStr = config.LogLevel();
+		}
+		if(levelStr != null && !levelStr.isEmpty()) {
+			LEVEL level = pxnLevel.levelFromString(levelStr);
+			pxnLogger.setLevel("console", level);
+			pxnLogger log = pxnLogger.get();
+			log.print(level, "Set log level: "+level.toString());
+		}
 	}
 
 

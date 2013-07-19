@@ -49,11 +49,15 @@ public abstract class pxnSchedulerTask implements Runnable {
 
 	public pxnSchedulerTask addTrigger(Trigger trigger) {
 		if(trigger == null) return null;
-		this.triggers.add(trigger);
+		synchronized(this.triggers) { 
+			this.triggers.add(trigger);
+		}
 		return this;
 	}
 	public void clearTriggers() {
-		this.triggers.clear();
+		synchronized(this.triggers) { 
+			this.triggers.clear();
+		}
 	}
 
 
