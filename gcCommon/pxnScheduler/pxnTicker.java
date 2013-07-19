@@ -1,4 +1,4 @@
-package com.growcontrol.gcServer.scheduler;
+package com.growcontrol.gcCommon.pxnScheduler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,34 +6,32 @@ import java.util.List;
 import com.growcontrol.gcCommon.TimeU;
 import com.growcontrol.gcCommon.TimeUnitTime;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
-import com.growcontrol.gcCommon.pxnScheduler.pxnScheduler;
-import com.growcontrol.gcCommon.pxnScheduler.pxnSchedulerTask;
 import com.growcontrol.gcCommon.pxnScheduler.pxnTriggers.triggerInterval;
 import com.growcontrol.gcServer.ServerConfig;
 
 
-public class gcTicker extends pxnSchedulerTask {
+public class pxnTicker extends pxnSchedulerTask {
 
 	// instance
-	private static gcTicker ticker = null;
+	private static pxnTicker ticker = null;
 
-	protected List<gcTickerTask> tasks = new ArrayList<gcTickerTask>();
+	protected List<pxnTickerTask> tasks = new ArrayList<pxnTickerTask>();
 
 	private TimeUnitTime interval = new TimeUnitTime();
 
 
-	public static gcTicker get() {
+	public static pxnTicker get() {
 		if(ticker == null)
-			ticker = new gcTicker();
+			ticker = new pxnTicker();
 		return ticker;
 	}
-	protected gcTicker() {
+	protected pxnTicker() {
 		// new task (multi-threaded / repeat)
 		super(true, true);
 		long tickInterval = ServerConfig.get().TickInterval();
 		setInterval(new TimeUnitTime(tickInterval, TimeU.MS));
 		// add scheduler
-		pxnScheduler.get("gcServer").newTask(this);
+		pxnScheduler.get("ticker").newTask(this);
 	}
 	@Override
 	public String getTaskName() {
@@ -81,7 +79,7 @@ System.out.println("TICK run()");
 	}
 
 
-	public void newTickerTask(gcTickerTask task) {
+	public void newTickerTask(pxnTickerTask task) {
 		if(task == null) throw new NullPointerException("task cannot be null");
 		synchronized(tasks) {
 			tasks.add(task);
