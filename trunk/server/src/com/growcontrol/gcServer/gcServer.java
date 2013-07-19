@@ -4,38 +4,25 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.fusesource.jansi.AnsiConsole;
-
-import com.growcontrol.gcCommon.pxnUtils;
-import com.growcontrol.gcCommon.pxnClock.pxnClock;
-import com.growcontrol.gcCommon.pxnLogger.pxnLevel;
-import com.growcontrol.gcCommon.pxnLogger.pxnLevel.LEVEL;
+import com.growcontrol.gcCommon.pxnApp;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 import com.growcontrol.gcCommon.pxnScheduler.pxnScheduler;
 import com.growcontrol.gcCommon.pxnScheduler.pxnSchedulerTask;
 import com.growcontrol.gcCommon.pxnScheduler.pxnTriggers.triggerInterval;
 import com.growcontrol.gcCommon.pxnSocket.pxnSocketProcessorFactory;
 import com.growcontrol.gcCommon.pxnSocket.pxnSocketServer;
-import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
 import com.growcontrol.gcServer.scheduler.gcTicker;
 import com.growcontrol.gcServer.serverPlugin.gcServerPluginManager;
 import com.growcontrol.gcServer.socketServer.gcSocketProcessor;
 
 
-public class gcServer {
+public class gcServer extends pxnApp {
+	public static final String appName = "gcServer";
 	public static final String version = "3.0.5";
 	public static final String defaultPrompt = ">";
 
 	protected static gcServer server = null;
 	private static ServerListeners listeners;
-	private Thread consoleInputThread = null;
-
-	// runtime args
-	protected boolean consoleEnabled = true;
-	protected boolean forceDebug = false;
-	private long startTime = -1;
-	private boolean stopping = false;
-	protected String configsPath = null;
 
 	// server plugin manager
 	private final gcServerPluginManager pluginManager = new gcServerPluginManager();
@@ -45,7 +32,7 @@ public class gcServer {
 	private pxnSocketServer socket = null;
 
 	// zones
-	private List<String> zones = null;
+	private List<String> zones = new ArrayList<String>();
 
 
 	// server instance
@@ -57,24 +44,17 @@ public class gcServer {
 
 
 	// init server
+	@Override
 	public void Start() {
+		super.Start();
 		pxnLogger log = pxnLogger.get();
-		// single instance lock
-		pxnUtils.lockInstance("gcServer.lock");
-		if(!consoleEnabled) {
-			System.out.println("Console input is disabled due to noconsole command argument.");
+if(!consoleEnabled) {
+System.out.println("Console input is disabled due to noconsole command argument.");
 //TODO: currently no way to stop the server with no console input
 System.exit(0);
-		}
-		log.printRaw("[[ Starting GC Server ]]");
+}
+
 		log.info("GrowControl "+version+" Server is starting..");
-		pxnUtils.addLibraryPath("lib");
-
-		// query time server
-		pxnClock clock = pxnClock.getBlocking();
-		startTime = clock.Millis();
-System.out.println(startTime);
-
 		// load configs
 		ServerConfig config = ServerConfig.get(configsPath);
 		if(config==null || config.config==null) {
@@ -82,33 +62,21 @@ System.out.println(startTime);
 			System.exit(1);
 			return;
 		}
-
 		// set log level
-		updateLogLevel();
-
+		setLogLevel(config.LogLevel());
 		// init listeners
 		listeners = new ServerListeners();
-
 		// start console input thread
-		if(consoleEnabled) {
-			consoleInputThread = new Thread("ConsoleInput") {
-				@Override
-				public void run() {
-					StartConsole();
-				}
-			};
-			consoleInputThread.start();
-		}
+		StartConsole();
 
-		// zones
-		if(zones == null) zones = new ArrayList<String>();
-		synchronized(zones) {
-			config.ZonesList(zones);
-			log.info("Loaded [ "+Integer.toString(zones.size())+" ] zones.");
+		// load zones
+		synchronized(this.zones) {
+			config.PopulateZones(this.zones);
+			log.info("Loaded [ "+Integer.toString(this.zones.size())+" ] zones.");
 		}
 
 		// load scheduler
-		pxnScheduler.get("gcServer").start();
+		pxnScheduler.get(getAppName()).start();
 		// load ticker
 		gcTicker.get();
 
@@ -169,116 +137,58 @@ pxnScheduler.get("gcServer").newTask(task);
 	}
 
 
-	// stop server
-	public void Shutdown() {
-		// queue shutdown
-		pxnThreadQueue.addToMain("BeginShutdown", new Runnable() {
-			@Override
-			public void run() {
-				doShutdown();
-			}
-		});
-	}
-	private void doShutdown() {
-		pxnLogger log = pxnLogger.get();
-		stopping = true;
-		log.printRaw("[[ Stopping GC Server ]]");
-		log.info("Stopping GC Server..");
-		// sleep
-		log.info("Waiting for things to finish..");
-		final int inter = 50;
-		final int maxWait = 1000;
-		for(int ms=maxWait; ms>0; ms-=inter) {
-			pxnUtils.Sleep(inter);
-			if((ms % 500)==0)
-				log.debug("Waiting "+ms+"ms..");
-			switch(ms) {
-			// first
-			case maxWait:
-				// close socket listener
-				socket.stop();
-				// pause scheduler
-				pxnScheduler.PauseAll();
-				break;
-			// 500ms
-			case 500:
-				// end schedulers
-				pxnScheduler.ShutdownAll();
-				break;
-			// 450ms
-			case 450:
-				break;
-			// 400ms
-			case 400:
-				break;
-			// 350ms
-			case 350:
-				// unload plugins
-				pluginManager.UnloadPlugins();
-				break;
-			// 300ms
-			case 300:
-				break;
-			// 250ms
-			case 250:
-				// close sockets
-				socket.forceCloseAll();
-				// stop console
-				consoleInputThread.interrupt(); // doesn't do much of anything
-				AnsiConsole.systemUninstall();
-				break;
-			// 200ms
-			case 200:
-				break;
-			// last
-			case inter:
+	@Override
+	protected void doShutdown(int step) {
+		switch(step) {
+		// first step (announce)
+		case 10:
+			pxnLogger.get().info("Stopping GC Server..");
+			break;
+		case 9:
+			// close socket listener
+			socket.stop();
+			// pause scheduler
+			pxnScheduler.PauseAll();
+			break;
+		case 8:
+			break;
+		case 7:
+			break;
+		case 6:
+			break;
+		case 5:
+			// end schedulers
+			pxnScheduler.ShutdownAll();
+			break;
+		case 4:
+			// unload plugins
+			pluginManager.UnloadPlugins();
+			break;
+		case 3:
+			// close sockets
+			socket.forceCloseAll();
+			break;
+		case 2:
+			break;
+		// last step
+		case 1:
 //TODO: display total time running
-				break;
-			default:
-				break;
-			}
+			break;
 		}
-		// stop process
-//		getMainThread().Shutdown();
-		pxnThreadQueue.getMain().Exit();
 	}
-	// reload server
-	public void Reload() {
-		pxnThreadQueue.addToMain("Reload", new Runnable() {
-			@Override
-			public void run() {
-//TODO:reload
-			}
-		});
-	}
+//	// reload server
+//	public void Reload() {
+//		pxnThreadQueue.addToMain("Reload", new Runnable() {
+//			@Override
+//			public void run() {
+////TODO:reload
+//			}
+//		});
+//	}
 
 
-	// console input loop
-	private void StartConsole() {
-		if(!consoleEnabled) return;
-		//TODO: password login
-		// If we input the special word then we will mask
-		// the next line.
-		//if ((trigger != null) && (line.compareTo(trigger) == 0))
-//			line = reader.readLine("password> ", mask);
-		//if (line.equalsIgnoreCase("quit") || line.equalsIgnoreCase("exit")) break;
-		while(!stopping) {
-			if(consoleInputThread.isInterrupted()) break;
-			try {
-				// wait for commands
-				String line = pxnLogger.readLine();
-				if(line == null) break;
-				if(line.isEmpty()) continue;
-				processCommand(line);
-			} catch(Exception e) {
-				pxnLogger.get().exception(e);
-				break;
-			}
-		}
-		System.out.println();
-		System.out.println();
-	}
 	// process command
+	@Override
 	public void processCommand(String line) {
 		if(line == null) throw new NullPointerException("line cannot be null");
 		line = line.trim();
@@ -291,41 +201,18 @@ pxnScheduler.get("gcServer").newTask(task);
 	}
 
 
+	@Override
+	public String getAppName() {
+		return appName;
+	}
+	@Override
+	public String getVersion() {
+		return version;
+	}
+
+
 	public static ServerListeners getListeners() {
 		return listeners;
-	}
-
-
-	public void updateLogLevel() {
-		String levelStr;
-		if(forceDebug) {
-			levelStr = "debug";
-		} else {
-			ServerConfig config = ServerConfig.get(configsPath);
-			levelStr = config.LogLevel();
-		}
-		if(levelStr != null && !levelStr.isEmpty()) {
-			LEVEL level = pxnLevel.levelFromString(levelStr);
-			pxnLogger.setLevel("console", level);
-			pxnLogger log = pxnLogger.get();
-			log.print(level, "Set log level: "+level.toString());
-		}
-	}
-
-
-	// is server stopping
-	public boolean isStopping() {
-		return this.stopping;
-	}
-	// uptime
-	public long getStartTime() {
-		return this.startTime;
-	}
-	public long getUptime() {
-		return pxnClock.get().Millis() - getStartTime();
-	}
-	public String getUptimeString() {
-		return Long.toString(getUptime());
 	}
 
 
@@ -337,7 +224,9 @@ pxnScheduler.get("gcServer").newTask(task);
 
 	// get zones
 	public List<String> getZones() {
-		return zones;
+		synchronized(zones) {
+			return new ArrayList<String>(zones);
+		}
 	}
 
 

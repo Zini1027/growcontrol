@@ -55,11 +55,11 @@ public class Main {
 				System.exit(0);
 			// no console
 			} else if(arg.equalsIgnoreCase("--no-console")) {
-				gcServer.server.consoleEnabled = false;
+				gcServer.server.setConsoleEnabled(false);
 				argsMsgList.add("no-console");
 			// debug mode
 			} else if(arg.equalsIgnoreCase("--debug")) {
-				gcServer.server.forceDebug = true;
+				gcServer.server.setForceDebug(true);
 				pxnLogger.setForceDebug("console", true);
 				argsMsgList.add("debug");
 			// configs path
@@ -68,8 +68,8 @@ public class Main {
 					System.out.println("Incomplete! --configs-path argument");
 					break;
 				}
-				gcServer.server.configsPath = args[i];
-				System.out.println("Set configs path to: "+gcServer.server.configsPath);
+				gcServer.server.setConfigsPath(args[i]);
+				System.out.println("Set configs path to: "+args[i]);
 				argsMsgList.add("configs-path");
 			// plugins path
 			} else if(arg.equalsIgnoreCase("--plugins-path")) {
@@ -121,7 +121,7 @@ public class Main {
 		AnsiConsole.out.println(" Running as: "+System.getProperty("user.name"));
 		AnsiConsole.out.println(" Current dir: "+System.getProperty("user.dir"));
 		AnsiConsole.out.println(" java home: "+System.getProperty("java.home"));
-		if(gcServer.get().forceDebug)
+		if(gcServer.get().forceDebug())
 			AnsiConsole.out.println(" Force Debug: true");
 		AnsiConsole.out.println(" args: [ "+argsMsgStr+" ]");
 		AnsiConsole.out.println();
