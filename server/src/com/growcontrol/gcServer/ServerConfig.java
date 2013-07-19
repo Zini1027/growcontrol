@@ -76,7 +76,7 @@ public class ServerConfig {
 
 
 	// zones (rooms)
-	public void ZonesList(Collection<String> zones) {
+	public void PopulateZones(Collection<String> zones) {
 		if(config == null) return;
 		if(zones  == null) throw new NullPointerException("zones list can't be null!");
 		try {
