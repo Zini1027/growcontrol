@@ -8,10 +8,10 @@ import com.growcontrol.gcCommon.pxnApp;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 import com.growcontrol.gcCommon.pxnScheduler.pxnScheduler;
 import com.growcontrol.gcCommon.pxnScheduler.pxnSchedulerTask;
+import com.growcontrol.gcCommon.pxnScheduler.pxnTicker;
 import com.growcontrol.gcCommon.pxnScheduler.pxnTriggers.triggerInterval;
 import com.growcontrol.gcCommon.pxnSocket.pxnSocketProcessorFactory;
 import com.growcontrol.gcCommon.pxnSocket.pxnSocketServer;
-import com.growcontrol.gcServer.scheduler.gcTicker;
 import com.growcontrol.gcServer.serverPlugin.gcServerPluginManager;
 import com.growcontrol.gcServer.socketServer.gcSocketProcessor;
 
@@ -78,7 +78,7 @@ System.exit(0);
 		// load scheduler
 		pxnScheduler.get(getAppName()).start();
 		// load ticker
-		gcTicker.get();
+		pxnTicker.get();
 
 		// load plugins
 		try {
