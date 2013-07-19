@@ -17,8 +17,9 @@ public class pxnThreadQueue implements Runnable {
 	protected final BlockingQueue<pxnRunnable> queue = new ArrayBlockingQueue<pxnRunnable>(10);
 
 	protected volatile boolean stopping = false;
-	protected volatile int active = 0;
 	protected volatile int maxThreads = 1;
+	protected volatile int active = 0;
+	protected volatile int runCount = 0;
 
 
 	// main thread
@@ -70,25 +71,38 @@ public class pxnThreadQueue implements Runnable {
 	public void run() {
 		// main thread
 		if(threads == null)
-			if(isRunning() || isStopping())
+			if(isRunning() || stopping)
 				return;
+		int inactiveCount = 0;
 		while(!stopping) {
 			pxnRunnable run = null;
 			try {
-				run = queue.take();
+				//run = queue.take();
+				run = queue.poll(1, TimeU.S);
+				inactiveCount += 1;
 			} catch (InterruptedException e) {
 				pxnLogger.get().exception(e);
 				break;
 			}
 			if(active < 0) active = 0;
-			if(run != null) {
-				active += 1;
+			// inactive thread
+			if(run == null) {
+				// inactive thread after 5 minutes
+				if(inactiveCount > 300 && threads != null) {
+					pxnLogger.get().info("("+queueName+") Inactive thread");
+					break;
+				}
+			// active thread
+			} else {
+				runCount++;
+				inactiveCount = 0;
+				active++;
 				try {
 					run.run();
 				} catch (Exception e) {
 					pxnLogger.get().exception(e);
 				}
-				active -= 1;
+				active--;
 			}
 		}
 		pxnLogger.get().info("("+queueName+") Stopped thread queue");
@@ -158,17 +172,28 @@ public class pxnThreadQueue implements Runnable {
 		} catch (InterruptedException e) {
 			pxnLogger.get().exception(e);
 		}
+		// add new thread (if all are in use)
 		addThread();
 	}
 
 
-	// add new thread (if needed)
-	protected void addThread() {
-		if(threads == null) return;
-		int count = threads.size();
+	// add new thread (if all are in use)
+	protected synchronized void addThread() {
+		if(stopping) return;
+		// multi-threaded mode only
+		if(this.threads == null) return;
+		int count = this.threads.size();
 		int free = count - active;
 		// not needed
 		if(free > 0) return;
+		// restart existing thread
+		for(Thread t : this.threads) {
+			if(t == null) continue;
+			if(!t.isAlive()) {
+				t.start();
+				return;
+			}
+		}
 		// max threads
 		if(count >= maxThreads) return;
 		// new thread
