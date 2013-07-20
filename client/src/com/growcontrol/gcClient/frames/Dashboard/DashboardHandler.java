@@ -28,13 +28,13 @@ public class DashboardHandler implements gcFrameHandlerInterface {
 			handler = new DashboardHandler();
 		return handler;
 	}
-	public DashboardHandler() {
-	}
+	private DashboardHandler() {}
 
 
 	@Override
 	public void Show() {
 		synchronized(modeLock) {
+			pxnLogger.get().info("Displaying window: Dashboard");
 			if(dashMode == null)
 				dashMode = DASH.ROOM;
 			try {
@@ -57,6 +57,7 @@ public class DashboardHandler implements gcFrameHandlerInterface {
 			public void run() {
 				if(frame == null)
 					return;
+				pxnLogger.get().info("Closing window: Dashboard");
 				synchronized(frame) {
 					frame.dispose();
 					frame = null;
@@ -68,6 +69,21 @@ public class DashboardHandler implements gcFrameHandlerInterface {
 	public JFrame getFrame() {
 		synchronized(frame) {
 			return frame;
+		}
+	}
+
+
+	// get/set gui mode
+	public synchronized DASH getMode() {
+		if(dashMode == null)
+			dashMode = DASH.ROOM;
+		return dashMode;
+	}
+	public DASH setMode(DASH mode) {
+		synchronized(modeLock) {
+			lastDashMode = dashMode;
+			dashMode = mode;
+			return lastDashMode;
 		}
 	}
 

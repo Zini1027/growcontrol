@@ -6,11 +6,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.lang.reflect.InvocationTargetException;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import com.growcontrol.gcClient.Main;
 import com.growcontrol.gcClient.frames.gcFrameHandlerInterface;
-import com.growcontrol.gcClient.frames.Login.LoginFrame.LoginWindows;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
@@ -18,14 +19,13 @@ public class LoginHandler implements gcFrameHandlerInterface, ActionListener, Ke
 	protected static LoginHandler handler = null;
 
 	// display mode
-	public enum CONN {DISCONNECTED, CONNECTING, AUTH, READY};
+	public enum CONN {WAITING, CONNECT, AUTH, READY};
 	protected volatile CONN connMode     = null;
 	protected volatile CONN lastConnMode = null;
 	private final Object modeLock = new Object();
 
 	// objects
 	protected LoginFrame frame = null;
-	protected LoginWindows currentCard = LoginWindows.LOGIN;
 
 
 	// login frame handler
@@ -34,21 +34,22 @@ public class LoginHandler implements gcFrameHandlerInterface, ActionListener, Ke
 			handler = new LoginHandler();
 		return handler;
 	}
-	public LoginHandler() {
-	}
+	private LoginHandler() {}
 
 
 	@Override
 	public synchronized void Show() {
 		synchronized(modeLock) {
+			pxnLogger.get().info("Displaying window: Login");
 			if(connMode == null)
-				connMode = CONN.DISCONNECTED;
+				connMode = CONN.WAITING;
 			try {
 				SwingUtilities.invokeAndWait(new Runnable() {
 					@Override
 					public void run() {
 						if(frame == null)
 							frame = new LoginFrame(handler);
+						frame.DisplayCard(connMode);
 					}
 				});
 			} catch (InvocationTargetException e) {
@@ -63,9 +64,11 @@ public class LoginHandler implements gcFrameHandlerInterface, ActionListener, Ke
 			public void run() {
 				if(frame == null)
 					return;
+				pxnLogger.get().info("Closing window: Login");
 				synchronized(frame) {
 					frame.dispose();
 					frame = null;
+Main.Shutdown();
 				}
 			}
 		});
@@ -78,20 +81,36 @@ public class LoginHandler implements gcFrameHandlerInterface, ActionListener, Ke
 	}
 
 
+	// get/set gui mode
+	public synchronized CONN getMode() {
+		if(connMode == null)
+			connMode = CONN.WAITING;
+		return connMode;
+	}
+	public CONN setMode(CONN mode) {
+		synchronized(modeLock) {
+			lastConnMode = connMode;
+			connMode = mode;
+			return lastConnMode;
+		}
+	}
+
+
 	// button click event
 	@Override
 	public void actionPerformed(ActionEvent event) {
-//		String buttonName = "";
-////		try {
-//		buttonName = ((JButton) event.getSource()).getActionCommand();
-////		} catch(Exception ignore) {
-////			return;
-////		}
+		String buttonName = "";
+//		try {
+		buttonName = ((JButton) event.getSource()).getActionCommand();
+//		} catch(Exception ignore) {
+//			return;
+//		}
+		pxnLogger.get().info("Button pressed: "+buttonName);
 
-//		if(buttonName.equals("Connect")) {
+		if(buttonName.equals("Connect")) {
 //			Main.getClient().getConnectState().setStateConnecting();
-////			setDisplay(loginFrame.CONNECTING_WINDOW_NAME);
-//			// connect to server
+//			setDisplay(loginFrame.CONNECTING_WINDOW_NAME);
+			// connect to server
 //			pxnSocketClient socket = null;
 //			try {
 //				// get connect info from window
@@ -120,10 +139,11 @@ public class LoginHandler implements gcFrameHandlerInterface, ActionListener, Ke
 //			} catch (IOException e) {
 //e.printStackTrace();
 //			}
-//
-//		} else if(buttonName.equals("Cancel"))
+
+		} else if(buttonName.equals("Cancel")) {
 //			Main.getClient().getConnectState().setStateClosed();
 ////			setDisplay(loginFrame.LOGIN_WINDOW_NAME);
+		}
 	}
 //	// get info from text boxes
 //	public void getConnectInfo(StringBuilder host, Integer port, StringBuilder username, StringBuilder password) {

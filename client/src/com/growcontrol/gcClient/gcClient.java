@@ -134,6 +134,8 @@ System.exit(0);
 			pxnScheduler.PauseAll();
 			break;
 		case 8:
+			// close windows
+			guiManager.Shutdown();
 			break;
 		case 7:
 			break;
