@@ -31,6 +31,7 @@ public abstract class pxnApp {
 
 
 	public void Start() {
+		Thread.currentThread().setName("Main-"+getAppName()+"-Thread");
 		// single instance lock
 		pxnUtils.lockInstance(getAppName()+".lock");
 		pxnLogger.get().printMajor("Starting "+getAppName());

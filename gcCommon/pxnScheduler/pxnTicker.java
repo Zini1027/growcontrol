@@ -7,7 +7,6 @@ import com.growcontrol.gcCommon.TimeU;
 import com.growcontrol.gcCommon.TimeUnitTime;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 import com.growcontrol.gcCommon.pxnScheduler.pxnTriggers.triggerInterval;
-import com.growcontrol.gcServer.ServerConfig;
 
 
 public class pxnTicker extends pxnSchedulerTask {
@@ -17,7 +16,7 @@ public class pxnTicker extends pxnSchedulerTask {
 
 	protected List<pxnTickerTask> tasks = new ArrayList<pxnTickerTask>();
 
-	private TimeUnitTime interval = new TimeUnitTime();
+	private TimeUnitTime interval = new TimeUnitTime(1, TimeU.S);
 
 
 	public static pxnTicker get() {
@@ -28,8 +27,8 @@ public class pxnTicker extends pxnSchedulerTask {
 	protected pxnTicker() {
 		// new task (multi-threaded / repeat)
 		super(true, true);
-		long tickInterval = ServerConfig.get().TickInterval();
-		setInterval(new TimeUnitTime(tickInterval, TimeU.MS));
+//		long tickInterval = ServerConfig.get().TickInterval();
+//		setInterval(new TimeUnitTime(tickInterval, TimeU.MS));
 		// add scheduler
 		pxnScheduler.get("ticker").newTask(this);
 	}
