@@ -4,6 +4,12 @@ import java.io.File;
 
 import javax.swing.ImageIcon;
 
+import org.fusesource.jansi.AnsiConsole;
+
+import com.growcontrol.gcCommon.pxnLogger.pxnLevel;
+import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLoggerConsole;
+
 
 public class Main {
 
@@ -19,7 +25,15 @@ public class Main {
 
 	// app startup
 	public static void main(String[] args) {
+		AnsiConsole.systemInstall();
+		System.out.println();
 		if(client != null) throw new UnsupportedOperationException("Cannot redefine singleton gcClient; already running");
+		pxnLogger.addLogHandler(
+			"console",
+			new pxnLoggerConsole(pxnLogger.getReader(),
+			new pxnLevel(pxnLevel.LEVEL.DEBUG))
+		);
+
 //		pxnLogger.addLogHandler(
 //			"console",
 //			new pxnLoggerConsole(pxnLogger.getReader(),

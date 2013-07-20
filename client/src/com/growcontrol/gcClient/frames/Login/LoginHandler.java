@@ -15,18 +15,23 @@ import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
 public class LoginHandler implements gcFrameHandlerInterface, ActionListener, KeyEventDispatcher {
-
 	protected static LoginHandler handler = null;
+
+	// display mode
+	public enum CONN {DISCONNECTED, CONNECTING, AUTH, READY};
+	protected volatile CONN connMode     = null;
+	protected volatile CONN lastConnMode = null;
+	private final Object modeLock = new Object();
+
+	// objects
 	protected LoginFrame frame = null;
 	protected LoginWindows currentCard = LoginWindows.LOGIN;
 
 
 	// login frame handler
-	public static LoginHandler get() {
-		synchronized(handler) {
-			if(handler == null)
-				handler = new LoginHandler();
-		}
+	public static synchronized LoginHandler get() {
+		if(handler == null)
+			handler = new LoginHandler();
 		return handler;
 	}
 	public LoginHandler() {
@@ -34,25 +39,30 @@ public class LoginHandler implements gcFrameHandlerInterface, ActionListener, Ke
 
 
 	@Override
-	public void Show() {
-		try {
-			SwingUtilities.invokeAndWait(new Runnable() {
-				@Override
-				public void run() {
-					synchronized(frame) {
-						frame = new LoginFrame(handler);
+	public synchronized void Show() {
+		synchronized(modeLock) {
+			if(connMode == null)
+				connMode = CONN.DISCONNECTED;
+			try {
+				SwingUtilities.invokeAndWait(new Runnable() {
+					@Override
+					public void run() {
+						if(frame == null)
+							frame = new LoginFrame(handler);
 					}
-				}
-			});
-		} catch (InvocationTargetException e) {
-			pxnLogger.get().exception(e);
-		} catch (InterruptedException ignore) {}
+				});
+			} catch (InvocationTargetException e) {
+				pxnLogger.get().exception(e);
+			} catch (InterruptedException ignore) {}
+		}
 	}
 	@Override
 	public void Close() {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
+				if(frame == null)
+					return;
 				synchronized(frame) {
 					frame.dispose();
 					frame = null;

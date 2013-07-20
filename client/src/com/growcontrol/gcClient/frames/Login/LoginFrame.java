@@ -119,7 +119,7 @@ System.out.println("CLOSING LOGIN WINDOW");
 //		separatorServersList.setPreferredSize(new Dimension(200, 2));
 //		panelLogin.add(separatorServersList, "growx, wrap");
 		// servers list
-		JComboBox comboSavedServers = new JComboBox();
+		JComboBox<String> comboSavedServers = new JComboBox<String>();
 		comboSavedServers.addItem("[ unsaved ]");
 		comboSavedServers.addItem("[ Local Computer ]");
 		comboSavedServers.addItem("home:1142");

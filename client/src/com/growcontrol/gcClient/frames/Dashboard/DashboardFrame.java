@@ -23,6 +23,7 @@ import com.growcontrol.gcClient.frames.gcFrameInterface;
 
 public class DashboardFrame extends JFrame implements gcFrameInterface {
 	private static final long serialVersionUID = 1L;
+@SuppressWarnings("unused")
 	private final DashboardHandler handler;
 
 //	private JPanel contentPane;
