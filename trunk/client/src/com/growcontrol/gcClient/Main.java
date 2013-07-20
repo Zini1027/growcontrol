@@ -60,7 +60,14 @@ public class Main {
 
 	// shutdown client
 	public static void Shutdown() {
-//		client.Shutdown();
+		if(gcClient.client == null) {
+			// stop gui manager only
+			guiManager.Shutdown();
+			System.exit(0);
+		} else {
+			// stop client instance
+			getClient().Shutdown();
+		}
 	}
 	public static void HideGUI() {
 //		client.HideGUI();

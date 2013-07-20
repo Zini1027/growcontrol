@@ -11,6 +11,7 @@ public class guiManager {
 	public enum GUI {LOGIN, DASH};
 	private static volatile GUI guiMode     = null;
 	private static volatile GUI lastGuiMode = null;
+//	private final Object modeLock = new Object();
 
 	// frames
 	protected LoginHandler     loginHandler = null;
@@ -24,6 +25,16 @@ public class guiManager {
 	}
 	private guiManager() {
 		doUpdate();
+	}
+	public static void Shutdown() {
+		if(manager != null)
+			get().doShutdown();
+	}
+	private void doShutdown() {
+		if(loginHandler != null)
+			loginHandler.Close();
+		if(dashHandler != null)
+			dashHandler.Close();
 	}
 
 
@@ -48,18 +59,18 @@ public class guiManager {
 
 	public synchronized LoginHandler getLoginHandler() {
 		if(loginHandler == null)
-			loginHandler = new LoginHandler();
+			loginHandler = LoginHandler.get();
 		return loginHandler;
 	}
 	public synchronized DashboardHandler getDashboardHandler() {
 		if(dashHandler == null)
-			dashHandler = new DashboardHandler();
+			dashHandler = DashboardHandler.get();
 		return dashHandler;
 	}
 
 
 	// get/set gui mode
-	public GUI getMode() {
+	public synchronized GUI getMode() {
 		if(guiMode == null)
 			guiMode = GUI.LOGIN;
 		return guiMode;

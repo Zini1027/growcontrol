@@ -32,9 +32,7 @@ public class LoginFrame extends JFrame implements gcFrameInterface {
 	private static final long serialVersionUID = 1L;
 	private final LoginHandler handler;
 
-	public static enum LoginWindows {LOGIN, CONNECTING};
 	protected CardLayout cardLayout = new CardLayout();
-
 	protected HashMap<String, JPanel> panels = new HashMap<String, JPanel>();
 
 //	public static final String LOGIN_WINDOW_NAME = "login";
@@ -82,15 +80,13 @@ public class LoginFrame extends JFrame implements gcFrameInterface {
 	// close event
 	protected void processWindowEvent(WindowEvent event) {
 		if(event.getID() == WindowEvent.WINDOW_CLOSING) {
-System.out.println("CLOSING LOGIN WINDOW");
-			dispose();
-			System.exit(0);
+			handler.Close();
 		}
 	}
 
 
 	// new card panel
-	private JPanel newPanel(LoginWindows window) {
+	private JPanel newPanel(LoginHandler.CONN window) {
 		if(panels.containsKey(window)) {
 			return panels.get(window);
 		} else {
@@ -103,7 +99,7 @@ System.out.println("CLOSING LOGIN WINDOW");
 
 	// login panel
 	private void createLoginPanel() {
-		JPanel panel = newPanel(LoginWindows.LOGIN);
+		JPanel panel = newPanel(LoginHandler.CONN.WAITING);
 		MigLayout migLayout = new MigLayout();
 		migLayout.setLayoutConstraints("");
 		migLayout.setColumnConstraints("[]10[]");
@@ -186,7 +182,7 @@ System.out.println("CLOSING LOGIN WINDOW");
 		this.labelStatus.setText(message);
 	}
 	private void createConnectingPanel() {
-		JPanel panel = newPanel(LoginWindows.CONNECTING);
+		JPanel panel = newPanel(LoginHandler.CONN.CONNECT);
 		panel.setLayout(new FlowLayout(FlowLayout.CENTER));
 		panel.setBackground(Color.DARK_GRAY);
 		ImageIcon loading = Main.loadImageResource("resources/icon-loading-animated.gif");
@@ -208,12 +204,12 @@ System.out.println("CLOSING LOGIN WINDOW");
 	}
 
 
-	public void DisplayCard(LoginWindows displayCard) {
+	public void DisplayCard(LoginHandler.CONN display) {
 		if(!SwingUtilities.isEventDispatchThread()) throw new ConcurrentModificationException("Cannot call this function directly!");
-		if(displayCard == null) throw new NullPointerException("displayCard can't be null");
-System.out.println("Displaying Card: "+displayCard.toString());
+		if(display == null) throw new NullPointerException("displayCard can't be null");
+System.out.println("Displaying Card: "+display.toString());
 		try {
-			cardLayout.show(this.getContentPane(), displayCard.toString());
+			cardLayout.show(this.getContentPane(), display.toString());
 //			cardLayout.show(panelConnecting.getParent(), cardName);
 		} catch(Exception ignore) {}
 	}
