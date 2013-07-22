@@ -2,20 +2,22 @@ package com.growcontrol.gcClient.frames.Login;
 
 import java.awt.KeyEventDispatcher;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
 import java.lang.reflect.InvocationTargetException;
 
-import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import com.growcontrol.gcClient.Main;
+import com.growcontrol.gcClient.gcClient;
 import com.growcontrol.gcClient.frames.gcFrameHandlerInterface;
+import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
-public class LoginHandler implements gcFrameHandlerInterface, ActionListener, KeyEventDispatcher {
+public class LoginHandler implements gcFrameHandlerInterface, KeyEventDispatcher {
 	protected static LoginHandler handler = null;
 
 	// display mode
@@ -23,6 +25,11 @@ public class LoginHandler implements gcFrameHandlerInterface, ActionListener, Ke
 	protected volatile CONN connMode     = null;
 	protected volatile CONN lastConnMode = null;
 	private final Object modeLock = new Object();
+
+	// static entries of saved servers list
+	public final String SavedStatic_Unsaved        = "[ Unsaved ]";
+//	public final String SavedStatic_RunServerLocal = "[ Run Internal Server ]";
+	public final String SavedStatic_LocalHost      = "[ Local Host ]";
 
 	// objects
 	protected LoginFrame frame = null;
@@ -91,79 +98,78 @@ Main.Shutdown();
 		synchronized(modeLock) {
 			lastConnMode = connMode;
 			connMode = mode;
+frame.DisplayCard(connMode);
 			return lastConnMode;
 		}
 	}
 
 
 	// button click event
-	@Override
-	public void actionPerformed(ActionEvent event) {
-		String buttonName = "";
-//		try {
-		buttonName = ((JButton) event.getSource()).getActionCommand();
-//		} catch(Exception ignore) {
-//			return;
-//		}
+	public void ButtonClicked(ActionEvent event, String buttonName) {
 		pxnLogger.get().info("Button pressed: "+buttonName);
-
-		if(buttonName.equals("Connect")) {
+		switch(buttonName) {
+		case "Save":
+			frame.setButtonName("Connect");
+			break;
+		case "Connect":
+			setMode(CONN.CONNECT);
+			String host = frame.textHost.getText();
+			String portStr = frame.textPort.getText();
+			int port = 0;
+			if(portStr != null && !portStr.isEmpty()) {
+				try {
+					port = Integer.parseInt(portStr);
+				} catch (Exception ignore) {}
+			}
+			String user = frame.textUsername.getText();
+			String pass = pxnUtils.MD5(frame.textHost.getText());
+			gcClient.get().Connect(host, port, user, pass);
+			break;
+		case "Cancel":
+			break;
+		}
+//		if(buttonName.equals("Connect")) {
 //			Main.getClient().getConnectState().setStateConnecting();
 //			setDisplay(loginFrame.CONNECTING_WINDOW_NAME);
-			// connect to server
-//			pxnSocketClient socket = null;
-//			try {
-//				// get connect info from window
-//				ConnectInfo connectInfo = new ConnectInfo();
-//				// connect to server
-//				socket = new pxnSocketClient(connectInfo.host, connectInfo.port, new gcSocketProcessor());
-//				Main.getClient().setSocket(socket);
-//				// send HELLO packet
-//				try {
-//					sendClientPackets.sendHELLO( Main.getClient().getSocket().getProcessor(),
-//							gcClient.version,
-//							connectInfo.username,
-//							connectInfo.password);
-//				} catch (Exception e) {
-//e.printStackTrace();
-//				}
-//			} catch (SocketTimeoutException e) {
-//				// connection timeout
-//				return;
-//			} catch (ConnectException e) {
-//				// socket closed
-//				return;
-//			} catch (UnknownHostException e) {
-//				// unknown hostname
-//				return;
-//			} catch (IOException e) {
-//e.printStackTrace();
-//			}
 
-		} else if(buttonName.equals("Cancel")) {
+//		} else if(buttonName.equals("Cancel")) {
 //			Main.getClient().getConnectState().setStateClosed();
 ////			setDisplay(loginFrame.LOGIN_WINDOW_NAME);
+//		}
+	}
+	public void ComboChanged(ItemEvent event, String selectedStr) {
+		switch(selectedStr) {
+		case SavedStatic_Unsaved:
+			return;
+//		case SavedStatic_RunServerLocal:
+//			frame.setHost("127.0.0.1");
+//			frame.setPort(1142);
+//			break;
+		case SavedStatic_LocalHost:
+			frame.setHost("127.0.0.1");
+			frame.setPort(1142);
+			break;
+		case "home:1142":
+			frame.setHost("home");
+			frame.setPort(1142);
+			frame.setUsername("user");
+			frame.setPassword("pass");
+		default:
+			break;
 		}
 	}
 //	// get info from text boxes
 //	public void getConnectInfo(StringBuilder host, Integer port, StringBuilder username, StringBuilder password) {
 //	}
-//	// get fields
-//	private class ConnectInfo {
-//		public final String host;
-//		public final int port;
-//		public final String username;
-//		public final String password;
-//		public ConnectInfo() {
-//			host = frame.textHost.getText();
-//			String portStr = frame.textPort.getText();
-//			port = (portStr != null && !portStr.isEmpty()) ?
-//				Integer.parseInt(portStr) :
-//				1142;
-//			username = frame.textUsername.getText();
-//			password = pxnUtils.MD5(frame.textHost.getText());
-//		}
-//	}
+
+
+	// populate saved servers
+	public void populateSavedServers(JComboBox<String> combo) {
+		combo.addItem(SavedStatic_Unsaved);
+//		combo.addItem(SavedStatic_RunServerLocal);
+		combo.addItem(SavedStatic_LocalHost);
+		combo.addItem("home:1142");
+	}
 
 
 //	// display window card
