@@ -9,25 +9,20 @@ import org.fusesource.jansi.AnsiConsole;
 import com.growcontrol.gcCommon.pxnLogger.pxnLevel;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 import com.growcontrol.gcCommon.pxnLogger.pxnLoggerConsole;
+import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
 
 
 public class Main {
 
-	// client instance
-	private static gcClient client = null;
-
-//	// logger
-//	private static final gcLogger log = gcLogger.getLogger();
-
-//	// runtime args
-//	private static boolean consoleEnabled = true;
+//	// command line arguments
+//	private static String argsMsgStr = "";
 
 
 	// app startup
 	public static void main(String[] args) {
 		AnsiConsole.systemInstall();
 		System.out.println();
-		if(client != null) throw new UnsupportedOperationException("Cannot redefine singleton gcClient; already running");
+		if(gcClient.client != null) throw new UnsupportedOperationException("Cannot redefine singleton gcClient; already running");
 		pxnLogger.addLogHandler(
 			"console",
 			new pxnLoggerConsole(pxnLogger.getReader(),
@@ -38,7 +33,7 @@ public class Main {
 //			"console",
 //			new pxnLoggerConsole(pxnLogger.getReader(),
 //				new pxnLevel(pxnLevel.LEVEL.DEBUG)) );
-		client = new gcClient();
+		gcClient.client = new gcClient();
 //		pluginManager.setMainClassYmlName("Client Main");
 		// process args
 		for(int i=0; i<args.length; i++) {
@@ -52,9 +47,33 @@ public class Main {
 //			// configs path
 //			// plugins path
 		}
+//		// build argsMsgStr
+//		argsMsgStr = "";
+//		if(argsMsgList.size() > 0) {
+//			for(String argStr : argsMsgList) {
+//				if(argStr == null || argStr.isEmpty()) continue;
+//				if(!argsMsgStr.isEmpty()) argsMsgStr += " ";
+//				argsMsgStr += argStr.replace(" ", "_");
+//			}
+//		}
+//		displayLogoHeader();
+//		displayStartupVars();
 		System.out.flush();
-		// start client gui
-		client.Start();
+		// queue startup in main thread
+		pxnThreadQueue.addToMain("client-startup", new Runnable() {
+			@Override
+			public void run() {
+				// start client gui
+				gcClient.get().Start();
+			}
+		});
+		// start/hand-off thread to main queue
+		pxnThreadQueue.getMain().run();
+		// main thread ended
+		pxnLogger.get().warning("Main process ended (this shouldn't happen)");
+		System.out.println();
+		System.out.println();
+		System.exit(0);
 	}
 
 
@@ -66,7 +85,7 @@ public class Main {
 			System.exit(0);
 		} else {
 			// stop client instance
-			getClient().Shutdown();
+			gcClient.get().Shutdown();
 		}
 	}
 	public static void HideGUI() {
@@ -74,10 +93,10 @@ public class Main {
 	}
 
 
-	// get client
-	public static gcClient getClient() {
-		return client;
-	}
+//	// get client
+//	public static gcClient getClient() {
+//		return client;
+//	}
 
 
 //	// get main logger
@@ -99,7 +118,7 @@ public class Main {
 		// open resource
 		if(image == null) {
 			try {
-				image = new ImageIcon(client.getClass().getResource(path));
+				image = new ImageIcon(gcClient.get().getClass().getResource(path));
 			} catch(Exception ignore) {}
 		}
 		return image;
