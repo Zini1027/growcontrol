@@ -114,7 +114,7 @@ public class pxnThreadQueue implements Runnable {
 		addQueue("Thread-Queue-Stopping", new Runnable() {
 			@Override
 			public void run() {
-				pxnLogger.get().info("("+queueName+") Stopping thread queue..");
+				pxnLogger.get().debug("("+queueName+") Stopping thread queue..");
 				stopping = true;
 			}
 		});

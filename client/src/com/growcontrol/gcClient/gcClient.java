@@ -1,13 +1,21 @@
 package com.growcontrol.gcClient;
 
+import java.io.IOException;
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.growcontrol.gcClient.socketClient.gcSocketProcessor;
+import com.growcontrol.gcClient.socketClient.sendClientPackets;
 import com.growcontrol.gcCommon.pxnApp;
+import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 import com.growcontrol.gcCommon.pxnScheduler.pxnScheduler;
 import com.growcontrol.gcCommon.pxnScheduler.pxnTicker;
 import com.growcontrol.gcCommon.pxnSocket.pxnSocketClient;
+import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
 
 
 public class gcClient extends pxnApp {
@@ -38,10 +46,70 @@ public class gcClient extends pxnApp {
 
 
 	public gcClient() {
-// wait for connection state change
 	}
 	public static gcClient get() {
 		return client;
+	}
+
+
+	public void Connect(String host, int port, String user, String pass) {
+		pxnThreadQueue.addToMain("connecting",
+			new doConnect(host, port, user, pass));
+	}
+	private class doConnect implements Runnable {
+		public pxnSocketClient socket = null;
+		private final String host;
+		private final int    port;
+@SuppressWarnings("unused")
+		private final String user;
+@SuppressWarnings("unused")
+		private final String pass;
+		public doConnect(String host, int port, String user, String pass) {
+			if(host == null || host.isEmpty())
+				host = "127.0.0.1";
+			if(port < 1) port = 1142;
+			if(user == null || user.isEmpty()) user = null;
+			if(pass == null || pass.isEmpty()) pass = null;
+			this.host = host;
+			this.port = pxnUtils.MinMax(port, 1, 65535);
+			this.user = user;
+			this.pass = pass;
+		}
+		@Override
+		public synchronized void run() {
+			// connect to server
+			try {
+				pxnLogger.get().info("connecting..");
+				socket = new pxnSocketClient(this.host, this.port, new gcSocketProcessor());
+//				Main.getClient().setSocket(socket);
+				// send HELLO packet
+				try {
+					sendClientPackets.sendHELLO(
+							socket.getProcessor(),
+							gcClient.version);
+//							connectInfo.username,
+//							connectInfo.password);
+				} catch (Exception e) {
+					pxnLogger.get().exception(e);
+				}
+			} catch (SocketTimeoutException ignore) {
+				// connection timeout
+				pxnLogger.get().warning("connection timeout!");
+				return;
+			} catch (ConnectException ignore) {
+				// socket closed
+				pxnLogger.get().warning("socket closed!");
+				return;
+			} catch (UnknownHostException ignore) {
+				// unknown hostname
+				pxnLogger.get().warning("unknown host!");
+				return;
+			} catch (IOException e) {
+				pxnLogger.get().exception(e);
+			}
+pxnLogger.get().severe("CONNECTED!!!!!!!!!!!!!!!!!!!");
+		}
+//		Start();
 	}
 
 
@@ -125,11 +193,11 @@ System.exit(0);
 			pxnLogger.get().info("Stopping GC Client..");
 			break;
 		case 9:
-			socket.stop();
 			// pause scheduler
 			pxnScheduler.PauseAll();
 			// close client socket
-			socket.stop();
+			if(socket != null)
+				socket.stop();
 			// pause scheduler
 			pxnScheduler.PauseAll();
 			break;
@@ -151,7 +219,8 @@ System.exit(0);
 			break;
 		case 3:
 			// close sockets
-			socket.forceCloseAll();
+			if(socket != null)
+				socket.forceCloseAll();
 			break;
 		case 2:
 			break;

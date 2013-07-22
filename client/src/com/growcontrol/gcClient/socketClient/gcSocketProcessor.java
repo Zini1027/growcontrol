@@ -1,8 +1,8 @@
 package com.growcontrol.gcClient.socketClient;
 
-import com.gcCommon.pxnParser.pxnParser;
-import com.gcCommon.pxnSocket.pxnSocketProcessor;
-import com.gcCommon.pxnSocket.pxnSocketProcessorThreaded;
+import com.growcontrol.gcCommon.pxnParser.pxnParser;
+import com.growcontrol.gcCommon.pxnSocket.pxnSocketProcessor;
+import com.growcontrol.gcCommon.pxnSocket.pxnSocketProcessorThreaded;
 
 
 public class gcSocketProcessor extends pxnSocketProcessorThreaded {
@@ -16,7 +16,9 @@ public class gcSocketProcessor extends pxnSocketProcessorThreaded {
 
 	@Override
 	public void processNow(pxnSocketProcessor processor, pxnParser line) {
+		if(line == null) return;
 		String first = line.getFirst();
+		if(first == null) return;
 		// HEY packet
 		if(first.equalsIgnoreCase("HEY")) {
 System.out.println("Got HEY packet!");
