@@ -5,6 +5,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.KeyboardFocusManager;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
@@ -48,6 +52,8 @@ public class LoginFrame extends JFrame implements gcFrameInterface {
 	protected JTextField textPort;
 	protected JTextField textUsername;
 	protected JPasswordField textPassword;
+	// button
+	protected JButton buttonConnect = null;
 
 
 	public LoginFrame(LoginHandler handler) {
@@ -116,12 +122,19 @@ public class LoginFrame extends JFrame implements gcFrameInterface {
 //		panelLogin.add(separatorServersList, "growx, wrap");
 		// servers list
 		JComboBox<String> comboSavedServers = new JComboBox<String>();
-		comboSavedServers.addItem("[ unsaved ]");
-		comboSavedServers.addItem("[ Local Computer ]");
-		comboSavedServers.addItem("home:1142");
-		comboSavedServers.setEnabled(false);
+		handler.populateSavedServers(comboSavedServers);
+//comboSavedServers.setEnabled(false);
 		panel.add(comboSavedServers, "growx, span 2, gapleft 10, gapright 10, center, wrap");
-
+		// item listener
+		comboSavedServers.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent event) {
+				if(event.getStateChange() != ItemEvent.SELECTED)
+					return;
+				String selectedStr = event.getItem().toString();
+				handler.ComboChanged(event, selectedStr);
+			}
+		});
 		// separator - Server Address
 		JLabel labelLocation = new JLabel("Server Location");
 		labelLocation.setToolTipText("<html>" +
@@ -168,10 +181,38 @@ public class LoginFrame extends JFrame implements gcFrameInterface {
 		panel.add(textPassword, "growx, wrap");
 
 		// connect button
-		JButton buttonConnect = new JButton("Connect");
+		buttonConnect = new JButton("Connect");
 		buttonConnect.setDefaultCapable(true);
 		panel.add(buttonConnect, "span 2, center");
-		buttonConnect.addActionListener(handler);
+		// action listener
+		buttonConnect.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				Object obj = event.getSource();
+				if(!(obj instanceof JButton))
+					return;
+				String buttonName = ((JButton) obj).getActionCommand();
+				handler.ButtonClicked(event, buttonName);
+			}
+		});
+	}
+	// set field values
+	public void setHost(String host) {
+		textHost.setText(host);
+	}
+	public void setPort(int port) {
+		textPort.setText(Integer.toString(port));
+	}
+	public void setUsername(String user) {
+		textUsername.setText(user);
+	}
+	public void setPassword(String pass) {
+		textPassword.setText(pass);
+	}
+	// set button text
+	public void setButtonName(String name) {
+		if(!SwingUtilities.isEventDispatchThread()) throw new ConcurrentModificationException("Cannot call this function directly!");
+		buttonConnect.setName(name);
 	}
 
 
@@ -192,7 +233,17 @@ public class LoginFrame extends JFrame implements gcFrameInterface {
 		// cancel button
 		JButton buttonCancel = new JButton("Cancel");
 		panel.add(buttonCancel);
-		buttonCancel.addActionListener(handler);
+		// action listener
+		buttonCancel.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				Object obj = event.getSource();
+				if(!(obj instanceof JButton))
+					return;
+				String buttonName = ((JButton) obj).getActionCommand();
+				handler.ButtonClicked(event, buttonName);
+			}
+		});
 		// status
 		labelStatus.setHorizontalAlignment(SwingConstants.CENTER);
 		labelStatus.setPreferredSize(new Dimension(180, 35));
