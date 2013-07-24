@@ -82,7 +82,8 @@ System.exit(0);
 
 		// load plugins
 		try {
-			pluginManager.LoadPlugins();
+			pluginManager.LoadPluginsDir();
+			pluginManager.InitPlugins();
 			pluginManager.EnablePlugins();
 		} catch (Exception e) {
 			log.exception(e);
@@ -118,18 +119,18 @@ System.exit(0);
 
 //TODO: remove temp scheduled task
 // new task (multi-threaded / repeat)
-pxnSchedulerTask task = new pxnSchedulerTask(true, true) {
-	@Override
-	public void run() {
-		System.out.println("333333333 tick");
-	}
-	@Override
-	public String getTaskName() {
-		return "333tickname";
-	}
-};
-task.addTrigger(new triggerInterval("3s"));
-pxnScheduler.get("gcServer").newTask(task);
+//pxnSchedulerTask task = new pxnSchedulerTask(true, true) {
+//	@Override
+//	public void run() {
+//		System.out.println("333333333 tick");
+//	}
+//	@Override
+//	public String getTaskName() {
+//		return "333tickname";
+//	}
+//};
+//task.addTrigger(new triggerInterval("3s"));
+//pxnScheduler.get("gcServer").newTask(task);
 
 //System.out.println("next run: "+task.UntilNextTrigger().get(TimeU.MS));
 
@@ -157,6 +158,8 @@ pxnScheduler.get("gcServer").newTask(task);
 		case 6:
 			break;
 		case 5:
+			// stop plugins
+			pluginManager.DisablePlugins();
 			// end schedulers
 			pxnScheduler.ShutdownAll();
 			break;

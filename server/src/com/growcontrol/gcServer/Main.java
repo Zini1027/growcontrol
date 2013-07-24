@@ -21,7 +21,6 @@ public class Main {
 	// app startup
 	public static void main(String[] args) {
 		AnsiConsole.systemInstall();
-		Thread.currentThread().setName("Main-Server-Thread");
 		System.out.println();
 		if(gcServer.server != null) throw new UnsupportedOperationException("Cannot redefine singleton gcServer; already running");
 		pxnLogger.addLogHandler(
@@ -29,60 +28,52 @@ public class Main {
 			new pxnLoggerConsole(pxnLogger.getReader(),
 			new pxnLevel(pxnLevel.LEVEL.DEBUG))
 		);
-
-//		pluginManager.setMainClassYmlName("Server Main");
-//doesn't log anything
-//try {
-//	pxnLogger.getReader().setDebug(new PrintWriter(new FileWriter("log.txt", true)));
-//} catch (IOException e) {
-//	// TODO Auto-generated catch block
-//	e.printStackTrace();
-//}
-//		pxnLogger.addLogHandler(
-//			"file",
-//			new pxnLoggerFile(
-//				new pxnLevel(pxnLevel.LEVEL.DEBUG)) );
-
 		// start gc server
 		gcServer.server = new gcServer();
-		List<String> argsMsgList = new ArrayList<String>();
 		// process args
+		List<String> argsMsgList = new ArrayList<String>();
 		for(int i=0; i<args.length; i++) {
 			String arg = args[i];
 			// version
 			if(arg.equalsIgnoreCase("--version")) {
-//				System.out.println("GrowControl "+gcServer.version+" Server");
+				System.out.println("GrowControl "+gcServer.version+" Server");
 				System.exit(0);
+			}
 			// no console
-			} else if(arg.equalsIgnoreCase("--no-console")) {
-				gcServer.server.setConsoleEnabled(false);
+			if(arg.equalsIgnoreCase("--no-console")) {
+				gcServer.get().setConsoleEnabled(false);
 				argsMsgList.add("no-console");
+				continue;
+			}
 			// debug mode
-			} else if(arg.equalsIgnoreCase("--debug")) {
-				gcServer.server.setForceDebug(true);
-				pxnLogger.setForceDebug("console", true);
+			if(arg.equalsIgnoreCase("--debug")) {
+				gcServer.get().setForceDebug(true);
 				argsMsgList.add("debug");
+				continue;
+			}
 			// configs path
-			} else if(arg.equalsIgnoreCase("--configs-path")) {
+			if(arg.equalsIgnoreCase("--configs-path")) {
 				i++; if(i <= args.length) {
 					System.out.println("Incomplete! --configs-path argument");
 					break;
 				}
-				gcServer.server.setConfigsPath(args[i]);
+				gcServer.get().setConfigsPath(args[i]);
 				System.out.println("Set configs path to: "+args[i]);
 				argsMsgList.add("configs-path");
+				continue;
+			}
 			// plugins path
-			} else if(arg.equalsIgnoreCase("--plugins-path")) {
+			if(arg.equalsIgnoreCase("--plugins-path")) {
 				i++; if(i <= args.length) {
 					System.out.println("Incomplete! --plugins-path argument");
 					break;
 				}
-				gcServer.server.getPluginManager().setPath(args[i]);
-				System.out.println("Set plugins path to: "+gcServer.server.getPluginManager().getPath());
+				gcServer.get().getPluginManager().setPath(args[i]);
+				System.out.println("Set plugins path to: "+gcServer.get().getPluginManager().getPath());
 				argsMsgList.add("plugins-path");
-			} else {
-				System.out.println("Unknown argument: "+arg);
+				continue;
 			}
+			System.out.println("Unknown argument: "+arg);
 		}
 		// build argsMsgStr
 		argsMsgStr = "";
@@ -93,12 +84,11 @@ public class Main {
 				argsMsgStr += argStr.replace(" ", "_");
 			}
 		}
-
 		displayLogoHeader();
 		displayStartupVars();
 		System.out.flush();
 		// queue startup in main thread
-		pxnThreadQueue.addToMain("StartServer", new Runnable() {
+		pxnThreadQueue.addToMain("server-startup", new Runnable() {
 			@Override
 			public void run() {
 				// start server
@@ -123,7 +113,8 @@ public class Main {
 		AnsiConsole.out.println(" java home: "+System.getProperty("java.home"));
 		if(gcServer.get().forceDebug())
 			AnsiConsole.out.println(" Force Debug: true");
-		AnsiConsole.out.println(" args: [ "+argsMsgStr+" ]");
+		if(argsMsgStr != null && !argsMsgStr.isEmpty())
+			AnsiConsole.out.println(" args: [ "+argsMsgStr+" ]");
 		AnsiConsole.out.println();
 		AnsiConsole.out.flush();
 	}

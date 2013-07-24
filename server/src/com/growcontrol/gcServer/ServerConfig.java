@@ -37,7 +37,14 @@ public class ServerConfig {
 			config = pxnConfig.loadFile(configsPath, "config.yml");
 		} catch (Exception e) {
 			pxnLogger.get().exception(e);
+			config = null;
 		}
+	}
+
+
+	// config has loaded
+	public boolean hasLoaded() {
+		return (config != null);
 	}
 
 

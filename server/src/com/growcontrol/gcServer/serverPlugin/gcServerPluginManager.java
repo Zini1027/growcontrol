@@ -1,12 +1,16 @@
 package com.growcontrol.gcServer.serverPlugin;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.growcontrol.gcCommon.pxnPlugin.pxnPluginManager;
-import com.growcontrol.gcCommon.pxnPlugin.pxnPluginYML;
 
 
 public class gcServerPluginManager extends pxnPluginManager {
+
+	// main class field names for plugin.yml
+	protected final String mainClass_Server = "Server Main";
+	protected final String mainClass_Client = "Client Main";
 
 	// listeners
 //	protected final gcServerListenerGroup commandListenerGroup = new gcServerListenerGroup(ListenerType.COMMAND);
@@ -15,6 +19,56 @@ public class gcServerPluginManager extends pxnPluginManager {
 //	protected static HashMap<String, gcServerPluginListenerOutput>	listenersOutput		= new HashMap<String, gcServerPluginListenerOutput>();
 //	protected static HashMap<String, gcServerPluginListenerInput>	listenersInput		= new HashMap<String, gcServerPluginListenerInput>();
 //	protected static HashMap<String, gcServerPluginListenerDevice>	listenersDevice		= new HashMap<String, gcServerPluginListenerDevice>();
+
+
+
+	@Override
+	public void LoadPluginsDir() {
+		LoadPluginsDir(new String[] {
+			mainClass_Server,
+			mainClass_Client
+		});
+	}
+	@Override
+	public void InitPlugins() {
+		InitPlugins(mainClass_Server);
+	}
+
+
+	// get client plugins
+	// 0 | plugin name
+	// 1 | version
+	// 2 | filename
+	public List<String[]> getClientPlugins() {
+		List<String[]> clientPlugins = new ArrayList<String[]>();
+		synchronized(this.plugins) {
+			for(PluginHolder holder : this.plugins.values()) {
+				String mainClass = holder.mainClasses.get(mainClass_Client);
+				if(mainClass == null || mainClass.isEmpty())
+					continue;
+				// add to client plugin list
+				clientPlugins.add(new String[] {
+					holder.pluginName,
+					holder.version,
+					holder.file.toString()
+				});
+			}
+		}
+		if(clientPlugins.size() == 0)
+			return null;
+		return clientPlugins;
+	}
+
+
+//	// plugin.yml entries for main class
+//	@Override
+//	protected String getMainClassFieldName() {
+//		return "Server Main";
+//	}
+//	@Override
+//	protected String getMainClassFieldName_ListOnly(){
+//		return "Client Main";
+//	}
 
 
 //	public gcServerPluginManager() {
@@ -28,11 +82,11 @@ public class gcServerPluginManager extends pxnPluginManager {
 //	}
 
 
-	// get plugin.yml
-	@Override
-	protected pxnPluginYML getPluginYML(File f) {
-		return new gcPluginYML(f, this.pluginYmlFileName);
-	}
+//	// get plugin.yml
+//	@Override
+//	protected pxnPluginYML getPluginYML(File f) {
+//		return new gcPluginYML(f, this.pluginYmlFileName);
+//	}
 
 
 //	// register listeners
