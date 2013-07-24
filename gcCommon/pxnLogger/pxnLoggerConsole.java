@@ -60,8 +60,7 @@ public class pxnLoggerConsole implements pxnLoggerHandler {
 	}
 	@Override
 	public pxnLevel getLevel() {
-throw new NullPointerException("NOT FINISHED!");
-//		return null;
+		return this.level;
 	}
 	// force debug mode
 	@Override

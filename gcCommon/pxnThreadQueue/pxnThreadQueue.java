@@ -75,10 +75,10 @@ public class pxnThreadQueue implements Runnable {
 				return;
 		int inactiveCount = 0;
 		while(!stopping) {
-			pxnRunnable run = null;
+			pxnRunnable task = null;
 			try {
 				//run = queue.take();
-				run = queue.poll(1, TimeU.S);
+				task = queue.poll(1, TimeU.S);
 				inactiveCount += 1;
 			} catch (InterruptedException e) {
 				pxnLogger.get().exception(e);
@@ -86,7 +86,7 @@ public class pxnThreadQueue implements Runnable {
 			}
 			if(active < 0) active = 0;
 			// inactive thread
-			if(run == null) {
+			if(task == null) {
 				// inactive thread after 5 minutes
 				if(inactiveCount > 300 && threads != null) {
 					pxnLogger.get().info("("+queueName+") Inactive thread");
@@ -97,8 +97,9 @@ public class pxnThreadQueue implements Runnable {
 				runCount++;
 				inactiveCount = 0;
 				active++;
+				pxnLogger.get().debug("Running thread task: "+task.getTaskName());
 				try {
-					run.run();
+					task.run();
 				} catch (Exception e) {
 					pxnLogger.get().exception(e);
 				}
@@ -114,7 +115,7 @@ public class pxnThreadQueue implements Runnable {
 		addQueue("Thread-Queue-Stopping", new Runnable() {
 			@Override
 			public void run() {
-				pxnLogger.get().debug("("+queueName+") Stopping thread queue..");
+//				pxnLogger.get().info("("+queueName+") Stopping thread queue..");
 				stopping = true;
 			}
 		});
