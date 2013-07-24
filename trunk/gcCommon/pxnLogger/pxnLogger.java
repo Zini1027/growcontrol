@@ -251,7 +251,7 @@ public class pxnLogger implements pxnLoggerInterface, pxnLogPrinter {
 	@Override
 	public void exception(String msg, Throwable e) {
 //TODO: use msg argument
-		if(e == null) throw new NullPointerException("e can't be null!");
+		if(e == null) throw new NullPointerException("throwable can't be null!");
 //		this.severe(e.getStackTrace().toString());
 		e.printStackTrace();
 //		Throwable throwable = logrecord.getThrown();

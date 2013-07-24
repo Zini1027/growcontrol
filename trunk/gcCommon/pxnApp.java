@@ -140,7 +140,7 @@ System.out.println(startTime);
 		if(levelStr != null && !levelStr.isEmpty()) {
 			LEVEL level = pxnLevel.levelFromString(levelStr);
 			pxnLogger.setLevel("console", level);
-			pxnLogger.get().print(level, "Set log level: "+level.toString());
+//			pxnLogger.get().print(level, "Set log level: "+level.toString());
 		}
 	}
 
@@ -150,6 +150,7 @@ System.out.println(startTime);
 	}
 	public void setForceDebug(boolean enabled) {
 		this.forceDebug = enabled;
+		pxnLogger.setForceDebug("console", enabled);
 	}
 	public void setConfigsPath(String path) {
 		this.configsPath = path;
