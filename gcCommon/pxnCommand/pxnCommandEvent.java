@@ -55,7 +55,7 @@ public class pxnCommandEvent extends pxnEvent {
 
 
 	public String[] getArgsArray() {
-		return (String[]) args.toArray();
+		return (String[]) args.toArray(new String[0]);
 	}
 
 

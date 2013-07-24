@@ -6,7 +6,8 @@ import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 public abstract class pxnPlugin {
 
-	private pxnPluginManager pluginManager;
+	private pxnPluginManager pluginManager = null;
+	private pxnPluginYML yml = null;
 
 	// load/unload plugin
 	public abstract String getPluginName();
@@ -33,6 +34,15 @@ public abstract class pxnPlugin {
 	public void setPluginManager(pxnPluginManager pluginManager) {
 		if(pluginManager == null) throw new NullPointerException("pluginManager cannot be null!");
 		this.pluginManager = pluginManager;
+	}
+	// plugin.yml
+	public pxnPluginYML getPluginYML() {
+		if(yml == null) throw new NullPointerException("yml not set!");
+		return yml;
+	}
+	public void setPluginYML(pxnPluginYML yml) {
+		if(yml == null) throw new NullPointerException("yml cannot be null!");
+		this.yml = yml;
 	}
 
 
