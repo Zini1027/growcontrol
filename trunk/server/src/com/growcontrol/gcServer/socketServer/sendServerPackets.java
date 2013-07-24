@@ -1,13 +1,10 @@
 package com.growcontrol.gcServer.socketServer;
 
-import java.io.File;
 import java.util.List;
-import java.util.Map.Entry;
 
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 import com.growcontrol.gcCommon.pxnSocket.pxnSocketProcessor;
 import com.growcontrol.gcServer.gcServer;
-import com.growcontrol.gcServer.serverPlugin.gcPluginYML;
 
 
 public class sendServerPackets {
@@ -39,9 +36,13 @@ pxnLogger.get().severe("Sent ZONE packets!");
 
 	// LIST client plugins
 	// (list loaded client plugins)
+	// 0 | plugin name
+	// 1 | version
+	// 2 | filename
 	public static void sendLISTPluginsClient(pxnSocketProcessor processor) throws Exception {
-		for(Entry<String, File> entry : gcPluginYML.clientMainClasses.entrySet()) {
-			sendPLUGIN(processor, entry.getValue().getName() );
+		List<String[]> clientPlugins = gcServer.get().getPluginManager().getClientPlugins();
+		for(String[] info : clientPlugins) {
+			sendPLUGIN(processor, info[2]);
 		}
 pxnLogger.get().severe("Sent PLUGIN packets!");
 	}

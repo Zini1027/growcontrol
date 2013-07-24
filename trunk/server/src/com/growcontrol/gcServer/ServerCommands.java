@@ -32,6 +32,8 @@ public class ServerCommands extends pxnCommandsHolder {
 			.setUsage("Clears the console screen.");
 		addCommand("help")
 			.addAlias("?");
+		addCommand("log")
+			.setUsage("log level info - Sets or displays the log level.");
 		addCommand("show")
 			.setUsage("Displays additional information.");
 		addCommand("version")
@@ -70,9 +72,11 @@ public class ServerCommands extends pxnCommandsHolder {
 		case "clear":
 			return _clear();
 		case "help":
-			return _help(commandEvent.getArgsArray());
+			return _help(commandEvent.getArgs());
+		case "log":
+			return _log(commandEvent.getArgs());
 		case "show":
-			return _show(commandEvent.getArgsArray());
+			return _show(commandEvent.getArgs());
 		case "version":
 			return _version();
 		case "say":
@@ -128,6 +132,18 @@ public class ServerCommands extends pxnCommandsHolder {
 
 	// help command
 	private static boolean _help(String[] args) {
+		return true;
+	}
+
+
+	// log command
+	private static boolean _log(String[] args) {
+		if(args.length == 1) {
+			gcServer.get().setLogLevel(args[0]);
+			return true;
+		}
+//TODO: command should be "log level debug"
+		System.out.println("Log level: "+pxnLogger.getLevel("console").toString());
 		return true;
 	}
 
