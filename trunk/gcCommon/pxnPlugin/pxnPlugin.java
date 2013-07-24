@@ -18,8 +18,17 @@ public abstract class pxnPlugin {
 
 	// plugin is enabled
 	private boolean enabled = false;
-	protected void setEnabled(boolean enabled) {
-		this.enabled = enabled;
+	protected void doEnable() {
+		if(enabled) return;
+		getLogger().info("Starting plugin..");
+		onEnable();
+		enabled = true;
+	}
+	protected void doDisable() {
+		if(!enabled) return;
+		getLogger().info("Stopping plugin..");
+		enabled = false;
+		onDisable();
 	}
 	public boolean isEnabled() {
 		return enabled;
@@ -47,8 +56,11 @@ public abstract class pxnPlugin {
 
 
 	// plugin logger
+	private pxnLogger log = null;
 	public pxnLogger getLogger() {
-		return pxnLogger.get("plugin-"+getPluginName());
+		if(log == null)
+			log = pxnLogger.get("plugin-"+getPluginName());
+		return log;
 	}
 
 

@@ -9,7 +9,7 @@ import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 public class pxnPluginYML {
 
-	public pxnConfig config = null;;
+	public pxnConfig config = null;
 
 
 	public pxnPluginYML(File file, String fileName) {
@@ -19,7 +19,14 @@ public class pxnPluginYML {
 			config = pxnConfig.loadJarResource(file, fileName);
 		} catch (IOException e) {
 			pxnLogger.get().exception(e);
+			config = null;
 		}
+	}
+
+
+	// config has loaded
+	public boolean hasLoaded() {
+		return (config != null);
 	}
 
 
@@ -34,17 +41,20 @@ public class pxnPluginYML {
 		return config.getString("Plugin Version");
 	}
 	// main class name
-	public String getMainClassValue() {
-		return getMainClassValue("main");
-	}
-	public String getMainClassValue(String mainClassName) {
+//	public String getMainClassValue() {
+//		return getMainClassValue(null);
+//	}
+	public String getMainClass(String fieldName) {
 		if(config == null) return null;
+		if(fieldName == null || fieldName.isEmpty())
+			fieldName = "Main Class";
 		// get main class from plugin.yml
-		String mainClassValue = config.getString(mainClassName);
+		String value = config.getString(fieldName);
+		if(value == null || value.isEmpty()) return null;
 		// trim .class from end
-		if(mainClassValue.endsWith(".class"))
-			mainClassValue = mainClassValue.substring(0, mainClassValue.length()-6);
-		return mainClassValue;
+		if(value.endsWith(".class"))
+			value = value.substring(0, value.length()-6);
+		return value;
 	}
 	// author
 	public String getAuthor() {
