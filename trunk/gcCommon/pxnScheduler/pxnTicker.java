@@ -36,6 +36,10 @@ public class pxnTicker extends pxnSchedulerTask {
 	public String getTaskName() {
 		return "gcTicker";
 	}
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
+	}
 
 
 	public void setInterval(TimeUnitTime interval) {

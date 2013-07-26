@@ -52,6 +52,10 @@ public class pxnScheduler extends Thread {
 		this.threadPool = new pxnThreadQueue("scheduler_"+name);
 		pxnLogger.get().debug("("+name+") New scheduler created");
 	}
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
+	}
 
 
 	// stop/pause

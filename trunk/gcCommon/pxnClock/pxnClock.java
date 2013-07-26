@@ -46,6 +46,10 @@ public class pxnClock {
 	// new instance
 	protected pxnClock() {
 	}
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
+	}
 
 
 	// static update

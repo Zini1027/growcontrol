@@ -8,6 +8,21 @@ import com.growcontrol.gcCommon.pxnListener.pxnListenerGroup;
 public class pxnCommandListenerGroup extends pxnListenerGroup {
 
 
+	// main listener
+	private static pxnCommandListenerGroup listener = null;
+	public static pxnCommandListenerGroup get() {
+		if(listener == null)
+			listener = new pxnCommandListenerGroup();
+		return listener;
+	}
+	protected pxnCommandListenerGroup() {
+	}
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
+	}
+
+
 	// trigger event
 	public boolean triggerCommandEvent(String line) {
 		if(line == null) throw new NullPointerException("line cannot be null!");

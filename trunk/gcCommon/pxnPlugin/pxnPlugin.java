@@ -1,5 +1,6 @@
 package com.growcontrol.gcCommon.pxnPlugin;
 
+import com.growcontrol.gcCommon.pxnCommand.pxnCommandListenerGroup;
 import com.growcontrol.gcCommon.pxnCommand.pxnCommandsHolder;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
@@ -13,7 +14,7 @@ public abstract class pxnPlugin {
 	public abstract String getPluginName();
 	public abstract void onEnable();
 	public abstract void onDisable();
-	public abstract void registerCommandsHolder(pxnCommandsHolder listener);
+//	public abstract void registerCommandsHolder(pxnCommandsHolder listener);
 
 
 	// plugin is enabled
@@ -42,6 +43,8 @@ public abstract class pxnPlugin {
 	}
 	public void setPluginManager(pxnPluginManager pluginManager) {
 		if(pluginManager == null) throw new NullPointerException("pluginManager cannot be null!");
+		// set only once
+		if(this.pluginManager != null) return;
 		this.pluginManager = pluginManager;
 	}
 	// plugin.yml
@@ -51,6 +54,8 @@ public abstract class pxnPlugin {
 	}
 	public void setPluginYML(pxnPluginYML yml) {
 		if(yml == null) throw new NullPointerException("yml cannot be null!");
+		// set only once
+		if(this.yml != null) return;
 		this.yml = yml;
 	}
 
@@ -61,6 +66,29 @@ public abstract class pxnPlugin {
 		if(log == null)
 			log = pxnLogger.get("plugin-"+getPluginName());
 		return log;
+	}
+
+
+//	// register listeners
+//	@Override
+//	public void register(pxnCommandsHolder commands) {
+//		commandListener = new pxnCommandListenerGroup();
+//		serverCommands = new ServerCommands();
+//		commandListener.register(serverCommands);
+//		if(listener == null) throw new NullPointerException("listener can't be null!");
+//		gcServerPluginManager pluginManager = getPluginManager();
+//		if(pluginManager == null) throw new NullPointerException("pluginManager hasn't been set!");
+//		gcServer.getListeners().registerCommandListener(listener);
+//	}
+
+
+	// commands holder
+	public void register(pxnCommandsHolder listener) {
+		pxnCommandListenerGroup.get().register(listener);
+	}
+	// trigger command
+	public boolean triggerCommand(String line) {
+		return pxnCommandListenerGroup.get().triggerCommandEvent(line);
 	}
 
 
