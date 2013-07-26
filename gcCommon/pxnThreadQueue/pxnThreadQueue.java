@@ -52,6 +52,10 @@ public class pxnThreadQueue implements Runnable {
 			}
 		});
 	}
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
+	}
 
 
 	// run state
