@@ -10,6 +10,7 @@ import com.growcontrol.gcCommon.pxnLogger.pxnLevel;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 import com.growcontrol.gcCommon.pxnLogger.pxnLoggerConsole;
 import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
+import com.growcontrol.gcServer.serverPlugin.gcServerPluginManager;
 
 
 public class Main {
@@ -68,8 +69,8 @@ public class Main {
 					System.out.println("Incomplete! --plugins-path argument");
 					break;
 				}
-				gcServer.get().getPluginManager().setPath(args[i]);
-				System.out.println("Set plugins path to: "+gcServer.get().getPluginManager().getPath());
+				gcServerPluginManager.get(args[i]);
+				System.out.println("Set plugins path to: "+args[i]);
 				argsMsgList.add("plugins-path");
 				continue;
 			}

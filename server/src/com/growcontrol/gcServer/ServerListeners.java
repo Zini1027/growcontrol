@@ -4,28 +4,42 @@ import com.growcontrol.gcCommon.pxnCommand.pxnCommandListenerGroup;
 import com.growcontrol.gcCommon.pxnCommand.pxnCommandsHolder;
 
 
-public class ServerListeners {
+public final class ServerListeners {
 
-	// commands
-	private pxnCommandListenerGroup commandListener;
-	private ServerCommands serverCommands;
+	private static ServerListeners listeners = null;
+
+//	// commands
+//	private pxnCommandListenerGroup commandListener;
+	// server commands
+	private ServerCommands commands;
+
+
+	public static synchronized ServerListeners get() {
+		if(listeners == null)
+			listeners = new ServerListeners();
+		return listeners;
+	}
 
 
 	// init listeners
-	public ServerListeners() {
-		commandListener = new pxnCommandListenerGroup();
-		serverCommands = new ServerCommands();
-		commandListener.register(serverCommands);
+	private ServerListeners() {
+		// commands listener
+		commands = new ServerCommands();
+		register(commands);
+	}
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
 	}
 
 
-	// commands
-	public void registerCommandListener(pxnCommandsHolder listener) {
-		commandListener.register(listener);
+	// commands holder
+	public void register(pxnCommandsHolder listener) {
+		pxnCommandListenerGroup.get().register(listener);
 	}
 	// trigger command
 	public boolean triggerCommand(String line) {
-		return commandListener.triggerCommandEvent(line);
+		return pxnCommandListenerGroup.get().triggerCommandEvent(line);
 	}
 
 

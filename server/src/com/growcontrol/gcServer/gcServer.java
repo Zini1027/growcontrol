@@ -7,9 +7,7 @@ import java.util.List;
 import com.growcontrol.gcCommon.pxnApp;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 import com.growcontrol.gcCommon.pxnScheduler.pxnScheduler;
-import com.growcontrol.gcCommon.pxnScheduler.pxnSchedulerTask;
 import com.growcontrol.gcCommon.pxnScheduler.pxnTicker;
-import com.growcontrol.gcCommon.pxnScheduler.pxnTriggers.triggerInterval;
 import com.growcontrol.gcCommon.pxnSocket.pxnSocketProcessorFactory;
 import com.growcontrol.gcCommon.pxnSocket.pxnSocketServer;
 import com.growcontrol.gcServer.serverPlugin.gcServerPluginManager;
@@ -22,10 +20,10 @@ public class gcServer extends pxnApp {
 	public static final String defaultPrompt = ">";
 
 	protected static gcServer server = null;
-	private static ServerListeners listeners;
+//	private static ServerListeners listeners;
 
-	// server plugin manager
-	private final gcServerPluginManager pluginManager = new gcServerPluginManager();
+//	// server plugin manager
+//	private final gcServerPluginManager pluginManager = new gcServerPluginManager();
 //	public final gcServerDeviceLoader deviceLoader = new gcServerDeviceLoader();
 
 	// server socket pool
@@ -65,7 +63,7 @@ System.exit(0);
 		// set log level
 		setLogLevel(config.LogLevel());
 		// init listeners
-		listeners = new ServerListeners();
+		ServerListeners.get();
 		// start console input thread
 		StartConsole();
 
@@ -82,6 +80,7 @@ System.exit(0);
 
 		// load plugins
 		try {
+			gcServerPluginManager pluginManager = gcServerPluginManager.get("plugins/");
 			pluginManager.LoadPluginsDir();
 			pluginManager.InitPlugins();
 			pluginManager.EnablePlugins();
@@ -159,13 +158,13 @@ System.exit(0);
 			break;
 		case 5:
 			// stop plugins
-			pluginManager.DisablePlugins();
+			gcServerPluginManager.get().DisablePlugins();
 			// end schedulers
 			pxnScheduler.ShutdownAll();
 			break;
 		case 4:
 			// unload plugins
-			pluginManager.UnloadPlugins();
+			gcServerPluginManager.get().UnloadPlugins();
 			break;
 		case 3:
 			// close sockets
@@ -197,7 +196,7 @@ System.exit(0);
 		line = line.trim();
 		if(line.isEmpty()) return;
 		// trigger event
-		if(!listeners.triggerCommand(line)) {
+		if(!ServerListeners.get().triggerCommand(line)) {
 			// command not found
 			pxnLogger.get().warning("Unknown command: "+line);
 		}
@@ -214,15 +213,15 @@ System.exit(0);
 	}
 
 
-	public static ServerListeners getListeners() {
-		return listeners;
-	}
+//	public static ServerListeners getListeners() {
+//		return listeners;
+//	}
 
 
-	// get plugin manager
-	public gcServerPluginManager getPluginManager() {
-		return pluginManager;
-	}
+//	// get plugin manager
+//	public gcServerPluginManager getPluginManager() {
+//		return pluginManager;
+//	}
 
 
 	// get zones

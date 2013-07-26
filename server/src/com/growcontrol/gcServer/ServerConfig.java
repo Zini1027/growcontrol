@@ -40,6 +40,10 @@ public class ServerConfig {
 			config = null;
 		}
 	}
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
+	}
 
 
 	// config has loaded

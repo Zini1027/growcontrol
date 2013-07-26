@@ -5,6 +5,7 @@ import java.util.List;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 import com.growcontrol.gcCommon.pxnSocket.pxnSocketProcessor;
 import com.growcontrol.gcServer.gcServer;
+import com.growcontrol.gcServer.serverPlugin.gcServerPluginManager;
 
 
 public class sendServerPackets {
@@ -40,7 +41,7 @@ pxnLogger.get().severe("Sent ZONE packets!");
 	// 1 | version
 	// 2 | filename
 	public static void sendLISTPluginsClient(pxnSocketProcessor processor) throws Exception {
-		List<String[]> clientPlugins = gcServer.get().getPluginManager().getClientPlugins();
+		List<String[]> clientPlugins = gcServerPluginManager.get().getClientPlugins();
 		for(String[] info : clientPlugins) {
 			sendPLUGIN(processor, info[2]);
 		}

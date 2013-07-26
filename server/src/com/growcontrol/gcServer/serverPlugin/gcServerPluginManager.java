@@ -21,6 +21,19 @@ public class gcServerPluginManager extends pxnPluginManager {
 //	protected static HashMap<String, gcServerPluginListenerDevice>	listenersDevice		= new HashMap<String, gcServerPluginListenerDevice>();
 
 
+	public static gcServerPluginManager get() {
+		return get(null);
+	}
+	public static synchronized gcServerPluginManager get(String pluginsPath) {
+		if(manager == null)
+			if(pluginsPath != null && !pluginsPath.isEmpty())
+				manager = new gcServerPluginManager(pluginsPath);
+		return (gcServerPluginManager) manager;
+	}
+	protected gcServerPluginManager(String pluginsPath) {
+		super(pluginsPath);
+	}
+
 
 	@Override
 	public void LoadPluginsDir() {
