@@ -41,9 +41,6 @@ public class pxnPluginYML {
 		return config.getString("Plugin Version");
 	}
 	// main class name
-//	public String getMainClassValue() {
-//		return getMainClassValue(null);
-//	}
 	public String getMainClass(String fieldName) {
 		if(config == null) return null;
 		if(fieldName == null || fieldName.isEmpty())
