@@ -6,10 +6,9 @@ import com.growcontrol.gcCommon.pxnCommand.pxnCommandsHolder;
 
 public final class ServerListeners {
 
+	// single instance
 	private static ServerListeners listeners = null;
 
-//	// commands
-//	private pxnCommandListenerGroup commandListener;
 	// server commands
 	private ServerCommands commands;
 
@@ -19,11 +18,9 @@ public final class ServerListeners {
 			listeners = new ServerListeners();
 		return listeners;
 	}
-
-
 	// init listeners
 	private ServerListeners() {
-		// commands listener
+		// server commands listener
 		commands = new ServerCommands();
 		register(commands);
 	}

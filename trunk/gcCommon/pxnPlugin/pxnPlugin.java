@@ -14,7 +14,6 @@ public abstract class pxnPlugin {
 	public abstract String getPluginName();
 	public abstract void onEnable();
 	public abstract void onDisable();
-//	public abstract void registerCommandsHolder(pxnCommandsHolder listener);
 
 
 	// plugin is enabled
@@ -67,19 +66,6 @@ public abstract class pxnPlugin {
 			log = pxnLogger.get("plugin-"+getPluginName());
 		return log;
 	}
-
-
-//	// register listeners
-//	@Override
-//	public void register(pxnCommandsHolder commands) {
-//		commandListener = new pxnCommandListenerGroup();
-//		serverCommands = new ServerCommands();
-//		commandListener.register(serverCommands);
-//		if(listener == null) throw new NullPointerException("listener can't be null!");
-//		gcServerPluginManager pluginManager = getPluginManager();
-//		if(pluginManager == null) throw new NullPointerException("pluginManager hasn't been set!");
-//		gcServer.getListeners().registerCommandListener(listener);
-//	}
 
 
 	// commands holder
