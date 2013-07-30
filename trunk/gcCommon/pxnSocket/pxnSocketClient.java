@@ -8,6 +8,8 @@ import java.net.UnknownHostException;
 
 import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnSocket.processor.pxnSocketProcessor;
+import com.growcontrol.gcCommon.pxnSocket.worker.pxnSocketWorker;
 
 
 public class pxnSocketClient implements pxnSocket {
@@ -71,16 +73,12 @@ public class pxnSocketClient implements pxnSocket {
 
 	// close socket
 	@Override
-	public void close() {
+	public void Close() {
 		worker.close();
 	}
 	@Override
-	public void forceCloseAll() {
-		close();
-	}
-	@Override
-	public void stop() {
-		close();
+	public void ForceClose() {
+		Close();
 	}
 
 

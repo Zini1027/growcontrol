@@ -1,4 +1,4 @@
-package com.growcontrol.gcCommon.pxnSocket;
+package com.growcontrol.gcCommon.pxnSocket.worker;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,14 +9,14 @@ import java.net.SocketException;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
-public class pxnSocketWorkerReader extends Thread {
+public class pxnSocketReader extends Thread {
 
 	private pxnSocketWorker worker;
 	private BufferedReader in;
 
 
-	public pxnSocketWorkerReader(pxnSocketWorker worker, Socket socket) {
-		super("Socket-Reader-"+Integer.toString(worker.socketId));
+	public pxnSocketReader(pxnSocketWorker worker, Socket socket) {
+		setName("SocketReader-"+Integer.toString(worker.socketId));
 		this.worker = worker;
 		try {
 			in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
