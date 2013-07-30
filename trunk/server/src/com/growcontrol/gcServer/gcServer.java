@@ -1,6 +1,5 @@
 package com.growcontrol.gcServer;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,10 +7,10 @@ import com.growcontrol.gcCommon.pxnApp;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 import com.growcontrol.gcCommon.pxnScheduler.pxnScheduler;
 import com.growcontrol.gcCommon.pxnScheduler.pxnTicker;
-import com.growcontrol.gcCommon.pxnSocket.pxnSocketProcessorFactory;
 import com.growcontrol.gcCommon.pxnSocket.pxnSocketServer;
+import com.growcontrol.gcCommon.pxnSocket.processor.pxnSocketProcessorFactory;
 import com.growcontrol.gcServer.serverPlugin.gcServerPluginManager;
-import com.growcontrol.gcServer.socketServer.gcSocketProcessor;
+import com.growcontrol.gcServer.socketServer.gcPacketReader;
 
 
 public class gcServer extends pxnApp {
@@ -94,16 +93,15 @@ System.exit(0);
 //		deviceLoader.LoadDevices(Arrays.asList(new String[] {"Lamp"}));
 
 		// start socket listener
-		try {
-			socket = new pxnSocketServer(config.ListenPort(), new pxnSocketProcessorFactory() {
-				@Override
-				public gcSocketProcessor newProcessor() {
-					return new gcSocketProcessor();
-				}
-			});
-		} catch (IOException e) {
-			log.exception(e);
-		}
+		this.socket = new pxnSocketServer();
+		this.socket.setFactory(new pxnSocketProcessorFactory() {
+			@Override
+			public gcPacketReader newProcessor() {
+				return new gcPacketReader();
+			}
+		});
+		this.socket.setPort(config.ListenPort());
+		this.socket.Start();
 
 //		// start schedulers
 //		log.info("Starting schedulers..");
@@ -146,7 +144,7 @@ System.exit(0);
 			break;
 		case 9:
 			// close socket listener
-			socket.stop();
+			socket.Close();
 			// pause scheduler
 			pxnScheduler.PauseAll();
 			break;
@@ -168,7 +166,7 @@ System.exit(0);
 			break;
 		case 3:
 			// close sockets
-			socket.forceCloseAll();
+			socket.ForceClose();
 			break;
 		case 2:
 			break;
