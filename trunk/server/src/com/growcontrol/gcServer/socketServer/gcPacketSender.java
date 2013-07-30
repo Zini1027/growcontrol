@@ -20,7 +20,7 @@ public final class gcPacketSender {
 	// (login is ok)
 	public static void sendHEY(pxnSocketWorker worker, String serverVersion) {
 		if(serverVersion == null) throw new NullPointerException("serverVersion can't be null!");
-		worker.sendData("HEY "+serverVersion);
+		worker.SendData("HEY "+serverVersion);
 pxnLogger.get().severe("Sent HEY packet!");
 	}
 
@@ -36,7 +36,7 @@ pxnLogger.get().severe("Sent ZONE packets!");
 	// ZONE
 	// (send a zone)
 	public static void sendZONE(pxnSocketWorker worker, String zoneName) {
-		worker.sendData("ZONE "+zoneName);
+		worker.SendData("ZONE "+zoneName);
 	}
 
 
@@ -55,7 +55,7 @@ pxnLogger.get().severe("Sent PLUGIN packets!");
 	// PLUGIN
 	// (send a plugin)
 	public static void sendPLUGIN(pxnSocketWorker worker, String pluginName) {
-		worker.sendData("PLUGIN "+pluginName);
+		worker.SendData("PLUGIN "+pluginName);
 	}
 
 

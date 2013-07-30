@@ -6,43 +6,48 @@ import java.net.Socket;
 import java.net.SocketException;
 
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnParser.pxnParser;
+import com.growcontrol.gcCommon.pxnSocket.pxnSocketUtils;
 import com.growcontrol.gcCommon.pxnSocket.processor.pxnSocketProcessor;
 import com.growcontrol.gcCommon.pxnSocket.processor.pxnSocketProcessorFactory;
 
 
 public class pxnSocketWorker {
+	private final String logName;
 
 	private final int socketId;
 	private final Socket socket;
 	private final pxnSocketProcessor processor;
 
-	// input/output threads
-	private final Thread threadReader;
-	private final Thread threadSender;
+	// input/output workers
+	private final pxnSocketReader reader;
+	private final pxnSocketSender sender;
 
 
 	public pxnSocketWorker(Socket socket, pxnSocketProcessorFactory factory) {
 		if(socket  == null) throw new NullPointerException("socket cannot be null!");
 		if(factory == null) throw new NullPointerException("factory cannot be null!");
+		logName = "SocketWorker-"+Integer.toString(getSocketId());
 		this.socket = socket;
 		this.processor = factory.newProcessor();
 		if(this.processor == null) throw new NullPointerException("Failed to get socket processor!");
-		this.socketId = this.processor.getNextId();
+		this.socketId = pxnSocketUtils.getNextSocketId();
 		try {
 			socket.setKeepAlive(true);
 		} catch (SocketException ignore) {}
 		// input/output threads
-		threadReader = new pxnSocketReader(this, socket);
-		threadSender = new pxnSocketSender(this, socket);
+		reader = new pxnSocketReader(this, socket);
+		sender = new pxnSocketSender(this, socket);
 	}
 
 
 	// start socket worker
 	public void Start() {
+		pxnLogger.get(logName).info("Connected: ["+Integer.toString(socketId)+"] "+getIPString());
 		synchronized(socket) {
 			// start threads
-			threadReader.start();
-			threadSender.start();
+			reader.start();
+			sender.start();
 		}
 	}
 
@@ -57,12 +62,12 @@ public class pxnSocketWorker {
 			try {
 				socket.close();
 			} catch (IOException e) {
-				pxnLogger.get().exception("Failed to close socket worker", e);
+				pxnLogger.get(logName).exception("Failed to close socket worker", e);
 			}
-			pxnLogger.get().info("Disconnected: "+getIPString());
-//			// stop input/output threads
-//			threadReader.interrupt();
-//			threadSender.interrupt();
+			pxnLogger.get(logName).info("Disconnected: "+getIPString());
+			// stop input/output threads
+			reader.interrupt();
+			sender.interrupt();
 		}
 	}
 	public boolean isClosed() {
@@ -70,9 +75,13 @@ public class pxnSocketWorker {
 	}
 
 
+	// pass data to processor
+	public void doProcessData(String line) {
+		processor.ProcessData(this, new pxnParser(line));
+	}
 	// add to output queue
-	public void sendData(String line) throws Exception {
-		processor.sendData(line);
+	public void SendData(String line) {
+		sender.SendData(line);
 	}
 
 
@@ -89,7 +98,7 @@ public class pxnSocketWorker {
 	}
 
 
-	// get socket id
+	// socket id
 	public int getSocketId() {
 		return socketId;
 	}

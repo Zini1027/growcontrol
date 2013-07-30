@@ -8,9 +8,17 @@ public final class pxnSocketUtils {
 		throw new CloneNotSupportedException();
 	}
 
+	private static volatile int nextSocketId = 0;
+
 	public static final int MAXPORT = 65536;
 
 	public enum pxnSocketState {CLOSED, WAITING, CONNECTED, FAILED};
+
+
+	// socket id
+	public static synchronized int getNextSocketId() {
+		return nextSocketId++;
+	}
 
 
 	// trim http:// and /path
