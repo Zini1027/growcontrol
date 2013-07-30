@@ -7,7 +7,7 @@ import com.growcontrol.gcCommon.pxnSocket.worker.pxnSocketWorker;
 import com.growcontrol.gcServer.gcServer;
 
 
-public class gcPacketReader extends pxnSocketProcessor {
+public class gcPacketReader implements pxnSocketProcessor {
 
 
 	public gcPacketReader() {
@@ -18,7 +18,7 @@ public class gcPacketReader extends pxnSocketProcessor {
 
 	@Override
 	public void ProcessData(pxnSocketWorker worker, pxnParser line) {
-//System.out.println("PROCESSING: "+line.getOriginal());
+System.out.println("PROCESSING: "+line.getOriginal());
 		String first = line.getFirst();
 		switch(first.toUpperCase()) {
 		case "HELLO":
@@ -72,6 +72,11 @@ pxnLogger.get().severe("SENDING FILE");
 //System.out.println("Invalid 'LIST plugins' packet!");
 //			}
 //		}
+	}
+
+
+	@Override
+	public void Closing() {
 	}
 
 

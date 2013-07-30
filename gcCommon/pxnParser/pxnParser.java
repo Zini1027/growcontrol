@@ -23,6 +23,7 @@ public class pxnParser {
 		this.original = data;
 		this.temp     = data;
 		this.delim    = delim;
+		hasNexted = true;
 		reset();
 	}
 	// parse into list

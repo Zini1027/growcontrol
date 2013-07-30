@@ -7,49 +7,64 @@ import java.net.Socket;
 import java.net.SocketException;
 
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
 
 
 public class pxnSocketReader extends Thread {
+	private final String logName;
 
 	private pxnSocketWorker worker;
 	private BufferedReader in;
 
 
 	public pxnSocketReader(pxnSocketWorker worker, Socket socket) {
-		setName("SocketReader-"+Integer.toString(worker.socketId));
+		if(worker == null) throw new NullPointerException("worker cannot be null!");
+		if(socket == null) throw new NullPointerException("socket cannot be null!");
+		logName = "SocketReader-"+Integer.toString(worker.getSocketId());
+		setName(logName);
 		this.worker = worker;
 		try {
 			in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		} catch (IOException e) {
-			pxnLogger.get().exception(e);
+			pxnLogger.get(logName).exception(e);
 		}
 	}
 
 
-	// reader thread
+	// input thread
 	@Override
 	public void run() {
-		pxnLogger.get().info("Connected: "+worker.getIPString());
-		String line = "";
-		while(!worker.closed) {
+		int packetCount = 0;
+		while(!worker.isClosed()) {
+			String line = null;
 			try {
 				line = in.readLine();
 			} catch (SocketException ignore) {
 				// socket closed
 				break;
 			} catch (IOException e) {
-				pxnLogger.get().exception(e);
+				pxnLogger.get(logName).exception(e);
 				break;
 			}
 			if(line == null) break;
 			if(line.isEmpty()) continue;
-			try {
-				worker.processor.processData(line);
-			} catch (Exception e) {
-				pxnLogger.get().exception(e);
-			}
+			packetCount++;
+			pxnThreadQueue.addToMain(
+				"Packet-"+Integer.toString(packetCount),
+				new DataThread(line)
+			);
 		}
-		worker.close();
+		worker.Close();
+	}
+	protected class DataThread implements Runnable {
+		private final String line;
+		public DataThread(String line) {
+			this.line = line;
+		}
+		@Override
+		public void run() {
+			worker.doProcessData(line);
+		}
 	}
 
 

@@ -87,7 +87,7 @@ public class pxnSocketServer implements pxnSocket {
 				}
 				// new worker
 				pxnSocketWorker worker = new pxnSocketWorker(socket, factory);
-				pxnLogger.get(logName).info("Connected socket #"+Integer.toString(worker.getSocketId()));
+//				pxnLogger.get(logName).info("Connected socket #"+Integer.toString(worker.getSocketId()));
 				worker.Start();
 				synchronized(workers) {
 					workers.add(worker);
@@ -163,7 +163,7 @@ pxnLogger.get(logName).info("CLOSED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!s");
 		}
 		pxnLogger.get(logName).debug("Sockets loaded: "+Integer.toString(workers.size()));
 		if(flushCount > 0)
-			pxnLogger.get(logName).info("Flushed [ "+Integer.toString(flushCount)+" ] closed sockets.");
+			pxnLogger.get(logName).info("Flushed [ "+Integer.toString(flushCount)+" ] stale socket"+(flushCount>1?"s":""));
 	}
 
 
