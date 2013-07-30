@@ -1,4 +1,4 @@
-package com.growcontrol.gcCommon.pxnSocket;
+package com.growcontrol.gcCommon.pxnSocket.worker;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -13,7 +13,7 @@ import java.util.concurrent.BlockingQueue;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
-public class pxnSocketWorkerSender extends Thread {
+public class pxnSocketSender extends Thread {
 	private static final String EOL = "\r\n";
 
 	private pxnSocketWorker worker;
@@ -22,8 +22,8 @@ public class pxnSocketWorkerSender extends Thread {
 	private BlockingQueue<String> queueOut;
 
 
-	public pxnSocketWorkerSender(pxnSocketWorker worker, Socket socket) {
-		super("Socket-Sender-"+Integer.toString(worker.socketId));
+	public pxnSocketSender(pxnSocketWorker worker, Socket socket) {
+		setName("SocketSender-"+Integer.toString(worker.socketId));
 		this.worker = worker;
 		this.socket = socket;
 		try {

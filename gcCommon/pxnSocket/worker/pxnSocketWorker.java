@@ -1,4 +1,4 @@
-package com.growcontrol.gcCommon.pxnSocket;
+package com.growcontrol.gcCommon.pxnSocket.worker;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.net.SocketException;
 
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnSocket.processor.pxnSocketProcessor;
 
 
 public class pxnSocketWorker {
@@ -32,9 +33,9 @@ public class pxnSocketWorker {
 			pxnLogger.get().exception(e);
 		}
 		// reader thread
-		threadReader = new pxnSocketWorkerReader(this, socket);
+		threadReader = new pxnSocketReader(this, socket);
 		// sender thread
-		threadSender = new pxnSocketWorkerSender(this, socket);
+		threadSender = new pxnSocketSender(this, socket);
 		// start threads
 		threadReader.start();
 		threadSender.start();

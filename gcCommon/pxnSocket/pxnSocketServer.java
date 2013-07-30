@@ -10,6 +10,8 @@ import java.util.List;
 
 import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnSocket.processor.pxnSocketProcessorFactory;
+import com.growcontrol.gcCommon.pxnSocket.worker.pxnSocketWorker;
 import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
 
 
@@ -129,21 +131,7 @@ public class pxnSocketServer implements pxnSocket {
 
 	// close socket
 	@Override
-	public void close() {
-		stop();
-	}
-//	public void close(int socketId) {
-//	}
-	@Override
-	public void forceCloseAll() {
-		synchronized(socketWorkers) {
-			for(pxnSocketWorker worker : socketWorkers)
-				worker.close();
-		}
-		flushClosed();
-	}
-	@Override
-	public void stop() {
+	public void Close() {
 		stopping = true;
 		// stop listening
 		if(listenerSocket != null) {
@@ -153,6 +141,14 @@ public class pxnSocketServer implements pxnSocket {
 				pxnLogger.get().exception(e);
 			}
 		}
+	}
+	@Override
+	public void ForceClose() {
+		synchronized(socketWorkers) {
+			for(pxnSocketWorker worker : socketWorkers)
+				worker.close();
+		}
+		flushClosed();
 	}
 
 
