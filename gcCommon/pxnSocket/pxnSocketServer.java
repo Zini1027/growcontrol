@@ -10,145 +10,202 @@ import java.util.List;
 
 import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnSocket.pxnSocketUtils.pxnSocketState;
 import com.growcontrol.gcCommon.pxnSocket.processor.pxnSocketProcessorFactory;
 import com.growcontrol.gcCommon.pxnSocket.worker.pxnSocketWorker;
-import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
 
 
 public class pxnSocketServer implements pxnSocket {
+	private static final String logName = "SocketServer";
 
-//TODO:
-//	protected final String bindHost;
-	protected final int port;
+	private volatile String host = null;
+	private volatile int port = 0;
 
-	// socket listener
-	protected ServerSocket listenerSocket = null;
-	protected Thread threadListener = null;
+	// socket state
+	private volatile pxnSocketState state = pxnSocketState.CLOSED;
+	private volatile boolean stopping = false;
 
-	// processor
-	protected final pxnSocketProcessorFactory processorFactory;
+	// listener socket
+	private ServerSocket listenerSocket = null;
+	private Thread listenerThread = null;
 
-	// socket pool
-	protected final List<pxnSocketWorker> socketWorkers = new ArrayList<pxnSocketWorker>();
-	protected boolean stopping = false;
+	// workers
+	private final List<pxnSocketWorker> workers = new ArrayList<pxnSocketWorker>();
+	// processor factory
+	private pxnSocketProcessorFactory factory = null;
 
 
-	// new socket server
-	public pxnSocketServer(int port, pxnSocketProcessorFactory processorFactory) throws IOException {
-		this(null, port, processorFactory);
-	}
-	public pxnSocketServer(String bindHost, int port, pxnSocketProcessorFactory processorFactory) throws IOException {
-		pxnLogger log = pxnLogger.get();
-		this.processorFactory = processorFactory;
-		// bind to host
-		if(bindHost != null && !bindHost.isEmpty()) {
-//TODO:
-		}
-		// port
-		if(port < 1 || port > 65536) {
-			log.severe("Invalid port "+Integer.toString(port)+" is not valid! Out of range!");
-			throw new IllegalArgumentException("Invalid port "+Integer.toString(port));
-		}
-		this.port = port;
-		// start listening
-//		try {
-		listenerSocket = new ServerSocket(port, 8);
-		log.info("Listening on port: "+Integer.toString(port));
-//		} catch (IOException e) {
-//			log.severe("Failed to listen on port: "+Integer.toString(port));
-//			log.exception(e);
-//			return;
-//		}
-		// socket listener thread
-		threadListener = new Thread("Socket-Server-Listener-"+Integer.toString(port)) {
-			@Override
-			public void run() {
-				startListenerThread();
-			}
-		};
-		threadListener.start();
-		pxnUtils.Sleep(10);
+	public pxnSocketServer() {
 	}
 
 
-	// socket listener thread
-	private void startListenerThread() {
-		// loop for new connections
-		while(!stopping) {
-			// queue flushing closed sockets
-			pxnThreadQueue.addToMain("SocketServer-Flush-"+Integer.toString(this.port), new Runnable() {
+	// start listening (threaded)
+	@Override
+	public synchronized void Start() {
+		synchronized(state) {
+			if(!pxnSocketState.CLOSED.equals(state)) return;
+			stopping = false;
+			state = pxnSocketState.WAITING;
+		}
+		pxnLogger.get(logName).info("Listening on port: "+Integer.toString(port));
+		try {
+			// listener socket
+			listenerSocket = new ServerSocket(port, 4);
+		} catch (IOException e) {
+			listenerSocket = null;
+			state = pxnSocketState.FAILED;
+			pxnLogger.get(logName).exception("Failed to listen on port: "+Integer.toString(port), e);
+			return;
+		}
+		// start listener thread
+		if(listenerThread == null)
+			listenerThread = new Thread(new Runnable() {
 				@Override
 				public void run() {
-					flushClosed();
+					runListener();
 				}
 			});
-			Socket socket = null;
+		listenerThread.start();
+	}
+	// listener thread
+	private void runListener() {
+		synchronized(state) {
+			if(!pxnSocketState.WAITING.equals(state)) return;
+			if(listenerSocket == null) return;
+		}
+		listenerThread.setName("SocketServer-"+Integer.toString(port));
+		pxnUtils.Sleep(10);
+		// loop for new connections
+		synchronized(listenerThread) {
+		while(!stopping && !listenerSocket.isClosed()) {
 			try {
 				// wait for a connection
-				socket = listenerSocket.accept();
+				Socket socket = listenerSocket.accept();
+				if(socket == null) {
+					pxnUtils.Sleep(50);
+					continue;
+				}
+				// new worker
+				pxnSocketWorker worker = new pxnSocketWorker(socket, factory);
+				pxnLogger.get(logName).info("Connected socket #"+Integer.toString(worker.getSocketId()));
+				worker.Start();
+				synchronized(workers) {
+					workers.add(worker);
+				}
 			} catch (SocketException ignore) {
 				// socket listener closed
-				stopping = true;
 				break;
 			} catch (IOException e) {
-				pxnLogger.get().exception(e);
+				pxnLogger.get(logName).exception(e);
+			} finally {
+				// flush closed sockets
+				doFlush();
 			}
-			// add socket to pool
-			if(socket != null) {
-				synchronized(socketWorkers) {
-					socketWorkers.add(new pxnSocketWorker(socket, processorFactory.newProcessor()));
-				}
-			}
-		}
-		// stopping socket listener
-		pxnLogger.get().info("Stopping socket listener..");
-		if(listenerSocket != null && !listenerSocket.isClosed()) {
+		}}
+		// stop socket listener
+		Close();
+		pxnLogger.get(logName).info("Stopping listener port: "+Integer.toString(port));
+		if(listenerSocket != null) {
 			try {
 				listenerSocket.close();
 			} catch (IOException e) {
-				pxnLogger.get().exception(e);
+				pxnLogger.get(logName).exception(e);
 			}
 		}
 	}
 
 
-	// flush closed sockets from pool
-	public void flushClosed() {
+	// close socket listener
+	@Override
+	public void Close() {
+		synchronized(state) {
+			stopping = true;
+			state = pxnSocketState.CLOSED;
+			// stop listening
+			if(listenerSocket != null && !listenerSocket.isClosed()) {
+				try {
+					listenerSocket.close();
+					pxnUtils.Sleep(10);
+				} catch (IOException e) {
+					pxnLogger.get(logName).exception("Failed to close socket listener: "+Integer.toString(port), e);
+				} finally {
+					listenerSocket = null;
+				}
+			}
+		}
+	}
+	// close all sockets
+	@Override
+	public void ForceClose() {
+		Close();
+		synchronized(workers) {
+			for(pxnSocketWorker w : workers)
+				if(w != null) {
+					w.Close();
+pxnLogger.get(logName).info("CLOSED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!s");
+				}
+			doFlush();
+		}
+	}
+	public void finalize() {
+		ForceClose();
+	}
+	// flush closed sockets
+	protected synchronized void doFlush() {
 		int flushCount = 0;
-		synchronized(socketWorkers) {
-			for(Iterator<pxnSocketWorker> it = socketWorkers.iterator(); it.hasNext();) {
+		synchronized(workers) {
+			for(Iterator<pxnSocketWorker> it = workers.iterator(); it.hasNext(); ) {
 				if(it.next().isClosed()) {
 					it.remove();
 					flushCount++;
 				}
 			}
 		}
-		pxnLogger.get().debug("Sockets loaded: "+Integer.toString(socketWorkers.size()));
+		pxnLogger.get(logName).debug("Sockets loaded: "+Integer.toString(workers.size()));
 		if(flushCount > 0)
-			pxnLogger.get().info("Flushed [ "+Integer.toString(flushCount)+" ] closed sockets.");
+			pxnLogger.get(logName).info("Flushed [ "+Integer.toString(flushCount)+" ] closed sockets.");
 	}
 
 
-	// close socket
+	// host
 	@Override
-	public void Close() {
-		stopping = true;
-		// stop listening
-		if(listenerSocket != null) {
-			try {
-				listenerSocket.close();
-			} catch (IOException e) {
-				pxnLogger.get().exception(e);
-			}
-		}
+	public String getHost() {
+		return host;
 	}
 	@Override
-	public void ForceClose() {
-		synchronized(socketWorkers) {
-			for(pxnSocketWorker worker : socketWorkers)
-				worker.close();
+	public void setHost(String host) {
+		synchronized(state) {
+			if(!pxnSocketState.CLOSED.equals(state)) return;
+			this.host = pxnSocketUtils.prepHost(host);
 		}
-		flushClosed();
+	}
+
+
+	// port
+	@Override
+	public int getPort() {
+		return port;
+	}
+	@Override
+	public void setPort(int port) {
+		synchronized(state) {
+			if(!pxnSocketState.CLOSED.equals(state)) return;
+			this.port = pxnSocketUtils.prepPort(port);
+		}
+	}
+
+
+	// processor factory
+	@Override
+	public pxnSocketProcessorFactory getFactory() {
+		return factory;
+	}
+	@Override
+	public void setFactory(pxnSocketProcessorFactory factory) {
+		synchronized(state) {
+			if(!pxnSocketState.CLOSED.equals(state)) return;
+			this.factory = factory;
+		}
 	}
 
 
