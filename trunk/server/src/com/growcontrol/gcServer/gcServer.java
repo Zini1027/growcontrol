@@ -19,11 +19,6 @@ public class gcServer extends pxnApp {
 	public static final String defaultPrompt = ">";
 
 	protected static gcServer server = null;
-//	private static ServerListeners listeners;
-
-//	// server plugin manager
-//	private final gcServerPluginManager pluginManager = new gcServerPluginManager();
-//	public final gcServerDeviceLoader deviceLoader = new gcServerDeviceLoader();
 
 	// server socket pool
 	private pxnSocketServer socket = null;
@@ -97,6 +92,7 @@ System.exit(0);
 			socket = new pxnSocketServer();
 //		socket.setHost();
 		socket.setPort(config.ListenPort());
+		// create processor
 		socket.setFactory(new pxnSocketProcessorFactory() {
 			@Override
 			public gcPacketReader newProcessor() {
@@ -146,7 +142,8 @@ System.exit(0);
 			break;
 		case 9:
 			// close socket listener
-			socket.Close();
+			if(socket != null)
+				socket.Close();
 			// pause scheduler
 			pxnScheduler.PauseAll();
 			break;
@@ -158,17 +155,26 @@ System.exit(0);
 			break;
 		case 5:
 			// stop plugins
-			gcServerPluginManager.get().DisablePlugins();
+			{
+				gcServerPluginManager manager = gcServerPluginManager.get();
+				if(manager != null)
+					manager.DisablePlugins();
+			}
 			// end schedulers
 			pxnScheduler.ShutdownAll();
 			break;
 		case 4:
 			// unload plugins
-			gcServerPluginManager.get().UnloadPlugins();
+			{
+				gcServerPluginManager manager = gcServerPluginManager.get();
+				if(manager != null)
+					manager.UnloadPlugins();
+			}
 			break;
 		case 3:
 			// close sockets
-			socket.ForceClose();
+			if(socket != null)
+				socket.ForceClose();
 			break;
 		case 2:
 			break;
@@ -213,21 +219,15 @@ System.exit(0);
 	}
 
 
-//	public static ServerListeners getListeners() {
-//		return listeners;
-//	}
-
-
-//	// get plugin manager
-//	public gcServerPluginManager getPluginManager() {
-//		return pluginManager;
-//	}
-
-
 	// get zones
 	public List<String> getZones() {
 		synchronized(zones) {
 			return new ArrayList<String>(zones);
+		}
+	}
+	public String[] getZonesArray() {
+		synchronized(zones) {
+			return (String[]) zones.toArray();
 		}
 	}
 
