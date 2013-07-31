@@ -9,7 +9,6 @@ public abstract class pxnSocketWorkerThread extends Thread {
 	protected final Socket socket;
 
 	protected volatile int packetsCount = 0;
-	protected final Object runLock = new Object();
 
 
 	public pxnSocketWorkerThread(pxnSocketWorker worker, Socket socket) {
@@ -18,9 +17,6 @@ public abstract class pxnSocketWorkerThread extends Thread {
 		this.worker = worker;
 		this.socket = socket;
 	}
-
-
-	protected abstract boolean getRunLock();
 
 
 	public void Closing() {

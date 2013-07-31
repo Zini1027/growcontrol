@@ -167,6 +167,13 @@ pxnLogger.get(logName).info("CLOSED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!s");
 	}
 
 
+	// socket state
+	@Override
+	public pxnSocketState getState() {
+		return state;
+	}
+
+
 	// host
 	@Override
 	public String getHost() {

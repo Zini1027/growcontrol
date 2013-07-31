@@ -17,18 +17,35 @@ public class pxnSocketSender extends pxnSocketWorkerThread {
 	private BlockingQueue<String> queueOut = null;
 	private PrintWriter out = null;
 
+	private Boolean running = false;
+
 
 	public pxnSocketSender(pxnSocketWorker worker, Socket socket) {
 		super(worker, socket);
 		logName = "SocketSender-"+Integer.toString(worker.getSocketId());
 		setName(logName);
+		// blocking queue
+		queueOut = new ArrayBlockingQueue<String>(100,  true);
+		// output stream
+		try {
+			out = new PrintWriter(socket.getOutputStream());
+			out.flush();
+		} catch (IOException e) {
+			pxnLogger.get(logName).exception(e);
+		}
 	}
 
 
 	// output thread
 	@Override
 	public void run() {
-		if(!getRunLock()) return;
+		synchronized(running) {
+			if(running) {
+				pxnLogger.get(logName).severe("Thread already running!");
+				return;
+			}
+			running = true;
+		}
 		String line = null;
 		while(!worker.isClosed()) {
 			try {
@@ -47,32 +64,14 @@ public class pxnSocketSender extends pxnSocketWorkerThread {
 //		sendFileNow(line.substring(9).trim());
 		}
 		worker.Close();
-	}
-	@Override
-	protected boolean getRunLock() {
-		synchronized(runLock) {
-			if(out != null || queueOut != null) {
-				pxnLogger.get(logName).severe("Thread already running, out/queueOut not null!");
-				return false;
-			}
-			// blocking queue
-			queueOut = new ArrayBlockingQueue<String>(100,  true);
-			// output stream
-			try {
-				out = new PrintWriter(socket.getOutputStream());
-				out.flush();
-			} catch (IOException e) {
-				pxnLogger.get(logName).exception(e);
-			}
-		}
-		return true;
+		running = false;
 	}
 
 
 	@Override
 	public void Closing() {
 		super.Closing();
-		synchronized(runLock) {
+		synchronized(running) {
 			queueOut.clear();
 			queueOut = null;
 		}
@@ -81,6 +80,12 @@ public class pxnSocketSender extends pxnSocketWorkerThread {
 
 	// add to send/out queue (returns false if failed)
 	public boolean Send(String line) {
+//		synchronized(running) {
+//			if(!running) {
+//				pxnLogger.get(logName).warning("Can't send packet, not connected!");
+//				return false;
+//			}
+//		}
 		try {
 			if(queueOut.offer(line, 1, TimeU.S))
 				return true;
