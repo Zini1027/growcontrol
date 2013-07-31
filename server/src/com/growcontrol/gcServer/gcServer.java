@@ -10,7 +10,7 @@ import com.growcontrol.gcCommon.pxnScheduler.pxnTicker;
 import com.growcontrol.gcCommon.pxnSocket.pxnSocketServer;
 import com.growcontrol.gcCommon.pxnSocket.processor.pxnSocketProcessorFactory;
 import com.growcontrol.gcServer.serverPlugin.gcServerPluginManager;
-import com.growcontrol.gcServer.socketServer.gcPacketReader;
+import com.growcontrol.gcServer.serverSocket.gcPacketReader;
 
 
 public class gcServer extends pxnApp {

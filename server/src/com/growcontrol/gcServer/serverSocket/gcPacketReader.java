@@ -1,4 +1,4 @@
-package com.growcontrol.gcServer.socketServer;
+package com.growcontrol.gcServer.serverSocket;
 
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 import com.growcontrol.gcCommon.pxnParser.pxnParser;
