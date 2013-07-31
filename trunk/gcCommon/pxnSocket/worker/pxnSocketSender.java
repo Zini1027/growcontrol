@@ -6,19 +6,22 @@ import java.net.Socket;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import com.growcontrol.gcCommon.TimeU;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
 public class pxnSocketSender extends Thread {
 	private final String logName;
-//	private static final String EOL = "\r\n";
+	private static final String EOL = "\r\n";
 
-@SuppressWarnings("unused")
-	private pxnSocketWorker worker;
-@SuppressWarnings("unused")
-	private Socket socket;
-	private PrintWriter out;
-	private BlockingQueue<String> queueOut;
+	private final pxnSocketWorker worker;
+	private final Socket socket;
+
+	private BlockingQueue<String> queueOut = null;
+	private PrintWriter out = null;
+	private volatile int countPacketsSent = 0;
+
+	private final Object runLock = new Object();
 
 
 	public pxnSocketSender(pxnSocketWorker worker, Socket socket) {
@@ -28,43 +31,72 @@ public class pxnSocketSender extends Thread {
 		setName(logName);
 		this.worker = worker;
 		this.socket = socket;
-		this.queueOut = new ArrayBlockingQueue<String>(1000,  true);
-		try {
-			out = new PrintWriter(socket.getOutputStream());
-			out.flush();
-		} catch (IOException e) {
-			pxnLogger.get(logName).exception(e);
-		}
-//		this.queueOut = worker.processor.getOutputQueue();
 	}
 
 
 	// output thread
 	@Override
 	public void run() {
-boolean b = true; if(b) return;
-//		while(!worker.isClosed()) {
-//			try {
-//				String line = queueOut.take();
-//				// send file
-//				if(line.startsWith("SENDFILE:")) {
-//					sendFileNow(line.substring(9).trim());
-//				} else {
-//					// send string
-//					out.print(line + EOL);
-//					out.flush();
-//				}
-//			} catch (InterruptedException e) {
-//				// socket closed
-//				break;
-//			}
-//		}
-//		worker.Close();
+		synchronized(runLock) {
+			if(queueOut != null) {
+				pxnLogger.get(logName).exception(
+					new Exception("Thread already running, queue not null!"));
+				return;
+			}
+			queueOut = new ArrayBlockingQueue<String>(100,  true);
+		}
+		// output stream
+		if(out == null) {
+			try {
+				out = new PrintWriter(socket.getOutputStream());
+				out.flush();
+			} catch (IOException e) {
+				pxnLogger.get(logName).exception(e);
+			}
+		}
+		String line = null;
+		while(!worker.isClosed()) {
+			try {
+				line = queueOut.poll(100, TimeU.MS);
+			} catch (InterruptedException ignore) {
+				// closing interrupt
+				break;
+			}
+			if(line == null) continue;
+			countPacketsSent++;
+			out.print(line+EOL);
+			out.flush();
+			line = null;
+//	// send file
+//	if(line.startsWith("SENDFILE:")) {
+//		sendFileNow(line.substring(9).trim());
+		}
+		worker.Close();
 	}
 
 
-	public void SendData(String line) {
-		queueOut.add(line);
+	public void Closing() {
+		this.interrupt();
+		synchronized(runLock) {
+			queueOut.clear();
+			queueOut = null;
+		}
+	}
+
+
+	// add to send/out queue (returns false if failed)
+	public boolean Send(String line) {
+		try {
+			if(queueOut.offer(line, 1, TimeU.S))
+				return true;
+			pxnLogger.get(logName).severe("Queue is full!");
+		} catch (InterruptedException ignore) {}
+		return false;
+	}
+
+
+	public int getPacketsCount() {
+		return countPacketsSent;
 	}
 
 

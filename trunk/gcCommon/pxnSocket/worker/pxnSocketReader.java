@@ -13,8 +13,13 @@ import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
 public class pxnSocketReader extends Thread {
 	private final String logName;
 
-	private pxnSocketWorker worker;
-	private BufferedReader in;
+	private final pxnSocketWorker worker;
+	private final Socket socket;
+
+	private BufferedReader in = null;
+	private volatile int countPacketsRead = 0;
+
+	private final Object runLock = new Object();
 
 
 	public pxnSocketReader(pxnSocketWorker worker, Socket socket) {
@@ -23,20 +28,28 @@ public class pxnSocketReader extends Thread {
 		logName = "SocketReader-"+Integer.toString(worker.getSocketId());
 		setName(logName);
 		this.worker = worker;
-		try {
-			in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		} catch (IOException e) {
-			pxnLogger.get(logName).exception(e);
-		}
+		this.socket = socket;
 	}
 
 
 	// input thread
 	@Override
 	public void run() {
-		int packetCount = 0;
+		synchronized(runLock) {
+			if(in != null) {
+				pxnLogger.get(logName).exception(
+					new Exception("Thread already running, in buffered reader not null!"));
+				return;
+			}
+			try {
+				in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			} catch (IOException e) {
+				pxnLogger.get(logName).exception(e);
+			}
+
+		}
+		String line = null;
 		while(!worker.isClosed()) {
-			String line = null;
 			try {
 				line = in.readLine();
 			} catch (SocketException ignore) {
@@ -48,11 +61,12 @@ public class pxnSocketReader extends Thread {
 			}
 			if(line == null) break;
 			if(line.isEmpty()) continue;
-			packetCount++;
+			countPacketsRead++;
 			pxnThreadQueue.addToMain(
-				"Packet-"+Integer.toString(packetCount),
+				"PacketIn-"+Integer.toString(countPacketsRead),
 				new DataThread(line)
 			);
+			line = null;
 		}
 		worker.Close();
 	}
@@ -65,6 +79,16 @@ public class pxnSocketReader extends Thread {
 		public void run() {
 			worker.doProcessData(line);
 		}
+	}
+
+
+	public void Closing() {
+		this.interrupt();
+	}
+
+
+	public int getPacketsCount() {
+		return countPacketsRead;
 	}
 
 

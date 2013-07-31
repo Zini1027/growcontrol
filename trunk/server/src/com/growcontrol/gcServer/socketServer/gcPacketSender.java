@@ -14,14 +14,15 @@ public final class gcPacketSender {
 	public Object clone() throws CloneNotSupportedException {
 		throw new CloneNotSupportedException();
 	}
+	private static final String logName = "gcPacketSender";
 
 
 	// HEY <server-version>
 	// (login is ok)
 	public static void sendHEY(pxnSocketWorker worker, String serverVersion) {
 		if(serverVersion == null) throw new NullPointerException("serverVersion can't be null!");
-		worker.SendData("HEY "+serverVersion);
-pxnLogger.get().severe("Sent HEY packet!");
+		worker.Send("HEY "+serverVersion);
+pxnLogger.get(logName).severe("Sent HEY packet!");
 	}
 
 
@@ -31,12 +32,12 @@ pxnLogger.get().severe("Sent HEY packet!");
 		List<String> zones = gcServer.get().getZones();
 		for(String zoneName : zones)
 			sendZONE(worker, zoneName);
-pxnLogger.get().severe("Sent ZONE packets!");
+pxnLogger.get(logName).severe("Sent ZONE packets!");
 	}
 	// ZONE
 	// (send a zone)
 	public static void sendZONE(pxnSocketWorker worker, String zoneName) {
-		worker.SendData("ZONE "+zoneName);
+		worker.Send("ZONE "+zoneName);
 	}
 
 
@@ -50,12 +51,12 @@ pxnLogger.get().severe("Sent ZONE packets!");
 		for(String[] info : clientPlugins) {
 			sendPLUGIN(worker, info[2]);
 		}
-pxnLogger.get().severe("Sent PLUGIN packets!");
+pxnLogger.get(logName).severe("Sent PLUGIN packets!");
 	}
 	// PLUGIN
 	// (send a plugin)
 	public static void sendPLUGIN(pxnSocketWorker worker, String pluginName) {
-		worker.SendData("PLUGIN "+pluginName);
+		worker.Send("PLUGIN "+pluginName);
 	}
 
 

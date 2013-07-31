@@ -93,15 +93,17 @@ System.exit(0);
 //		deviceLoader.LoadDevices(Arrays.asList(new String[] {"Lamp"}));
 
 		// start socket listener
-		this.socket = new pxnSocketServer();
-		this.socket.setFactory(new pxnSocketProcessorFactory() {
+		if(socket == null)
+			socket = new pxnSocketServer();
+//		socket.setHost();
+		socket.setPort(config.ListenPort());
+		socket.setFactory(new pxnSocketProcessorFactory() {
 			@Override
 			public gcPacketReader newProcessor() {
 				return new gcPacketReader();
 			}
 		});
-		this.socket.setPort(config.ListenPort());
-		this.socket.Start();
+		socket.Start();
 
 //		// start schedulers
 //		log.info("Starting schedulers..");
