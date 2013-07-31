@@ -1,17 +1,24 @@
 package com.growcontrol.gcClient.socketClient;
 
-import com.gcCommon.pxnSocket.pxnSocketProcessor;
+import com.growcontrol.gcCommon.pxnSocket.worker.pxnSocketWorker;
 
 
-public class sendClientPackets {
+public final class gcPacketSender {
+	private gcPacketSender() {}
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
+	}
+@SuppressWarnings("unused")
+	private static final String logName = "gcPacketSender";
 
 
 	// HELLO <client-version> [<username> [<password>]]
 	// (login packet)
-	public static void sendHELLO(pxnSocketProcessor processor, String clientVersion) throws Exception{
-		sendHELLO(processor, clientVersion, null, null);
+	public static void sendHELLO(pxnSocketWorker worker, String clientVersion) {
+		sendHELLO(worker, clientVersion, null, null);
 	}
-	public static void sendHELLO(pxnSocketProcessor processor, String clientVersion, String username, String password) throws Exception {
+	public static void sendHELLO(pxnSocketWorker worker, String clientVersion, String username, String password) {
 		if(clientVersion == null) throw new NullPointerException("clientVersion can't be null!");
 		String packet = "HELLO "+clientVersion;
 		if(username != null && !username.isEmpty()) {
@@ -20,7 +27,7 @@ public class sendClientPackets {
 				packet += " "+password;
 			}
 		}
-		processor.sendData(packet);
+		worker.Send(packet);
 System.out.println("Sent HEY packet! "+clientVersion);
 	}
 
@@ -28,10 +35,10 @@ System.out.println("Sent HEY packet! "+clientVersion);
 	// LIST zones
 	// LIST plugins client
 	// (client list requests)
-	public static void sendLIST(pxnSocketProcessor processor, String args) throws Exception {
+	public static void sendLIST(pxnSocketWorker worker, String args) {
 		if(args == null) throw new NullPointerException("LIST args can't be null!");
 		if(args.isEmpty()) throw new IllegalArgumentException("LIST args can't be empty!");
-		processor.sendData("LIST "+args);
+		worker.Send("LIST "+args);
 System.out.println("Sent LIST packet! "+args);
 	}
 
