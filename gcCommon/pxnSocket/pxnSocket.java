@@ -1,5 +1,6 @@
 package com.growcontrol.gcCommon.pxnSocket;
 
+import com.growcontrol.gcCommon.pxnSocket.pxnSocketUtils.pxnSocketState;
 import com.growcontrol.gcCommon.pxnSocket.processor.pxnSocketProcessorFactory;
 
 
@@ -8,6 +9,7 @@ public interface pxnSocket {
 	public void Start();
 	public void Close();
 	public void ForceClose();
+	public pxnSocketState getState();
 
 	public String getHost();
 	public void setHost(String host);

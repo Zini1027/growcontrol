@@ -106,6 +106,19 @@ return;
 	}
 
 
+	// socket state
+	@Override
+	public pxnSocketState getState() {
+		return state;
+	}
+
+
+	// get socket worker
+	public pxnSocketWorker getWorker() {
+		return worker;
+	}
+
+
 	// host
 	@Override
 	public String getHost() {

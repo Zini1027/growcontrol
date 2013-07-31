@@ -15,18 +15,32 @@ public class pxnSocketReader extends pxnSocketWorkerThread {
 
 	private BufferedReader in = null;
 
+	private Boolean running = false;
+
 
 	public pxnSocketReader(pxnSocketWorker worker, Socket socket) {
 		super(worker, socket);
 		logName = "SocketReader-"+Integer.toString(worker.getSocketId());
 		setName(logName);
+		// buffered reader
+		try {
+			in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		} catch (IOException e) {
+			pxnLogger.get(logName).exception(e);
+		}
 	}
 
 
 	// input thread
 	@Override
 	public void run() {
-		if(!getRunLock()) return;
+		synchronized(running) {
+			if(running) {
+				pxnLogger.get(logName).severe("Thread already running!");
+				return;
+			}
+			running = true;
+		}
 		String line = null;
 		while(!worker.isClosed()) {
 			try {
@@ -48,22 +62,7 @@ public class pxnSocketReader extends pxnSocketWorkerThread {
 			line = null;
 		}
 		worker.Close();
-	}
-	@Override
-	protected boolean getRunLock() {
-		synchronized(runLock) {
-			if(in != null) {
-				pxnLogger.get(logName).severe("Thread already running, 'in' not null!");
-				return false;
-			}
-			// buffered reader
-			try {
-				in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			} catch (IOException e) {
-				pxnLogger.get(logName).exception(e);
-			}
-		}
-		return true;
+		running = false;
 	}
 	protected class DataThread implements Runnable {
 		private final String line;

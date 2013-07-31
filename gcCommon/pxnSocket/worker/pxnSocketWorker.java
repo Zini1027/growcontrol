@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 
+import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 import com.growcontrol.gcCommon.pxnParser.pxnParser;
 import com.growcontrol.gcCommon.pxnSocket.pxnSocketUtils;
@@ -48,6 +49,7 @@ public class pxnSocketWorker {
 			// start threads
 			reader.start();
 			sender.start();
+//			pxnUtils.Sleep(100);
 		}
 	}
 
