@@ -16,7 +16,12 @@ import java.util.regex.Pattern;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
-public class pxnUtils {
+public final class pxnUtils {
+	private pxnUtils() {}
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
+	}
 
 
 	// add lib to paths
