@@ -1,20 +1,19 @@
 package com.growcontrol.gcClient;
 
-import java.io.IOException;
-import java.net.ConnectException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.growcontrol.gcClient.socketClient.gcSocketProcessor;
-import com.growcontrol.gcClient.socketClient.sendClientPackets;
+import com.growcontrol.gcClient.clientPlugin.gcClientPluginManager;
+import com.growcontrol.gcClient.clientSocket.gcPacketReader;
+import com.growcontrol.gcClient.clientSocket.gcPacketSender;
 import com.growcontrol.gcCommon.pxnApp;
 import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 import com.growcontrol.gcCommon.pxnScheduler.pxnScheduler;
 import com.growcontrol.gcCommon.pxnScheduler.pxnTicker;
 import com.growcontrol.gcCommon.pxnSocket.pxnSocketClient;
+import com.growcontrol.gcCommon.pxnSocket.pxnSocketUtils.pxnSocketState;
+import com.growcontrol.gcCommon.pxnSocket.processor.pxnSocketProcessorFactory;
 import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
 
 
@@ -24,10 +23,6 @@ public class gcClient extends pxnApp {
 	public static final String defaultPrompt = "";
 
 	protected static gcClient client = null;
-	private static ClientListeners listeners;
-
-//	// client plugin manager
-//	private final gcClientPluginManager pluginManager = new gcClientPluginManager();
 
 	// client socket
 	private pxnSocketClient socket = null;
@@ -36,13 +31,6 @@ public class gcClient extends pxnApp {
 
 	// zones
 	private List<String> zones = new ArrayList<String>();
-
-//	// plugins
-//	private List<String> plugins = new ArrayList<String>();
-
-//	// frame handlers (windows)
-//	private LoginHandler loginWindow = null;
-//	private DashboardHandler dashboardWindow = null;
 
 
 	public gcClient() {
@@ -53,7 +41,7 @@ public class gcClient extends pxnApp {
 
 
 	public void Connect(String host, int port, String user, String pass) {
-		pxnThreadQueue.addToMain("connecting",
+		pxnThreadQueue.addToMain("SocketConnect",
 			new doConnect(host, port, user, pass));
 	}
 	private class doConnect implements Runnable {
@@ -75,38 +63,33 @@ public class gcClient extends pxnApp {
 			this.user = user;
 			this.pass = pass;
 		}
+		// connect to server
 		@Override
 		public synchronized void run() {
-			// connect to server
-			try {
-				pxnLogger.get().info("connecting..");
-				socket = new pxnSocketClient(this.host, this.port, new gcSocketProcessor());
-//				Main.getClient().setSocket(socket);
-				// send HELLO packet
-				try {
-					sendClientPackets.sendHELLO(
-							socket.getProcessor(),
-							gcClient.version);
-//							connectInfo.username,
-//							connectInfo.password);
-				} catch (Exception e) {
-					pxnLogger.get().exception(e);
+pxnLogger.get().info("Connecting..");
+			// create socket
+			if(socket == null)
+				socket = new pxnSocketClient();
+			socket.setHost(this.host);
+			socket.setPort(this.port);
+			// create processor
+			socket.setFactory(new pxnSocketProcessorFactory() {
+				@Override
+				public gcPacketReader newProcessor() {
+					return new gcPacketReader();
 				}
-			} catch (SocketTimeoutException ignore) {
-				// connection timeout
-				pxnLogger.get().warning("connection timeout!");
+			});
+			socket.Start();
+			if(!pxnSocketState.CONNECTED.equals(socket.getState())) {
+				pxnLogger.get().warning("Failed to connect!");
 				return;
-			} catch (ConnectException ignore) {
-				// socket closed
-				pxnLogger.get().warning("socket closed!");
-				return;
-			} catch (UnknownHostException ignore) {
-				// unknown hostname
-				pxnLogger.get().warning("unknown host!");
-				return;
-			} catch (IOException e) {
-				pxnLogger.get().exception(e);
 			}
+			// send HELLO packet
+			gcPacketSender.sendHELLO(
+				socket.getWorker(),
+				gcClient.version);
+//				connectInfo.username,
+//				connectInfo.password);
 pxnLogger.get().severe("CONNECTED!!!!!!!!!!!!!!!!!!!");
 		}
 //		Start();
@@ -135,24 +118,26 @@ System.exit(0);
 		// set log level
 		setLogLevel(config.LogLevel());
 		// init listeners
-		listeners = new ClientListeners();
+		ClientListeners.get();
 		// start console input thread
 		StartConsole();
 
 		// load scheduler
-		pxnScheduler.get("gcClient").start();
+		pxnScheduler.get(getAppName()).start();
 		// load ticker
 		pxnTicker.get();
 
-//		// load plugins
-//		try {
-//			pluginManager.LoadPlugins();
-//			pluginManager.EnablePlugins();
-//		} catch (Exception e) {
-//			log.exception(e);
-//			Shutdown();
-//			return;
-//		}
+		// load plugins
+		try {
+			gcClientPluginManager pluginManager = gcClientPluginManager.get("plugins/");
+			pluginManager.LoadPluginsDir();
+			pluginManager.InitPlugins();
+			pluginManager.EnablePlugins();
+		} catch (Exception e) {
+			log.exception(e);
+			Shutdown();
+			return;
+		}
 
 		// start gui manager
 		guiManager.get();
@@ -193,11 +178,9 @@ System.exit(0);
 			pxnLogger.get().info("Stopping GC Client..");
 			break;
 		case 9:
-			// pause scheduler
-			pxnScheduler.PauseAll();
-			// close client socket
+			// close socket
 			if(socket != null)
-				socket.stop();
+				socket.Close();
 			// pause scheduler
 			pxnScheduler.PauseAll();
 			break;
@@ -210,17 +193,27 @@ System.exit(0);
 		case 6:
 			break;
 		case 5:
+			// stop plugins
+			{
+				gcClientPluginManager manager = gcClientPluginManager.get();
+				if(manager != null)
+					manager.DisablePlugins();
+			}
 			// end schedulers
 			pxnScheduler.ShutdownAll();
 			break;
 		case 4:
 			// unload plugins
-//			pluginManager.UnloadPlugins();
+			{
+				gcClientPluginManager manager = gcClientPluginManager.get();
+				if(manager != null)
+					manager.UnloadPlugins();
+			}
 			break;
 		case 3:
 			// close sockets
 			if(socket != null)
-				socket.forceCloseAll();
+				socket.ForceClose();
 			break;
 		case 2:
 			break;
@@ -239,7 +232,7 @@ System.exit(0);
 		line = line.trim();
 		if(line.isEmpty()) return;
 		// trigger event
-		if(!listeners.triggerCommand(line)) {
+		if(!ClientListeners.get().triggerCommand(line)) {
 			// command not found
 			pxnLogger.get().warning("Unknown command: "+line);
 		}
@@ -256,21 +249,15 @@ System.exit(0);
 	}
 
 
-	public static ClientListeners getListeners() {
-		return listeners;
-	}
-
-
-//	// get plugin manager
-//	public gcClientPluginManager getPluginManager() {
-//		return pluginManager;
-//	}
-
-
 	// get zones
 	public List<String> getZones() {
 		synchronized(zones) {
 			return new ArrayList<String>(zones);
+		}
+	}
+	public String[] getZonesArray() {
+		synchronized(zones) {
+			return (String[]) zones.toArray();
 		}
 	}
 
