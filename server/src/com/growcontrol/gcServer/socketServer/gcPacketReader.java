@@ -8,11 +8,10 @@ import com.growcontrol.gcServer.gcServer;
 
 
 public class gcPacketReader implements pxnSocketProcessor {
+	private static final String logName = "gcPacketReader";
 
 
 	public gcPacketReader() {
-//		// in/out queue size
-//		super(1000, 1000);
 	}
 
 
@@ -22,7 +21,7 @@ System.out.println("PROCESSING: "+line.getOriginal());
 		String first = line.getFirst();
 		switch(first.toUpperCase()) {
 		case "HELLO":
-pxnLogger.get().severe("Got HELLO packet!");
+pxnLogger.get(logName).severe("Got HELLO packet!");
 // send HEY packet
 gcPacketSender.sendHEY(worker, gcServer.version);
 			break;
@@ -33,11 +32,11 @@ processLIST(worker, line);
 		case "FILE":
 // FILE request
 //		sendData("SENDFILE: test.txt");
-pxnLogger.get().severe("SENDING FILE");
+pxnLogger.get(logName).severe("SENDING FILE");
 			break;
 		default:
 			// unknown packet
-			pxnLogger.get().warning("Unknown Packet: "+line.getOriginal());
+			pxnLogger.get(logName).warning("Unknown Packet: "+line.getOriginal());
 			break;
 		}
 	}
@@ -53,7 +52,7 @@ pxnLogger.get().severe("SENDING FILE");
 //			try {
 //				gcPacketSender.sendLISTZones(processor);
 //			} catch (Exception e) {
-//pxnLogger.get().exception(e);
+//pxnLogger.get(logName).exception(e);
 //			}
 //		} else
 //
@@ -66,7 +65,7 @@ pxnLogger.get().severe("SENDING FILE");
 //				try {
 //					gcPacketSender.sendLISTPluginsClient(processor);
 //				} catch (Exception e) {
-//pxnLogger.get().exception(e);
+//pxnLogger.get(logName).exception(e);
 //				}
 //			} else {
 //System.out.println("Invalid 'LIST plugins' packet!");

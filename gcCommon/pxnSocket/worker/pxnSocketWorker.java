@@ -56,7 +56,7 @@ public class pxnSocketWorker {
 	public void Close() {
 		synchronized(socket) {
 			if(isClosed()) return;
-			// clear data queues
+			// socket closing event
 			processor.Closing();
 			// close socket
 			try {
@@ -66,8 +66,8 @@ public class pxnSocketWorker {
 			}
 			pxnLogger.get(logName).info("Disconnected: "+getIPString());
 			// stop input/output threads
-			reader.interrupt();
-			sender.interrupt();
+			reader.Closing();
+			sender.Closing();
 		}
 	}
 	public boolean isClosed() {
@@ -80,8 +80,8 @@ public class pxnSocketWorker {
 		processor.ProcessData(this, new pxnParser(line));
 	}
 	// add to output queue
-	public void SendData(String line) {
-		sender.SendData(line);
+	public void Send(String line) {
+		sender.Send(line);
 	}
 
 
