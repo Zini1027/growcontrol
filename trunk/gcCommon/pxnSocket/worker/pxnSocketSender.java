@@ -10,50 +10,25 @@ import com.growcontrol.gcCommon.TimeU;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
-public class pxnSocketSender extends Thread {
+public class pxnSocketSender extends pxnSocketWorkerThread {
 	private final String logName;
 	private static final String EOL = "\r\n";
 
-	private final pxnSocketWorker worker;
-	private final Socket socket;
-
 	private BlockingQueue<String> queueOut = null;
 	private PrintWriter out = null;
-	private volatile int countPacketsSent = 0;
-
-	private final Object runLock = new Object();
 
 
 	public pxnSocketSender(pxnSocketWorker worker, Socket socket) {
-		if(worker == null) throw new NullPointerException("worker cannot be null!");
-		if(socket == null) throw new NullPointerException("socket cannot be null!");
+		super(worker, socket);
 		logName = "SocketSender-"+Integer.toString(worker.getSocketId());
 		setName(logName);
-		this.worker = worker;
-		this.socket = socket;
 	}
 
 
 	// output thread
 	@Override
 	public void run() {
-		synchronized(runLock) {
-			if(queueOut != null) {
-				pxnLogger.get(logName).exception(
-					new Exception("Thread already running, queue not null!"));
-				return;
-			}
-			queueOut = new ArrayBlockingQueue<String>(100,  true);
-		}
-		// output stream
-		if(out == null) {
-			try {
-				out = new PrintWriter(socket.getOutputStream());
-				out.flush();
-			} catch (IOException e) {
-				pxnLogger.get(logName).exception(e);
-			}
-		}
+		if(!getRunLock()) return;
 		String line = null;
 		while(!worker.isClosed()) {
 			try {
@@ -63,7 +38,7 @@ public class pxnSocketSender extends Thread {
 				break;
 			}
 			if(line == null) continue;
-			countPacketsSent++;
+			packetsCount++;
 			out.print(line+EOL);
 			out.flush();
 			line = null;
@@ -73,10 +48,30 @@ public class pxnSocketSender extends Thread {
 		}
 		worker.Close();
 	}
+	@Override
+	protected boolean getRunLock() {
+		synchronized(runLock) {
+			if(out != null || queueOut != null) {
+				pxnLogger.get(logName).severe("Thread already running, out/queueOut not null!");
+				return false;
+			}
+			// blocking queue
+			queueOut = new ArrayBlockingQueue<String>(100,  true);
+			// output stream
+			try {
+				out = new PrintWriter(socket.getOutputStream());
+				out.flush();
+			} catch (IOException e) {
+				pxnLogger.get(logName).exception(e);
+			}
+		}
+		return true;
+	}
 
 
+	@Override
 	public void Closing() {
-		this.interrupt();
+		super.Closing();
 		synchronized(runLock) {
 			queueOut.clear();
 			queueOut = null;
@@ -92,11 +87,6 @@ public class pxnSocketSender extends Thread {
 			pxnLogger.get(logName).severe("Queue is full!");
 		} catch (InterruptedException ignore) {}
 		return false;
-	}
-
-
-	public int getPacketsCount() {
-		return countPacketsSent;
 	}
 
 
