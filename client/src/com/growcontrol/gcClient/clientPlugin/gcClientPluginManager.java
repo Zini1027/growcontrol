@@ -1,21 +1,41 @@
 package com.growcontrol.gcClient.clientPlugin;
 
-import java.io.File;
-
-import com.growcontrol.gcClient.Main;
-import com.growcontrol.gcClient.clientPlugin.events.gcClientEventCommand;
-import com.growcontrol.gcClient.clientPlugin.listeners.gcClientListenerCommand;
-import com.growcontrol.gcClient.clientPlugin.listeners.gcClientListenerGroup;
-import com.growcontrol.gcClient.clientPlugin.listeners.gcClientListenerGroup.ListenerType;
-import com.gcCommon.pxnEvent.pxnEvent.EventPriority;
-import com.gcCommon.pxnPlugin.pxnPluginManager;
-import com.gcCommon.pxnPlugin.pxnPluginYML;
+import com.growcontrol.gcCommon.pxnPlugin.pxnPluginManager;
 
 
 public class gcClientPluginManager extends pxnPluginManager {
 
-	// listeners
-	protected final gcClientListenerGroup commandListenerGroup = new gcClientListenerGroup(ListenerType.COMMAND);
+	// main class field names for plugin.yml
+	public final String mainClass_Server = "Server Main";
+	public final String mainClass_Client = "Client Main";
+
+
+	public static gcClientPluginManager get() {
+		return get(null);
+	}
+	public static synchronized gcClientPluginManager get(String pluginsPath) {
+		if(manager == null)
+			if(pluginsPath != null && !pluginsPath.isEmpty())
+				manager = new gcClientPluginManager(pluginsPath);
+		return (gcClientPluginManager) manager;
+	}
+	protected gcClientPluginManager(String pluginsPath) {
+		super(pluginsPath);
+	}
+
+
+	// load jars from dir
+	@Override
+	public void LoadPluginsDir() {
+		LoadPluginsDir(new String[] {
+			mainClass_Client
+		});
+	}
+	// init client plugin instances
+	@Override
+	public void InitPlugins() {
+		InitPlugins(mainClass_Client);
+	}
 
 
 //	// client gui frames for plugins
@@ -27,36 +47,10 @@ public class gcClientPluginManager extends pxnPluginManager {
 //	public void addFrame(gcPluginFrame frame) {
 //		frames.add(frame);
 //	}
-
-
-	// get plugin.yml
-	@Override
-	protected pxnPluginYML getPluginYML(File f) {
-		return new gcPluginYML(f, this.pluginYmlFileName);
-	}
-
-
-	// register listeners
-	public void registerCommandListener(gcClientListenerCommand listener) {
-		commandListenerGroup.register(listener);
-	}
-//	public gcServerListenerGroup getCommandListenerGroup() {
-//		return commandListenerGroup;
+//	// add frame to dashboard
+//	public void addFrame(gcPluginFrame frame) {
+//		Main.getClient().getConnectState().getFrame("dashboard");
 //	}
-	public boolean triggerEvent(gcClientEventCommand event) {
-//		gcClient.log.debug("Triggering event: "+event.getLine().getFirst());
-		for(EventPriority priority : EventPriority.values()) {
-			if(commandListenerGroup.triggerEvent(event, priority))
-				event.setHandled();
-		}
-		return event.isHandled();
-	}
-
-
-	// add frame to dashboard
-	public void addFrame(gcPluginFrame frame) {
-		Main.getClient().getConnectState().getFrame("dashboard");
-	}
 
 
 }
