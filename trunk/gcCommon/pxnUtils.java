@@ -246,6 +246,9 @@ public final class pxnUtils {
 		return baseString + delim + addThis;
 	}
 	public static String addStringSet(String baseString, List<String> addThis, String delim) {
+		return addStringSet(baseString, (String[]) addThis.toArray(), delim);
+	}
+	public static String addStringSet(String baseString, String[] addThis, String delim) {
 		if(baseString == null) baseString = "";
 		for(String line : addThis) {
 			if(!baseString.isEmpty()) baseString += delim;
