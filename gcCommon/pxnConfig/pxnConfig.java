@@ -13,7 +13,7 @@ import java.util.jar.JarFile;
 import org.yaml.snakeyaml.Yaml;
 
 import com.growcontrol.gcCommon.pxnUtils;
-import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 
 
 // config file loader
@@ -77,7 +77,7 @@ public class pxnConfig {
 			}
 		} catch(Exception e) {
 			this.data = null;
-			pxnLogger.get().exception(e);
+			pxnLog.get().exception(e);
 		}
 	}
 
@@ -87,7 +87,7 @@ public class pxnConfig {
 		if(fileName == null)   throw new NullPointerException("fileName cannot be null!");
 		if(fileName.isEmpty()) throw new NullPointerException("fileName cannot be empty!");
 		String path = sanFilePath(filePath, fileName);
-		pxnLogger.get().debug("Loading config file: "+path);
+		pxnLog.get().debug("Loading config file: "+path);
 		return openFile(path);
 	}
 	protected static InputStream openFile(String fileStr) {
@@ -98,7 +98,7 @@ public class pxnConfig {
 			if(!file.exists()) throw new FileNotFoundException("File not found!");
 			return new FileInputStream(file);
 		} catch (FileNotFoundException ignore) {
-			pxnLogger.get().debug("Failed to load config file: "+fileStr);
+			pxnLog.get().debug("Failed to load config file: "+fileStr);
 			return openResource(fileStr);
 		}
 	}
@@ -116,7 +116,7 @@ public class pxnConfig {
 		try {
 			return pxnConfig.class.getResourceAsStream(fileStr);
 		} catch(Exception ignore) {
-			pxnLogger.get().debug("Not found as a resource either!");
+			pxnLog.get().debug("Not found as a resource either!");
 			return null;
 		}
 	}
@@ -224,23 +224,23 @@ ignore.printStackTrace();
 	// set value
 	public void set(String path, String value) {
 //TODO:
-pxnLogger.get().severe("CONFIG FUNCTION NOT FINISHED!");
+pxnLog.get().severe("CONFIG FUNCTION NOT FINISHED!");
 	}
 	public void set(String path, boolean value) {
 //TODO:
-pxnLogger.get().severe("CONFIG FUNCTION NOT FINISHED!");
+pxnLog.get().severe("CONFIG FUNCTION NOT FINISHED!");
 	}
 	public void set(String path, int value) {
 //TODO:
-pxnLogger.get().severe("CONFIG FUNCTION NOT FINISHED!");
+pxnLog.get().severe("CONFIG FUNCTION NOT FINISHED!");
 	}
 	public void set(String path, long value) {
 //TODO:
-pxnLogger.get().severe("CONFIG FUNCTION NOT FINISHED!");
+pxnLog.get().severe("CONFIG FUNCTION NOT FINISHED!");
 	}
 	public void set(String path, double value) {
 //TODO:
-pxnLogger.get().severe("CONFIG FUNCTION NOT FINISHED!");
+pxnLog.get().severe("CONFIG FUNCTION NOT FINISHED!");
 	}
 
 

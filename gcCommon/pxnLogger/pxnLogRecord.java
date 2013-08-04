@@ -62,7 +62,7 @@ public final class pxnLogRecord implements java.io.Serializable {
 		}
 		// exception
 		if(ex != null)
-			msgBuilt.add(pxnUtils.ExceptionToString(ex));
+			builder.add(pxnUtils.ExceptionToString(ex));
 		// finished
 		return builder.toArray(new String[0]);
 	}

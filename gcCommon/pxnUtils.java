@@ -2,7 +2,9 @@ package com.growcontrol.gcCommon;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.RandomAccessFile;
+import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.nio.channels.FileLock;
 import java.security.MessageDigest;
@@ -13,7 +15,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.regex.Pattern;
 
-import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 
 
 public final class pxnUtils {
@@ -35,7 +37,7 @@ public final class pxnUtils {
 		// get current paths
 		String currentPaths = System.getProperty("java.library.path");
 		if(currentPaths == null) return;
-		pxnLogger.get().debug("Adding lib path: "+libDir);
+		pxnLog.get().debug("Adding lib path: "+libDir);
 		// set library paths
 		if(currentPaths.isEmpty()) {
 			System.setProperty("java.library.path", libPath);
@@ -50,7 +52,7 @@ public final class pxnUtils {
 			fieldSysPath.setAccessible(true);
 			fieldSysPath.set(null, null);
 		} catch (SecurityException | NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-			pxnLogger.get().exception(e);
+			pxnLog.get().exception(e);
 		}
 	}
 
@@ -72,16 +74,16 @@ public final class pxnUtils {
 							randomAccessFile.close();
 							file.delete();
 						} catch (Exception e) {
-							pxnLogger.get().severe("Unable to remove lock file: "+lockFile);
-							pxnLogger.get().exception(e);
+							pxnLog.get().severe("Unable to remove lock file: "+lockFile);
+							pxnLog.get().exception(e);
 						}
 					}
 				});
 				return true;
 			}
 		} catch (Exception e) {
-			pxnLogger.get().severe("Unable to create and/or lock file: "+lockFile);
-			pxnLogger.get().exception(e);
+			pxnLog.get().severe("Unable to create and/or lock file: "+lockFile);
+			pxnLog.get().exception(e);
 		}
 		return false;
 	}
@@ -91,7 +93,7 @@ public final class pxnUtils {
 		try {
 			pid = Integer.parseInt( ( new File("/proc/self")).getCanonicalFile().getName() );
 		} catch (NumberFormatException | IOException e) {
-			pxnLogger.get().exception(e);
+			pxnLog.get().exception(e);
 		}
 		return pid;
 	}
@@ -102,7 +104,7 @@ public final class pxnUtils {
 		try {
 			Thread.sleep(millis);
 		} catch (InterruptedException e) {
-			pxnLogger.get().exception(e);
+			pxnLog.get().exception(e);
 		}
 	}
 	public static void Sleep(TimeUnitTime time) {
@@ -214,6 +216,15 @@ public final class pxnUtils {
 		} catch(Exception ignore) {
 			return null;
 		}
+	}
+
+
+	// exception to string
+	public static String ExceptionToString(Throwable e) {
+		if(e == null) return null;
+		StringWriter writer = new StringWriter(256);
+		e.printStackTrace(new PrintWriter(writer));
+		return writer.toString().trim();
 	}
 
 

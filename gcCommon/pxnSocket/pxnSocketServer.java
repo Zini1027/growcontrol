@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.growcontrol.gcCommon.pxnUtils;
-import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnSocket.pxnSocketUtils.pxnSocketState;
 import com.growcontrol.gcCommon.pxnSocket.processor.pxnSocketProcessorFactory;
 import com.growcontrol.gcCommon.pxnSocket.worker.pxnSocketWorker;
@@ -47,14 +47,14 @@ public class pxnSocketServer implements pxnSocket {
 			stopping = false;
 			state = pxnSocketState.WAITING;
 		}
-		pxnLogger.get(logName).info("Listening on port: "+Integer.toString(port));
+		pxnLog.get(logName).info("Listening on port: "+Integer.toString(port));
 		try {
 			// listener socket
 			listenerSocket = new ServerSocket(port, 4);
 		} catch (IOException e) {
 			listenerSocket = null;
 			state = pxnSocketState.FAILED;
-			pxnLogger.get(logName).exception("Failed to listen on port: "+Integer.toString(port), e);
+			pxnLog.get(logName).exception("Failed to listen on port: "+Integer.toString(port), e);
 			return;
 		}
 		// start listener thread
@@ -96,7 +96,7 @@ public class pxnSocketServer implements pxnSocket {
 				// socket listener closed
 				break;
 			} catch (IOException e) {
-				pxnLogger.get(logName).exception(e);
+				pxnLog.get(logName).exception(e);
 			} finally {
 				// flush closed sockets
 				doFlush();
@@ -104,12 +104,12 @@ public class pxnSocketServer implements pxnSocket {
 		}}
 		// stop socket listener
 		Close();
-		pxnLogger.get(logName).info("Stopping listener port: "+Integer.toString(port));
+		pxnLog.get(logName).info("Stopping listener port: "+Integer.toString(port));
 		if(listenerSocket != null) {
 			try {
 				listenerSocket.close();
 			} catch (IOException e) {
-				pxnLogger.get(logName).exception(e);
+				pxnLog.get(logName).exception(e);
 			}
 		}
 	}
@@ -127,7 +127,7 @@ public class pxnSocketServer implements pxnSocket {
 					listenerSocket.close();
 					pxnUtils.Sleep(10);
 				} catch (IOException e) {
-					pxnLogger.get(logName).exception("Failed to close socket listener: "+Integer.toString(port), e);
+					pxnLog.get(logName).exception("Failed to close socket listener: "+Integer.toString(port), e);
 				} finally {
 					listenerSocket = null;
 				}
@@ -142,7 +142,7 @@ public class pxnSocketServer implements pxnSocket {
 			for(pxnSocketWorker w : workers)
 				if(w != null) {
 					w.Close();
-pxnLogger.get(logName).info("CLOSED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!s");
+pxnLog.get(logName).info("CLOSED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!s");
 				}
 			doFlush();
 		}
@@ -161,9 +161,9 @@ pxnLogger.get(logName).info("CLOSED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!s");
 				}
 			}
 		}
-		pxnLogger.get(logName).debug("Sockets loaded: "+Integer.toString(workers.size()));
+		pxnLog.get(logName).debug("Sockets loaded: "+Integer.toString(workers.size()));
 		if(flushCount > 0)
-			pxnLogger.get(logName).info("Flushed [ "+Integer.toString(flushCount)+" ] stale socket"+(flushCount>1?"s":""));
+			pxnLog.get(logName).info("Flushed [ "+Integer.toString(flushCount)+" ] stale socket"+(flushCount>1?"s":""));
 	}
 
 

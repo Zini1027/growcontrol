@@ -1,6 +1,6 @@
 package com.growcontrol.gcServer.serverSocket;
 
-import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnParser.pxnParser;
 import com.growcontrol.gcCommon.pxnSocket.processor.pxnSocketProcessor;
 import com.growcontrol.gcCommon.pxnSocket.worker.pxnSocketWorker;
@@ -21,7 +21,7 @@ System.out.println("PROCESSING: "+line.getOriginal());
 		String first = line.getFirst();
 		switch(first.toUpperCase()) {
 		case "HELLO":
-pxnLogger.get(logName).severe("Got HELLO packet!");
+pxnLog.get(logName).severe("Got HELLO packet!");
 // send HEY packet
 gcPacketSender.sendHEY(worker, gcServer.version);
 			break;
@@ -32,11 +32,11 @@ processLIST(worker, line);
 		case "FILE":
 // FILE request
 //		sendData("SENDFILE: test.txt");
-pxnLogger.get(logName).severe("SENDING FILE");
+pxnLog.get(logName).severe("SENDING FILE");
 			break;
 		default:
 			// unknown packet
-			pxnLogger.get(logName).warning("Unknown Packet: "+line.getOriginal());
+			pxnLog.get(logName).warning("Unknown Packet: "+line.getOriginal());
 			break;
 		}
 	}

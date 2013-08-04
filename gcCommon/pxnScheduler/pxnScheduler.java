@@ -8,7 +8,7 @@ import java.util.UUID;
 import com.growcontrol.gcCommon.TimeU;
 import com.growcontrol.gcCommon.TimeUnitTime;
 import com.growcontrol.gcCommon.pxnUtils;
-import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
 
 
@@ -50,7 +50,7 @@ public class pxnScheduler extends Thread {
 		if(name == null) throw new NullPointerException("schedulerName cannot be null!");
 		this.schedulerName = name;
 		this.threadPool = new pxnThreadQueue("scheduler_"+name);
-		pxnLogger.get().debug("("+name+") New scheduler created");
+		pxnLog.get().debug("("+name+") New scheduler created");
 	}
 	@Override
 	public Object clone() throws CloneNotSupportedException {
@@ -85,7 +85,7 @@ public class pxnScheduler extends Thread {
 	@Override
 	public void run() {
 		if(running) {
-			pxnLogger.get().severe("("+schedulerName+") Scheduler already running!");
+			pxnLog.get().severe("("+schedulerName+") Scheduler already running!");
 			return;
 		}
 		running = true;
@@ -153,7 +153,7 @@ public class pxnScheduler extends Thread {
 		if(task == null) throw new NullPointerException("task cannot be null!");
 		synchronized(this.tasks) {
 			this.tasks.add(task);
-			pxnLogger.get().debug("("+task.getTaskName()+") New task created");
+			pxnLog.get().debug("("+task.getTaskName()+") New task created");
 		}
 	}
 

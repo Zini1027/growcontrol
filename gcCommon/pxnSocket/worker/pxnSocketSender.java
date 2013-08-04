@@ -7,7 +7,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import com.growcontrol.gcCommon.TimeU;
-import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 
 
 public class pxnSocketSender extends pxnSocketWorkerThread {
@@ -31,7 +31,7 @@ public class pxnSocketSender extends pxnSocketWorkerThread {
 			out = new PrintWriter(socket.getOutputStream());
 			out.flush();
 		} catch (IOException e) {
-			pxnLogger.get(logName).exception(e);
+			pxnLog.get(logName).exception(e);
 		}
 	}
 
@@ -41,7 +41,7 @@ public class pxnSocketSender extends pxnSocketWorkerThread {
 	public void run() {
 		synchronized(running) {
 			if(running) {
-				pxnLogger.get(logName).severe("Thread already running!");
+				pxnLog.get(logName).severe("Thread already running!");
 				return;
 			}
 			running = true;
@@ -89,7 +89,7 @@ public class pxnSocketSender extends pxnSocketWorkerThread {
 		try {
 			if(queueOut.offer(line, 1, TimeU.S))
 				return true;
-			pxnLogger.get(logName).severe("Queue is full!");
+			pxnLog.get(logName).severe("Queue is full!");
 		} catch (InterruptedException ignore) {}
 		return false;
 	}

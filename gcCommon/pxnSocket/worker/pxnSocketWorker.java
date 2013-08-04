@@ -5,7 +5,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 
-import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnParser.pxnParser;
 import com.growcontrol.gcCommon.pxnSocket.pxnSocketUtils;
 import com.growcontrol.gcCommon.pxnSocket.processor.pxnSocketProcessor;
@@ -43,7 +43,7 @@ public class pxnSocketWorker {
 
 	// start socket worker
 	public void Start() {
-		pxnLogger.get(logName).info("Connected: ["+Integer.toString(socketId)+"] "+getIPString());
+		pxnLog.get(logName).info("Connected: ["+Integer.toString(socketId)+"] "+getIPString());
 		synchronized(socket) {
 			// start threads
 			reader.start();
@@ -63,9 +63,9 @@ public class pxnSocketWorker {
 			try {
 				socket.close();
 			} catch (IOException e) {
-				pxnLogger.get(logName).exception("Failed to close socket worker", e);
+				pxnLog.get(logName).exception("Failed to close socket worker", e);
 			}
-			pxnLogger.get(logName).info("Disconnected: "+getIPString());
+			pxnLog.get(logName).info("Disconnected: "+getIPString());
 			// stop input/output threads
 			reader.Closing();
 			sender.Closing();

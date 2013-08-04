@@ -10,6 +10,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
@@ -101,7 +102,7 @@ public class pxnClock {
 	protected void doUpdate() {
 		if(!enableNTP) return;
 		synchronized(threadLock) {
-			pxnLogger log = pxnLogger.get();
+			pxnLogger log = pxnLog.get();
 			double time = System.currentTimeMillis();
 			if(lastChecked != 0.0 && ((time-lastChecked)/1000.0) < 60.0) return;
 			lastChecked = time;

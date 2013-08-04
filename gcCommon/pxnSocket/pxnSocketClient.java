@@ -6,7 +6,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
-import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnSocket.pxnSocketUtils.pxnSocketState;
 import com.growcontrol.gcCommon.pxnSocket.processor.pxnSocketProcessorFactory;
 import com.growcontrol.gcCommon.pxnSocket.worker.pxnSocketWorker;
@@ -40,12 +40,12 @@ public class pxnSocketClient implements pxnSocket {
 //			stopping = false;
 			state = pxnSocketState.WAITING;
 		}
-		pxnLogger.get(logName).info("Connecting to host: "+host+":"+Integer.toString(port));
+		pxnLog.get(logName).info("Connecting to host: "+host+":"+Integer.toString(port));
 		try {
 			// connect to host
 			Socket socket = new Socket(host, port);
 if(!socket.isConnected()){
-pxnLogger.get(logName).severe("NOT CONNECTED - pxnSOcketClient:70");
+pxnLog.get(logName).severe("NOT CONNECTED - pxnSOcketClient:70");
 socket.close();
 return;
 }
@@ -59,28 +59,28 @@ return;
 			return;
 		} catch (UnknownHostException e) {
 			// unknown host
-			pxnLogger.get(logName).exception(e);
+			pxnLog.get(logName).exception(e);
 //TODO:
 //gcClient.setConnectState(ConnectState.CLOSED);
 		} catch (SocketTimeoutException e) {
 			// connect timeout
-			pxnLogger.get(logName).exception(e);
+			pxnLog.get(logName).exception(e);
 //TODO:
 //gcClient.setConnectState(ConnectState.CLOSED);
 		} catch(ConnectException e) {
 			// connection refused
-			pxnLogger.get(logName).exception(e);
+			pxnLog.get(logName).exception(e);
 //TODO:
 //JOptionPane.showMessageDialog(null, e.getMessage(), "Connection failed!", JOptionPane.ERROR_MESSAGE);
 //gcClient.setConnectState(ConnectState.CLOSED);
 		} catch (IOException e) {
-			pxnLogger.get(logName).warning("Failed to connect to: "+host+":"+Integer.toString(port));
-			pxnLogger.get(logName).exception(e);
+			pxnLog.get(logName).warning("Failed to connect to: "+host+":"+Integer.toString(port));
+			pxnLog.get(logName).exception(e);
 //TODO:
 //JOptionPane.showMessageDialog(null, e.getMessage(), "Connection failed!", JOptionPane.ERROR_MESSAGE);
 //gcClient.setConnectState(ConnectState.CLOSED);
 		} catch (Exception e) {
-			pxnLogger.get(logName).exception(e);
+			pxnLog.get(logName).exception(e);
 		}
 		Close();
 		state = pxnSocketState.FAILED;

@@ -2,6 +2,7 @@ package com.growcontrol.gcCommon.pxnPlugin;
 
 import com.growcontrol.gcCommon.pxnCommand.pxnCommandListenerGroup;
 import com.growcontrol.gcCommon.pxnCommand.pxnCommandsHolder;
+import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
@@ -63,7 +64,7 @@ public abstract class pxnPlugin {
 	private pxnLogger log = null;
 	public pxnLogger getLogger() {
 		if(log == null)
-			log = pxnLogger.get("plugin-"+getPluginName());
+			log = pxnLog.get("plugin-"+getPluginName());
 		return log;
 	}
 
