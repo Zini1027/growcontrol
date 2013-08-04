@@ -1,19 +1,16 @@
-package com.growcontrol.gcCommon.pxnLogger;
+package com.growcontrol.gcCommon.pxnLogger.handlers;
 
-import com.growcontrol.gcCommon.pxnLogger.pxnLevel.LEVEL;
+import com.growcontrol.gcCommon.pxnLogger.pxnLogRecord;
 
 
-public interface pxnLoggerHandler {
-//TODO:
-//public abstract class pxnLoggerHandler extends PrintWriter {
+public interface pxnLogHandler {
 
-	// print
-	public void print(pxnLogRecord logRecord);
-	public void print(String msg);
+	public String getName();
 
-	// log level
-	public pxnLevel getLevel();
-	public void setLevel(LEVEL level);
-	public void setForceDebug(boolean forceDebug);
+	public void Publish(pxnLogRecord rec);
+	public void Publish(String msg);
+
+	public void Flush();
+	public void Close();
 
 }
