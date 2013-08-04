@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.growcontrol.gcCommon.pxnConfig.pxnConfig;
-import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 
 
 public class pxnPluginYML {
@@ -18,7 +18,7 @@ public class pxnPluginYML {
 		try {
 			config = pxnConfig.loadJarResource(file, fileName);
 		} catch (IOException e) {
-			pxnLogger.get().exception(e);
+			pxnLog.get().exception(e);
 			config = null;
 		}
 	}

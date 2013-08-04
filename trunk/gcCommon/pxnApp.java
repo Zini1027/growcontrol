@@ -22,7 +22,7 @@ public abstract class pxnApp {
 	public abstract String getAppName();
 	public abstract String getVersion();
 
-	protected abstract void ProcessCommand(String line);
+	public abstract void ProcessCommand(String line);
 	protected abstract void doShutdown(int step);
 
 

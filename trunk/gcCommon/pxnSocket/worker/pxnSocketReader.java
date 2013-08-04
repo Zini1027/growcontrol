@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.SocketException;
 
-import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
 
 
@@ -26,7 +26,7 @@ public class pxnSocketReader extends pxnSocketWorkerThread {
 		try {
 			in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		} catch (IOException e) {
-			pxnLogger.get(logName).exception(e);
+			pxnLog.get(logName).exception(e);
 		}
 	}
 
@@ -36,7 +36,7 @@ public class pxnSocketReader extends pxnSocketWorkerThread {
 	public void run() {
 		synchronized(running) {
 			if(running) {
-				pxnLogger.get(logName).severe("Thread already running!");
+				pxnLog.get(logName).severe("Thread already running!");
 				return;
 			}
 			running = true;
@@ -49,7 +49,7 @@ public class pxnSocketReader extends pxnSocketWorkerThread {
 				// socket closed
 				break;
 			} catch (IOException e) {
-				pxnLogger.get(logName).exception(e);
+				pxnLog.get(logName).exception(e);
 				break;
 			}
 			if(line == null) break;

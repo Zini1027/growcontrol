@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 import org.xeustechnologies.jcl.JarClassLoader;
 
+import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
@@ -72,7 +73,7 @@ public class pxnPluginManager {
 			File dir = new File(path);
 			if(!dir.isDirectory()) dir.mkdirs();
 			if(!dir.isDirectory()) {
-				pxnLogger.get().exception(new FileNotFoundException("plugins folder not found! "+path));
+				pxnLog.get().exception(new FileNotFoundException("plugins folder not found! "+path));
 				return;
 			}
 			// get files list from /plugins
@@ -83,7 +84,7 @@ public class pxnPluginManager {
 				}
 			});
 			if(files == null) {
-				pxnLogger.get().exception(new IOException("Failed to get plugins list! "+path));
+				pxnLog.get().exception(new IOException("Failed to get plugins list! "+path));
 				return;
 			}
 			// loop .jar files
@@ -101,7 +102,7 @@ public class pxnPluginManager {
 					String pluginName = yml.getPluginName();
 					// plugin already loaded
 					if(this.plugins.containsKey(pluginName)) {
-						pxnLogger.get().warning("Duplicate plugin already loaded: "+pluginName);
+						pxnLog.get().warning("Duplicate plugin already loaded: "+pluginName);
 						failed++;
 						continue;
 					}
@@ -119,12 +120,12 @@ public class pxnPluginManager {
 					this.plugins.put(pluginName, holder);
 					successful++;
 				} catch(Exception e) {
-					pxnLogger.get().exception("Failed to load plugin! "+file.toString(), e);
+					pxnLog.get().exception("Failed to load plugin! "+file.toString(), e);
 					failed++;
 				}
 			}
-			pxnLogger.get().info("Found [ "+Integer.toString(successful)+" ] plugins.");
-			if(failed > 0) pxnLogger.get().warning("Failed to preload [ "+Integer.toString(failed)+" ] plugins!");
+			pxnLog.get().info("Found [ "+Integer.toString(successful)+" ] plugins.");
+			if(failed > 0) pxnLog.get().warning("Failed to preload [ "+Integer.toString(failed)+" ] plugins!");
 		}
 	}
 
@@ -136,12 +137,13 @@ public class pxnPluginManager {
 	public void InitPlugins(String mainClassFieldName) {
 		if(mainClassFieldName == null || mainClassFieldName.isEmpty())
 			mainClassFieldName = "Main Class";
-		synchronized(this.plugins){ 
+		synchronized(this.plugins){
+			pxnLogger log = pxnLog.get();
 			int successful = 0;
 			int failed = 0;
 			for(PluginHolder holder : this.plugins.values()) {
 				if(!holder.file.isFile()) {
-					pxnLogger.get().warning("jar file not found: "+holder.file);
+					log.warning("jar file not found: "+holder.file);
 					failed++;
 					continue;
 				}
@@ -150,7 +152,7 @@ public class pxnPluginManager {
 				if(mainClass == null || mainClass.isEmpty())
 					continue;
 				// new plugin instance
-				pxnLogger.get().info("Loading plugin "+holder.pluginName+" "+holder.version);
+				log.info("Loading plugin "+holder.pluginName+" "+holder.version);
 				try {
 					JarClassLoader classLoader = new JarClassLoader();
 					classLoader.add(holder.file.toString());
@@ -158,21 +160,21 @@ public class pxnPluginManager {
 					holder.plugin.setPluginManager(this);
 					holder.plugin.setPluginYML(holder.yml);
 				} catch(Exception e) {
-					pxnLogger.get().warning("Failed to load plugin: "+holder.pluginName);
-					pxnLogger.get().exception(e);
+					log.warning("Failed to load plugin: "+holder.pluginName);
+					log.exception(e);
 					failed++;
 					continue;
 				}
 			}
-			if(successful > 0) pxnLogger.get().info("Inited [ "+Integer.toString(successful)+" ] plugins.");
-			if(failed     > 0) pxnLogger.get().warning("Failed to init [ "+Integer.toString(failed)+" ] plugins!");
+			if(successful > 0) log.info("Inited [ "+Integer.toString(successful)+" ] plugins.");
+			if(failed     > 0) log.warning("Failed to init [ "+Integer.toString(failed)+" ] plugins!");
 		}
 	}
 
 
 	// enable plugins
 	public void EnablePlugins() {
-		pxnLogger log = pxnLogger.get();
+		pxnLogger log = pxnLog.get();
 		int successful = 0;
 		int failed = 0;
 		synchronized(this.plugins) {
@@ -203,7 +205,7 @@ public class pxnPluginManager {
 
 	// disable plugins
 	public void DisablePlugins() {
-		pxnLogger log = pxnLogger.get();
+		pxnLogger log = pxnLog.get();
 		int successful = 0;
 		int failed     = 0;
 		synchronized(this.plugins) {

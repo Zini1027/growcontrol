@@ -203,7 +203,7 @@ System.exit(0);
 
 	// process command
 	@Override
-	protected void ProcessCommand(String line) {
+	public void ProcessCommand(String line) {
 		if(line == null) throw new NullPointerException("line cannot be null");
 		line = line.trim();
 		if(line.isEmpty()) return;

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.growcontrol.gcCommon.pxnListener.pxnEvent.EventPriority;
-import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 
 
 public class pxnListenerGroup {
@@ -15,7 +15,7 @@ public class pxnListenerGroup {
 	// register listener
 	public void register(pxnListener listener) {
 		if(listener == null) throw new NullPointerException("listener cannot be null!");
-pxnLogger.get().debug("Registered listener: "+listener.toString()+" ("+Integer.toString(listeners.size())+")");
+pxnLog.get().debug("Registered listener: "+listener.toString()+" ("+Integer.toString(listeners.size())+")");
 		synchronized(listeners) {
 			listeners.add(listener);
 		}

@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.growcontrol.gcCommon.TimeU;
 import com.growcontrol.gcCommon.TimeUnitTime;
-import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnScheduler.pxnTriggers.triggerInterval;
 
 
@@ -56,8 +56,8 @@ public class pxnTicker extends pxnSchedulerTask {
 		long timeSinceLast = time - timeLast;
 		double offByPercent = ((double)interval.get(TimeU.MS)) / ((double)timeSinceLast);
 		if(offByPercent < 0.9 || offByPercent > 1.1) {
-pxnLogger.get().warning("Tick to soon! possible lag?");
-pxnLogger.get().debug("Time since last tick: "+Long.toString(timeSinceLast));
+pxnLog.get().warning("Tick to soon! possible lag?");
+pxnLog.get().debug("Time since last tick: "+Long.toString(timeSinceLast));
 		return;
 	}
 //	} else

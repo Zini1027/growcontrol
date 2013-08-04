@@ -2,7 +2,7 @@ package com.growcontrol.gcServer.serverSocket;
 
 import java.util.List;
 
-import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnSocket.worker.pxnSocketWorker;
 import com.growcontrol.gcServer.gcServer;
 import com.growcontrol.gcServer.serverPlugin.gcServerPluginManager;
@@ -22,7 +22,7 @@ public final class gcPacketSender {
 	public static void sendHEY(pxnSocketWorker worker, String serverVersion) {
 		if(serverVersion == null) throw new NullPointerException("serverVersion can't be null!");
 		worker.Send("HEY "+serverVersion);
-pxnLogger.get(logName).severe("Sent HEY packet!");
+pxnLog.get(logName).severe("Sent HEY packet!");
 	}
 
 
@@ -32,7 +32,7 @@ pxnLogger.get(logName).severe("Sent HEY packet!");
 		List<String> zones = gcServer.get().getZones();
 		for(String zoneName : zones)
 			sendZONE(worker, zoneName);
-pxnLogger.get(logName).severe("Sent ZONE packets!");
+pxnLog.get(logName).severe("Sent ZONE packets!");
 	}
 	// ZONE
 	// (send a zone)
@@ -51,7 +51,7 @@ pxnLogger.get(logName).severe("Sent ZONE packets!");
 		for(String[] info : clientPlugins) {
 			sendPLUGIN(worker, info[2]);
 		}
-pxnLogger.get(logName).severe("Sent PLUGIN packets!");
+pxnLog.get(logName).severe("Sent PLUGIN packets!");
 	}
 	// PLUGIN
 	// (send a plugin)

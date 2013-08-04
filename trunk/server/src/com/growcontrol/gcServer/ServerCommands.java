@@ -2,7 +2,7 @@ package com.growcontrol.gcServer;
 
 import com.growcontrol.gcCommon.pxnCommand.pxnCommandEvent;
 import com.growcontrol.gcCommon.pxnCommand.pxnCommandsHolder;
-import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 
 
 public class ServerCommands extends pxnCommandsHolder {
@@ -105,7 +105,7 @@ public class ServerCommands extends pxnCommandsHolder {
 	// kill command
 	private static boolean _kill() {
 		try {
-			pxnLogger.get().warning("Killing server! (Triggered by console command)");
+			pxnLog.get().warning("Killing server! (Triggered by console command)");
 		} catch(Exception ignore) {}
 		System.out.println();
 		System.out.println();
@@ -143,7 +143,7 @@ public class ServerCommands extends pxnCommandsHolder {
 			return true;
 		}
 //TODO: command should be "log level debug"
-		System.out.println("Log level: "+pxnLogger.getLevel("console").toString());
+		System.out.println("Log level: "+pxnLog.get().getLevel("console").toString());
 		return true;
 	}
 
@@ -156,7 +156,7 @@ public class ServerCommands extends pxnCommandsHolder {
 
 	// version command
 	private static boolean _version() {
-		pxnLogger.get().info("Version: "+gcServer.version);
+		pxnLog.get().info("Version: "+gcServer.version);
 		return true;
 	}
 
@@ -164,7 +164,7 @@ public class ServerCommands extends pxnCommandsHolder {
 	// say command
 	private static boolean _say(String msg) {
 		msg = "(console) "+msg;
-		pxnLogger.get().printRaw(msg);
+		pxnLog.get().Publish(msg);
 		return true;
 	}
 
