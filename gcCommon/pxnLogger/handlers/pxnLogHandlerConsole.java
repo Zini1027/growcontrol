@@ -1,6 +1,7 @@
 package com.growcontrol.gcCommon.pxnLogger.handlers;
 
 import org.fusesource.jansi.Ansi;
+import org.fusesource.jansi.AnsiConsole;
 
 import com.growcontrol.gcCommon.pxnLogger.pxnLogRecord;
 
@@ -15,6 +16,22 @@ public class pxnLogHandlerConsole implements pxnLogHandler {
 		if(handler == null)
 			handler = new pxnLogHandlerConsole();
 		return handler;
+	}
+	private pxnLogHandlerConsole() {
+		AnsiConsole.systemInstall();
+		System.out.println();
+		System.out.flush();
+	}
+
+
+	// close
+	@Override
+	public void Close() {
+		AnsiConsole.systemUninstall();
+	}
+	@Override
+	protected void finalize() {
+		Close();
 	}
 
 
@@ -60,9 +77,6 @@ public class pxnLogHandlerConsole implements pxnLogHandler {
 	@Override
 	public void Flush() {
 		System.out.flush();
-	}
-	@Override
-	public void Close() {
 	}
 
 

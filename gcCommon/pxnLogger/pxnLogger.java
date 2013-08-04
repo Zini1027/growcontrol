@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.fusesource.jansi.AnsiConsole;
-
 import com.growcontrol.gcCommon.pxnLogger.handlers.pxnLogHandler;
 import com.growcontrol.gcCommon.pxnLogger.handlers.pxnLogHandlerConsole;
 
@@ -30,9 +28,6 @@ public class pxnLogger extends pxnLogPrinter implements pxnLoggerInterface {
 	}
 	protected static synchronized void Init() {
 		if(inited) return;
-		AnsiConsole.systemInstall();
-		System.out.println();
-		System.out.flush();
 		if(handlers.isEmpty())
 			handlers.add(pxnLogHandlerConsole.get());
 		inited = true;

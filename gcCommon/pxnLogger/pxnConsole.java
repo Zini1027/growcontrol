@@ -122,7 +122,7 @@ public class pxnConsole implements Runnable {
 			thread = new Thread(this);
 		thread.start();
 	}
-	public static void Shutdown() {
+	public static void Close() {
 		if(console == null) return;
 		console.stopping = true;
 		if(console.running)

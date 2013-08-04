@@ -8,11 +8,19 @@ public class pxnLogHandlerFile implements pxnLogHandler {
 
 
 	// handler instance
-	private static pxnLogHandlerConsole handler = null;
-	public static synchronized pxnLogHandlerConsole get() {
+	private static pxnLogHandlerFile handler = null;
+	public static synchronized pxnLogHandlerFile get() {
 		if(handler == null)
-			handler = new pxnLogHandlerConsole();
+			handler = new pxnLogHandlerFile();
 		return handler;
+	}
+
+
+	private pxnLogHandlerFile() {
+	}
+	// close
+	@Override
+	public void Close() {
 	}
 
 
@@ -33,9 +41,6 @@ public class pxnLogHandlerFile implements pxnLogHandler {
 
 	@Override
 	public void Flush() {
-	}
-	@Override
-	public void Close() {
 	}
 
 
