@@ -1,44 +1,70 @@
 package com.growcontrol.gcCommon.pxnLogger;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.fusesource.jansi.Ansi;
-
+import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnClock.pxnClock;
 
 
-public final class pxnLogRecord {
+public final class pxnLogRecord implements java.io.Serializable {
+	private static final long serialVersionUID = 6L;
 
-//	private java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\x1B\\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]");
-//	private boolean strip = false;
+	private final String msg;
+	private final Throwable ex;
+	private final pxnLevel level;
+	private final long millis;
+	private final String[] msgBuilt;
+	private final transient pxnLogger log;
 
-	public final String msg;
-	public final pxnLevel.LEVEL level;
-	public final String loggerName;
-	public final long millis;
 
-
-	pxnLogRecord(String msg, pxnLevel.LEVEL level, String loggerName) {
-		if(level == null) throw new NullPointerException("level cannot be null");
-		if(msg == null)
-			this.msg = "null";
-		else
-			this.msg = Ansi.ansi().render(msg).toString();
+	public static pxnLogRecord Create(pxnLogger log, pxnLevel level, String msg) {
+		return new pxnLogRecord(log, level, msg, null);
+	}
+	public static pxnLogRecord Create(pxnLogger log, pxnLevel level, String msg, Throwable ex) {
+		return new pxnLogRecord(log, level, msg, ex);
+	}
+	private pxnLogRecord(pxnLogger log, pxnLevel level, String msg, Throwable ex) {
+		if(log   == null) throw new NullPointerException("log cannot be null!");
+		if(level == null) throw new NullPointerException("level cannot be null!");
+		if(msg == null) msg = "<null>";
+		this.msg = msg;
 		this.level = level;
-		this.loggerName = loggerName;
+		this.log = log;
 		this.millis = pxnClock.get().Millis();
+		this.ex = ex;
+		msgBuilt = BuildMessage();
 	}
 
 
-	// build log line
-	public String toString() {
-		String line = formatDate(millis)+" "+
-			"["+pxnLevel.levelToString(level)+"] ";
-		if(loggerName != null)
-			if(!loggerName.isEmpty())
-				line += "["+loggerName+"] ";
-		line += msg;
-		return line;
+//TODO: add formatter class
+	private synchronized String[] BuildMessage() {
+		List<String> builder = new ArrayList<String>();
+		// message
+		if(msg != null) {
+			StringBuilder line = new StringBuilder();
+			line.append(formatDate(millis)).append(" ").append("[").append(level.toString()).append("] ");
+			// get log name tree
+			String logTree = "";
+			if(this.log != null) {
+				logTree = this.log.getNameFormatted()+" ";
+				pxnLogger p = log.getParent();
+				while(p != null) {
+//					logTree = p.getNameFormatted()+" "+logTree;
+					logTree = p.getNameFormatted()+logTree;
+					p = p.getParent();
+				}
+			}
+			// build message
+			line.append(logTree).append(msg);
+			builder.add(line.toString());
+		}
+		// exception
+		if(ex != null)
+			msgBuilt.add(pxnUtils.ExceptionToString(ex));
+		// finished
+		return builder.toArray(new String[0]);
 	}
 
 
@@ -46,6 +72,21 @@ public final class pxnLogRecord {
 	public static String formatDate(long millis) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("D yyyy-MM-dd HH:mm:ss");
 		return dateFormat.format(millis);
+	}
+
+
+	// get stored vars
+	public String[] getMessage() {
+		return msgBuilt;
+	}
+	public String getMsg() {
+		return msg;
+	}
+	public Throwable getThrowable() {
+		return ex;
+	}
+	public pxnLevel getLevel() {
+		return level;
 	}
 
 

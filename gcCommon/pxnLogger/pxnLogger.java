@@ -1,270 +1,175 @@
 package com.growcontrol.gcCommon.pxnLogger;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
-import jline.ConsoleReader;
-import jline.History;
-
-import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
-import com.growcontrol.gcCommon.pxnLogger.pxnLevel.LEVEL;
+import com.growcontrol.gcCommon.pxnLogger.handlers.pxnLogHandler;
+import com.growcontrol.gcCommon.pxnLogger.handlers.pxnLogHandlerConsole;
 
 
-public class pxnLogger implements pxnLoggerInterface, pxnLogPrinter {
+public class pxnLogger extends pxnLogPrinter implements pxnLoggerInterface {
 
-	protected static volatile Boolean inited = false;
+	private final HashMap<String, pxnLogger> loggers = new HashMap<String, pxnLogger>();
+	private final static List<pxnLogHandler> handlers = new ArrayList<pxnLogHandler>();
+	private static volatile boolean inited = false;
 
-	protected String loggerName;
+	private final String name;
+	private final pxnLogger parent;
+	private pxnLevel level = pxnLevel.INFO;
+	private static boolean debug = false;
 
-	// loggers
-	protected static HashMap<String, pxnLogger> loggers = new HashMap<String, pxnLogger>();
-	protected static HashMap<String, pxnLoggerHandler> logHandlers = new HashMap<String, pxnLoggerHandler>();
 
-	// console interface
-	protected static boolean consoleEnabled = true;
-	public static final String defaultPrompt = ">";
-	// jLine reader
-	protected static ConsoleReader reader = null;
-	// jAnsi
-	protected static PrintWriter out = new PrintWriter(AnsiConsole.out);
+	protected pxnLogger(String name, pxnLogger parent) {
+		if(name == null || name.isEmpty()) throw new NullPointerException("name cannot be null!");
+		this.name = name;
+		this.parent = parent;
+		Init();
+	}
+	protected static synchronized void Init() {
+		if(inited) return;
+		AnsiConsole.systemInstall();
+		System.out.println();
+		System.out.flush();
+		if(handlers.isEmpty())
+			handlers.add(pxnLogHandlerConsole.get());
+		inited = true;
+	}
+
+
+	// add handler
+	public static void addHandler(pxnLogHandler handler) {
+		synchronized(handlers) {
+			handlers.add(handler);
+		}
+	}
 
 
 	// get logger
-	public static pxnLogger get() {
-		return get(null);
+	@Override
+	public pxnLogger get(String name) {
+		return getLogger(name, false);
 	}
-	public static pxnLogger get(String loggerName) {
+	@Override
+	public pxnLogger getAnon(String name) {
+		return getLogger(name, true);
+	}
+	@Override
+	public pxnLogger getLogger(String name, boolean anon) {
+		if(name == null || name.isEmpty()) throw new NullPointerException("name cannot be null!");
 		synchronized(loggers) {
-			if(loggers.containsKey(loggerName))
-				return loggers.get(loggerName);
-			pxnLogger log = new pxnLogger(loggerName);
-			loggers.put(loggerName, log);
+			String nameL = name.toLowerCase();
+			if(loggers.containsKey(nameL))
+				return loggers.get(nameL);
+			// new logger
+			pxnLogger log = new pxnLogger(name, this);
+			log.setLevel(getLevel());
+			if(!anon)
+				loggers.put(nameL, log);
 			return log;
 		}
 	}
-	// new logger
-	protected pxnLogger() {
-		this(null);
-	}
-	protected pxnLogger(String loggerName) {
-		this.loggerName = loggerName;
-		if(!inited) init();
-	}
 
 
-	// init logger
-	protected void init() {
-		synchronized(inited) {
-			if(inited) return;
-			loggers.clear();
-			logHandlers.clear();
-
-			inited = true;
-		}
-		// jline reader
-		if(consoleEnabled && reader == null) {
-			try {
-				reader = new ConsoleReader();
-				reader.setBellEnabled(false);
-				reader.setUseHistory(true);
-				reader.setDefaultPrompt(defaultPrompt);
-				History history = reader.getHistory();
-				history.setHistoryFile(new File("history.txt"));
-				history.setMaxSize(100);
-				//reader.setDebug(new PrintWriter(new FileWriter("writer.debug", true)));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	protected static boolean isInited() {
-		return inited;
-	}
-
-
-	// get logger name
+	// parent logger
 	@Override
-	public String getLoggerName() {
-		return loggerName;
+	public pxnLogger getParent() {
+		return parent;
 	}
-
-
-	// console interface
-	public static boolean isConsoleEnabled() {
-		return consoleEnabled;
-	}
-	public static void setConsoleEnabled(boolean enabled) {
-		consoleEnabled = enabled;
-	}
-	// prompt
-	public static String getPrompt() {
-		return reader.getDefaultPrompt();
-	}
-	public static void setPrompt(String promptStr) throws IOException {
-		if(promptStr == null)
-			reader.setDefaultPrompt(defaultPrompt);
-		else
-			reader.setDefaultPrompt(promptStr);
-		reader.redrawLine();
-		reader.flushConsole();
-	}
-	public static ConsoleReader getReader() {
-		if(!isInited()) get().init();
-		return reader;
-	}
-
-
-	// read console input
-	public static String readLine() throws IOException {
-		if(reader == null) throw new NullPointerException("reader can't be null!");
-		return reader.readLine();
-	}
-	// clear console
-	public static void clear() {
-		if(reader == null) throw new NullPointerException("reader can't be null!");
-		AnsiConsole.out.println(Ansi.ansi()
-			.eraseScreen()
-			.cursor(0, 0) );
-	}
-
-
-	// log levels
-	public static pxnLevel getLevel(String handlerName) {
-		pxnLoggerHandler handler = getLogHandler(handlerName);
-		if(handler == null) return null;
-		return handler.getLevel();
-	}
-	public static void setLevel(String handlerName, String level) {
-		setLevel(handlerName, pxnLevel.levelFromString(level));
-	}
-	public static void setLevel(String handlerName, LEVEL level) {
-		pxnLoggerHandler handler = getLogHandler(handlerName);
-		if(handler == null) throw new NullPointerException(handlerName+" (can't set log level, handler not found!)");
-		handler.setLevel(level);
-	}
-	// force debug mode
-	public static void setForceDebug(String handlerName, boolean forceDebug) {
-		pxnLoggerHandler handler = getLogHandler(handlerName);
-		if(handler == null) throw new NullPointerException(handlerName+" (can't set log level, handler not found!)");
-		handler.setForceDebug(forceDebug);
-	}
-
-
-	// log handlers
-	public static pxnLoggerHandler getLogHandler(String handlerName) {
-		synchronized(logHandlers) {
-			if(logHandlers.containsKey(handlerName))
-				return logHandlers.get(handlerName);
-		}
-		return null;
-	}
-	public static void addLogHandler(String handlerName, pxnLoggerHandler handler) {
-		synchronized(logHandlers) {
-			logHandlers.put(handlerName, handler);
-		}
-	}
-
-
-	// new log record
-	protected static pxnLogRecord newRecord(String msg, LEVEL level, String loggerName) {
-		return new pxnLogRecord(msg, level, loggerName);
-	}
-
-
-	// print to handlers
 //	@Override
-//	public void print(String msg) {
-//		print(msg, LEVEL.INFO);
+//	public List<pxnLogHandler> getHandlers() {
+//		return handlers;
 //	}
+
+
+	// name
 	@Override
-	public void print(LEVEL level, String msg) {
-		if(msg == null) msg = "[null]";
-		if(level == null) throw new NullPointerException("level cannot be null");
-		printRaw(
-			newRecord(msg, level, loggerName)
-		);
+	public String getName() {
+		return name;
 	}
 	@Override
-	public void printRaw(pxnLogRecord logRecord) {
-		if(logRecord == null) return;
-		synchronized(logHandlers) {
-			if(logHandlers.size() == 0) {
-				System.out.println(logRecord.toString());
-			} else {
-				for(pxnLoggerHandler handler : logHandlers.values())
-					handler.print(logRecord);
-			}
+	public String getNameFormatted() {
+		return "["+getName()+"]";
+	}
+
+
+	// level
+	@Override
+	public pxnLevel getLevel() {
+		return level;
+	}
+	@Override
+	public pxnLevel getLevel(String handlerName) {
+//TODO:
+		return level;
+	}
+	@Override
+	public void setLevel(pxnLevel level) {
+		if(level == null) throw new NullPointerException("level cannot be null!");
+		this.level = level;
+		// set child levels
+		synchronized(loggers) {
+			for(pxnLogger log : loggers.values())
+				log.setLevel(level);
+		}
+		pxnLog.get().Publish(level, "Set log level: "+level.toString());
+	}
+	@Override
+	public void setLevel(String handlerName, pxnLevel level) {
+//TODO:
+		setLevel(level);
+//		if(handlerName.equalsIgnoreCase("CONSOLE"))
+		// update debug mode
+		debug = getLevel().isLoggable(pxnLevel.DEBUG);
+	}
+	// is level loggable
+	@Override
+	public boolean isLoggable(pxnLevel level) {
+		return getLevel().isLoggable(level);
+	}
+	@Override
+	public boolean isDebug() {
+		return debug;
+	}
+
+
+	@Override
+	public void Publish(pxnLogRecord rec) {
+		if(!isLoggable(rec.getLevel())) return;
+		if(parent != null) {
+			parent.Publish(rec);
+			return;
+		}
+		// pass to handlers
+		synchronized(handlers) {
+			for(pxnLogHandler h : handlers)
+				h.Publish(rec);
 		}
 	}
 	@Override
-	public void printRaw(String msg) {
-		if(msg == null) msg = "[null]";
-		synchronized(logHandlers) {
-			for(pxnLoggerHandler handler : logHandlers.values())
-				handler.print(msg);
+	public void Publish(String msg) {
+		if(msg == null) msg = "<null>";
+		synchronized(handlers) {
+			for(pxnLogHandler h : handlers)
+				h.Publish(msg);
 		}
 	}
 	@Override
-	public void printMajor(String msg) {
-		if(msg == null) msg = "[null]";
-		printRaw("[[ "+msg+" ]]");
-	}
-
-
-	// debug
-	@Override
-	public void debug(String msg) {
-		print(LEVEL.DEBUG, msg);
-	}
-	// info
-	@Override
-	public void info(String msg) {
-		print(LEVEL.INFO, msg);
-	}
-	// warning
-	@Override
-	public void warning(String msg) {
-		print(LEVEL.WARNING, msg);
-	}
-	// severe
-	@Override
-	public void severe(String msg) {
-		print(LEVEL.SEVERE, msg);
-	}
-	// fatal error
-	@Override
-	public void fatal(String msg) {
-		print(LEVEL.FATAL, msg);
-		System.exit(1);
-	}
-
-
-	// print exception - stack trace
-	@Override
-	public void exception(Throwable e) {
-		exception(null, e);
+	public void Major(String msg) {
+//TODO:
+Publish(msg);
+//if(msg == null) msg = "[null]";
+//printRaw("[[ "+msg+" ]]");
 	}
 	@Override
-	public void exception(String msg, Throwable e) {
-//TODO: use msg argument
-		if(e == null) throw new NullPointerException("throwable can't be null!");
-//		this.severe(e.getStackTrace().toString());
-		e.printStackTrace();
-//		Throwable throwable = logrecord.getThrown();
-//		if (throwable != null) {
-//			StringWriter stringwriter = new StringWriter();
-//			throwable.printStackTrace(new PrintWriter(stringwriter));
-//			stringbuilder.append(stringwriter.toString());
-//		}
+	public void Publish(pxnLevel level, String msg) {
+		Publish(pxnLogRecord.Create(this, level, msg));
 	}
 	@Override
-	public void debug(Throwable e) {
-//TODO: only throw exception if in debug mode
-		exception(e);
+	public void Publish(pxnLevel level, String msg, Throwable ex) {
+		Publish(pxnLogRecord.Create(this, level, msg, ex));
 	}
 
 

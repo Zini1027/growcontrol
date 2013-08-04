@@ -1,42 +1,42 @@
-package com.growcontrol.gcCommon.pxnLogger;
+package com.growcontrol.gcCommon.pxnLogger.handlers;
 
-import com.growcontrol.gcCommon.pxnLogger.pxnLevel.LEVEL;
-
-
-public class pxnLoggerFile extends Thread implements pxnLoggerHandler {
+import com.growcontrol.gcCommon.pxnLogger.pxnLogRecord;
 
 
-	@Override
-	public void print(pxnLogRecord logRecord) {
+public class pxnLogHandlerFile implements pxnLogHandler {
+	private static final String handlerName = "FILE";
+
+
+	// handler instance
+	private static pxnLogHandlerConsole handler = null;
+	public static synchronized pxnLogHandlerConsole get() {
+		if(handler == null)
+			handler = new pxnLogHandlerConsole();
+		return handler;
 	}
 
 
 	@Override
-	public void print(String msg) {
+	public String getName() {
+		return handlerName;
+	}
+
+
+	// print to file
+	@Override
+	public void Publish(pxnLogRecord rec) {
+	}
+	@Override
+	public void Publish(String msg) {
 	}
 
 
 	@Override
-	public pxnLevel getLevel() {
-		return null;
+	public void Flush() {
 	}
 	@Override
-	public void setLevel(LEVEL level) {
+	public void Close() {
 	}
-	@Override
-	public void setForceDebug(boolean forceDebug) {
-	}
-
-
-
-//@SuppressWarnings("unused")
-//	private boolean strip = false;
-//
-//	// output buffer
-//@SuppressWarnings("unused")
-//	private String buffer = "";
-//@SuppressWarnings("unused")
-//	private FileHandler fileHandler = null;
 
 
 //	public pxnLoggerFile() {
@@ -50,24 +50,6 @@ public class pxnLoggerFile extends Thread implements pxnLoggerHandler {
 //		} catch(Exception e) {
 //			global.log(Level.WARNING, "Failed to log to server.log", exception);
 //		}
-//	}
-
-
-//	@Override
-//	public void print(gcLogRecord logRecord) {
-//		if(logRecord == null) throw new NullPointerException("logRecord cannot be null!");
-//		fileHandler
-//	}
-//	@Override
-//	public void print(String msg) {
-//		if(msg == null) throw new NullPointerException("msg cannot be null!");
-//		fileHandler
-//	}
-
-
-//	@Override
-//	public void setLogLevel(LEVEL level) {
-//		this.level = level;
 //	}
 
 

@@ -1,100 +1,79 @@
 package com.growcontrol.gcCommon.pxnLogger;
 
-
-public class pxnLevel {
-
-	// log levels
-	public static enum LEVEL {
-		DEBUG,
-		INFO,
-		WARNING,
-		SEVERE,
-		FATAL
-	};
-	protected static final int LEVEL_DEBUG   = 50;
-	protected static final int LEVEL_INFO    = 40;
-	protected static final int LEVEL_WARNING = 30;
-	protected static final int LEVEL_SEVERE  = 10;
-	protected static final int LEVEL_FATAL   = 0;
-
-	protected LEVEL level = LEVEL.INFO;
-	protected boolean forceDebug = false;
+import java.util.ArrayList;
+import java.util.List;
 
 
-	public pxnLevel() {
-		this(null);
-	}
-	public pxnLevel(LEVEL level) {
-		if(level != null)
-			this.level = level;
-	}
+public class pxnLevel implements java.io.Serializable {
+	private static final long serialVersionUID = 6L;
+
+	private static final transient List<pxnLevel> knownLevels = new ArrayList<pxnLevel>();
+
+	public static final transient pxnLevel OFF     = new pxnLevel("OFF",     Integer.MAX_VALUE);
+	public static final transient pxnLevel FATAL   = new pxnLevel("FATAL",   2000);
+	public static final transient pxnLevel SEVERE  = new pxnLevel("SEVERE",  1000);
+	public static final transient pxnLevel WARNING = new pxnLevel("WARNING", 900);
+	public static final transient pxnLevel INFO    = new pxnLevel("INFO",    800);
+	public static final transient pxnLevel CONFIG  = new pxnLevel("CONFIG",  700);
+	public static final transient pxnLevel DEBUG   = new pxnLevel("DEBUG",   600);
+	public static final transient pxnLevel FINE    = new pxnLevel("FINE",    500);
+	public static final transient pxnLevel FINER   = new pxnLevel("FINER",   400);
+	public static final transient pxnLevel FINEST  = new pxnLevel("FINEST",  300);
+	public static final transient pxnLevel ALL     = new pxnLevel("ALL",     Integer.MIN_VALUE);
+
+	private final String name;
+	private final int value;
 
 
-	// set log level
-	public void setLevel(String level) {
-		setLevel(levelFromString(level));
-	}
-	public void setLevel(LEVEL level) {
-		if(level == null) throw new NullPointerException("level cannot be null!");
-		this.level = level;
-		pxnLogger.get().print(level, "Set log level: "+level.toString());
-//		pxnLogger.get().debug("Set log level to: "+levelToString(level));
-	}
-	// get log level
-	public LEVEL getLevel() {
-		if(forceDebug)
-			return LEVEL.DEBUG;
-		return level;
-	}
-	public String getLevelString() {
-		return levelToString(getLevel());
-	}
-	// force debug mode
-	public void setForceDebug(boolean forceDebug) {
-		this.forceDebug = forceDebug;
+	protected pxnLevel(String name, int value) {
+		if(name == null || name.isEmpty()) throw new NullPointerException("name cannot be null!");
+		this.name = name.toUpperCase();
+		this.value = value;
+		synchronized(knownLevels) {
+			knownLevels.add(this);
+		}
 	}
 
 
-	// test level
-	public static boolean isLoggable(LEVEL setLevel, LEVEL testLevel) {
-		return isLoggable(setLevel, levelToInt(testLevel));
+	public static pxnLevel findLevel(int value) {
+//TODO:
+		return null;
 	}
-	public static boolean isLoggable(LEVEL setLevel, int testLevel) {
-		if(setLevel == null) throw new NullPointerException();
-		return levelToInt(setLevel) >= testLevel;
-	}
-	public boolean isDebug() {
-		return level.equals(LEVEL.DEBUG);
+	public static pxnLevel parse(String name) {
+		if(name == null || name.isEmpty()) return null;
+		name = name.toUpperCase();
+		synchronized(knownLevels) {
+			for(pxnLevel level : knownLevels)
+				if(name.equals(level.getName()))
+					return level;
+		}
+		return null;
 	}
 
 
-//	public String toString() {
-//	return levelToString(this.level);
-//}
-	// log levels
-	public static String levelToString(LEVEL level) {
-		if(level == null) throw new NullPointerException("level cannot be null!");
-		if(level.equals(LEVEL.FATAL))   return "FATAL";
-		if(level.equals(LEVEL.SEVERE))  return "SEVERE";
-		if(level.equals(LEVEL.WARNING)) return "WARNING";
-		if(level.equals(LEVEL.INFO))    return "info";
-		return "debug";
+	public String getName() {
+		return name;
 	}
-	public static LEVEL levelFromString(String level) {
-		if(level == null) throw new NullPointerException("level cannot be null!");
-		if(level.equalsIgnoreCase("fatal"))   return LEVEL.FATAL;
-		if(level.equalsIgnoreCase("severe"))  return LEVEL.SEVERE;
-		if(level.equalsIgnoreCase("warning")) return LEVEL.WARNING;
-		if(level.equalsIgnoreCase("info"))    return LEVEL.INFO;
-		return LEVEL.DEBUG;
+	public String toString() {
+		return getName();
 	}
-	public static int levelToInt(LEVEL level) {
-		if(level == null) throw new NullPointerException("level cannot be null!");
-		if(level.equals(LEVEL.FATAL))   return LEVEL_FATAL;
-		if(level.equals(LEVEL.SEVERE))  return LEVEL_SEVERE;
-		if(level.equals(LEVEL.WARNING)) return LEVEL_WARNING;
-		if(level.equals(LEVEL.INFO))    return LEVEL_INFO;
-		return LEVEL_DEBUG;
+	public int getValue() {
+		return value;
+	}
+
+
+	// is level loggable
+	public boolean isLoggable(pxnLevel level) {
+		if(level == null) return false;
+		int lvl = level.getValue();
+		// disabled
+		if(value == pxnLevel.OFF.getValue()) return false;
+		// forced
+		if(value == pxnLevel.ALL.getValue()) return true;
+		// is always
+		if(lvl == pxnLevel.ALL.getValue()) return true;
+		// compare by value
+		return value <= lvl;
 	}
 
 

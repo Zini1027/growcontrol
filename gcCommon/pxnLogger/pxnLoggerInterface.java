@@ -1,27 +1,63 @@
 package com.growcontrol.gcCommon.pxnLogger;
 
-import com.growcontrol.gcCommon.pxnLogger.pxnLevel.LEVEL;
-
 
 public interface pxnLoggerInterface {
 
-	// logger name
-	public String getLoggerName();
+	//### pxnLogger ###//
 
-//	// log level
-//	public pxnLevel getLevel(String handlerName);
-//	public void setLevel(String handlerName, LEVEL level);
-//	public void setLevel(String handlerName, String level);
+	// get logger
+	public pxnLogger get(String name);
+	public pxnLogger getAnon(String name);
+	public pxnLogger getLogger(String name, boolean anon);
 
-//	// log handlers
-//	public pxnLoggerHandlerInterface getLogHandler(String handlerName);
-//	public void addLogHandler(String handlerName, pxnLoggerHandlerInterface handler);
+	// parent logger
+	public pxnLogger getParent();
+//	public List<pxnLogHandler> getHandlers();
+
+	// name
+	public String getName();
+	public String getNameFormatted();
+	// level
+	public pxnLevel getLevel();
+	public pxnLevel getLevel(String handlerName);
+	public void setLevel(pxnLevel level);
+	public void setLevel(String handlerName, pxnLevel level);
+	public boolean isLoggable(pxnLevel level);
+	public boolean isDebug();
 
 	// print to handlers
-//	public void print(String msg);
-	public void print(LEVEL level, String msg);
-	public void printRaw(pxnLogRecord logRecord);
-	public void printRaw(String msg);
-	public void printMajor(String msg);
+	public void Publish(pxnLogRecord rec);
+	public void Publish(String msg);
+	public void Publish(pxnLevel level, String msg);
+	public void Publish(pxnLevel level, String msg, Throwable ex);
+	public void Major(String msg);
+
+
+
+	//### pxnLogPrinter ###//
+
+	// print writers
+	public void fatal    (String msg);
+	public void severe   (String msg);
+	public void warning  (String msg);
+	public void info     (String msg);
+	public void config   (String msg);
+	public void debug    (String msg);
+	public void fine     (String msg);
+	public void finer    (String msg);
+	public void finest   (String msg);
+	// exception
+	public void exception(Throwable ex);
+	// message with exception
+	public void exception(String msg, Throwable ex);
+	public void fatal    (String msg, Throwable ex);
+	public void severe   (String msg, Throwable ex);
+	public void warning  (String msg, Throwable ex);
+	public void info     (String msg, Throwable ex);
+	public void config   (String msg, Throwable ex);
+	public void debug    (String msg, Throwable ex);
+	public void fine     (String msg, Throwable ex);
+	public void finer    (String msg, Throwable ex);
+	public void finest   (String msg, Throwable ex);
 
 }

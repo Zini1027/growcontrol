@@ -1,71 +1,68 @@
-package com.growcontrol.gcCommon.pxnLogger;
+package com.growcontrol.gcCommon.pxnLogger.handlers;
 
-import java.io.IOException;
+import org.fusesource.jansi.Ansi;
 
-
-public class pxnLoggerConsole implements pxnLoggerHandler {
-
-	protected final jline.ConsoleReader reader;
-	protected pxnLevel level;
+import com.growcontrol.gcCommon.pxnLogger.pxnLogRecord;
 
 
-	public pxnLoggerConsole(jline.ConsoleReader reader, pxnLevel level) {
-		if(reader == null) throw new NullPointerException("reader cannot be null!");
-		if(level  == null) throw new NullPointerException("level cannot be null!");
-		this.reader = reader;
-		this.level = level;
+public class pxnLogHandlerConsole implements pxnLogHandler {
+	private static final String handlerName = "CONSOLE";
+
+
+	// handler instance
+	private static pxnLogHandlerConsole handler = null;
+	public static synchronized pxnLogHandlerConsole get() {
+		if(handler == null)
+			handler = new pxnLogHandlerConsole();
+		return handler;
+	}
+
+
+	@Override
+	public String getName() {
+		return handlerName;
 	}
 
 
 	// print to console
 	@Override
-	public void print(pxnLogRecord logRecord) {
-		if(logRecord == null) throw new NullPointerException("logRecord cannot be null!");
-		if(!pxnLevel.isLoggable(level.getLevel(), logRecord.level)) return;
-		print(logRecord.toString());
-	}
-	@Override
-	public void print(String msg) {
-		if(msg == null) msg = "null";
-		// no console handler
-		if(reader == null) {
-			System.out.print(msg);
-		} else {
-			// print using jansi
-			try {
-				reader.printString(jline.ConsoleReader.RESET_LINE+"");
-				reader.printString(msg);
-				reader.printNewline();
-				reader.flushConsole();
-//				reader.drawLine();
-//				reader.redrawLine();
-				try {
-					reader.drawLine();
-				} catch (Throwable e) {
-					reader.getCursorBuffer().clearBuffer();
-				}
-				reader.flushConsole();
-			} catch (IOException e) {
-				e.printStackTrace();
-				System.out.print(msg);
-			}
+	public void Publish(pxnLogRecord rec) {
+		for(String line : rec.getMessage()) {
+			System.out.println(
+				Ansi.ansi().render(line).toString()
+			);
 		}
+//ConsoleReader reader = new ConsoleReader();
+//try {
+//reader.printString(jline.ConsoleReader.RESET_LINE+"");
+//reader.printString(msg);
+//reader.printNewline();
+//reader.flushConsole();
+////reader.drawLine();
+////reader.redrawLine();
+//try {
+//	reader.drawLine();
+//} catch (Throwable e) {
+//	reader.getCursorBuffer().clearBuffer();
+//}
+//reader.flushConsole();
+//} catch (IOException e) {
+//e.printStackTrace();
+//System.out.print(msg);
+//}
+	}
+	@Override
+	public void Publish(String msg) {
+		System.out.println(msg);
 	}
 
 
-	// logger level
 	@Override
-	public void setLevel(pxnLevel.LEVEL level) {
-		this.level.setLevel(level);
+	public void Flush() {
+		System.out.flush();
 	}
 	@Override
-	public pxnLevel getLevel() {
-		return this.level;
-	}
-	// force debug mode
-	@Override
-	public void setForceDebug(boolean forceDebug) {
-		this.level.setForceDebug(forceDebug);
+	public void Close() {
 	}
 
 
