@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.growcontrol.gcCommon.pxnApp;
+import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 import com.growcontrol.gcCommon.pxnScheduler.pxnScheduler;
 import com.growcontrol.gcCommon.pxnScheduler.pxnTicker;
@@ -15,10 +16,7 @@ import com.growcontrol.gcServer.serverSocket.gcPacketReader;
 
 public class gcServer extends pxnApp {
 	public static final String appName = "gcServer";
-	public static final String version = "3.0.5";
-	public static final String defaultPrompt = ">";
-
-	protected static gcServer server = null;
+	public static final String version = "3.0.6";
 
 	// server socket pool
 	private pxnSocketServer socket = null;
@@ -28,10 +26,18 @@ public class gcServer extends pxnApp {
 
 
 	// server instance
-	public gcServer() {
-	}
 	public static gcServer get() {
-		return server;
+		return (gcServer) instance;
+	}
+
+
+	@Override
+	public String getAppName() {
+		return appName;
+	}
+	@Override
+	public String getVersion() {
+		return version;
 	}
 
 
@@ -39,7 +45,7 @@ public class gcServer extends pxnApp {
 	@Override
 	public void Start() {
 		super.Start();
-		pxnLogger log = pxnLogger.get();
+		pxnLogger log = pxnLog.get();
 if(!consoleEnabled) {
 System.out.println("Console input is disabled due to noconsole command argument.");
 //TODO: currently no way to stop the server with no console input
@@ -109,7 +115,7 @@ System.exit(0);
 //log.severe("Listing Com Ports:");
 //for(Map.Entry<String, String> entry : Serial.listPorts().entrySet())
 //log.severe(entry.getKey()+" - "+entry.getValue());
-		log.printRaw("[[ GC Server Running! ]]");
+		log.Major("[[ GC Server Running! ]]");
 
 
 //TODO: remove temp scheduled task
@@ -138,7 +144,7 @@ System.exit(0);
 		switch(step) {
 		// first step (announce)
 		case 10:
-			pxnLogger.get().info("Stopping GC Server..");
+			pxnLog.get().info("Stopping GC Server..");
 			break;
 		case 9:
 			// close socket listener
@@ -197,25 +203,15 @@ System.exit(0);
 
 	// process command
 	@Override
-	public void processCommand(String line) {
+	protected void ProcessCommand(String line) {
 		if(line == null) throw new NullPointerException("line cannot be null");
 		line = line.trim();
 		if(line.isEmpty()) return;
 		// trigger event
 		if(!ServerListeners.get().triggerCommand(line)) {
 			// command not found
-			pxnLogger.get().warning("Unknown command: "+line);
+			pxnLog.get().warning("Unknown command: "+line);
 		}
-	}
-
-
-	@Override
-	public String getAppName() {
-		return appName;
-	}
-	@Override
-	public String getVersion() {
-		return version;
 	}
 
 
