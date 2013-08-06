@@ -1,7 +1,13 @@
 package com.growcontrol.gcServer;
 
+import java.io.IOException;
+
+import jline.console.ConsoleReader;
+
 import com.growcontrol.gcCommon.pxnCommand.pxnCommandEvent;
 import com.growcontrol.gcCommon.pxnCommand.pxnCommandsHolder;
+import com.growcontrol.gcCommon.pxnLogger.pxnConsole;
+import com.growcontrol.gcCommon.pxnLogger.pxnLevel;
 import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 
 
@@ -33,6 +39,7 @@ public class ServerCommands extends pxnCommandsHolder {
 		addCommand("help")
 			.addAlias("?");
 		addCommand("log")
+			.addAlias("level")
 			.setUsage("log level info - Sets or displays the log level.");
 		addCommand("show")
 			.setUsage("Displays additional information.");
@@ -126,6 +133,14 @@ public class ServerCommands extends pxnCommandsHolder {
 
 	// clear command
 	private static boolean _clear() {
+		try {
+			ConsoleReader reader = pxnConsole.getReader();
+			if(reader == null) return false;
+			reader.clearScreen();
+			reader.flush();
+		} catch (IOException e) {
+			pxnLog.get().exception(e);
+		}
 		return true;
 	}
 
@@ -138,13 +153,32 @@ public class ServerCommands extends pxnCommandsHolder {
 
 	// log command
 	private static boolean _log(String[] args) {
-		if(args.length == 1) {
-			gcServer.get().setLogLevel(args[0]);
+		pxnLevel level = null;
+		// 0 args
+		if(args.length == 0) {
+			_log();
 			return true;
+		} else
+		// 1 arg
+		if(args.length == 1) {
+			if(args[0].equalsIgnoreCase("level")) {
+				_log();
+				return true;
+			}
+			level = pxnLevel.parse(args[0]);
+		} else
+		// 2 args
+		if(args.length == 2 && args[0].equalsIgnoreCase("level")) {
+			level = pxnLevel.parse(args[1]);
 		}
-//TODO: command should be "log level debug"
-		System.out.println("Log level: "+pxnLog.get().getLevel("console").toString());
+		// invalid
+		if(level == null)
+			return false;
+		pxnLog.get().setLevel(level);
 		return true;
+	}
+	private static void _log() {
+		pxnLog.get().Publish("Current log level: "+pxnLog.get().getLevel().toString());
 	}
 
 

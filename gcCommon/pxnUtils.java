@@ -198,6 +198,24 @@ public final class pxnUtils {
 	}
 
 
+	public static boolean isNumeric(String text) {
+		if(text == null || text.isEmpty()) return false;
+		try {
+			Integer.parseInt(text);
+		} catch (Exception ignore) {
+			return false;
+		}
+		return true;
+	}
+	public static Integer toNumber(String text) {
+		try {
+			return Integer.parseInt(text);
+		} catch (Exception ignore) {
+			return null;
+		}
+	}
+
+
 	// cast a collection to list
 	public static <T> List<T> castList(Class<? extends T> clss, Collection<?> c) {
 		if(clss == null) throw new NullPointerException("clss can't be null!");
