@@ -27,7 +27,7 @@ public class gcServer extends pxnApp {
 
 	// server instance
 	public static gcServer get() {
-		return (gcServer) instance;
+		return (gcServer) appInstance;
 	}
 	protected gcServer() {
 		super();
@@ -77,6 +77,7 @@ System.exit(0);
 		}
 
 		// load scheduler
+		log.info("Starting schedulers..");
 		pxnScheduler.get(getAppName()).start();
 		// load ticker
 		pxnTicker.get();
@@ -109,10 +110,6 @@ System.exit(0);
 			}
 		});
 		socket.Start();
-
-//		// start schedulers
-//		log.info("Starting schedulers..");
-//		gcSchedulerManager.StartAll();
 
 //TODO: remove this
 //log.severe("Listing Com Ports:");
