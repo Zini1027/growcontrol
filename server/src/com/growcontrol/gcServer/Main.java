@@ -5,9 +5,7 @@ import org.fusesource.jansi.AnsiConsole;
 
 import com.growcontrol.gcCommon.pxnApp;
 import com.growcontrol.gcCommon.pxnMain;
-import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnLogger.pxnLog;
-import com.growcontrol.gcCommon.pxnParser.pxnParser;
 import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
 import com.growcontrol.gcServer.serverPlugin.gcServerPluginManager;
 
@@ -20,13 +18,13 @@ public class Main extends pxnMain {
 	}
 	@Override
 	protected pxnApp getAppInstance() {
-		return gcServer.get();
+		return new gcServer();
 	}
 
 
 	// app startup
 	@Override
-	protected void StartMain(pxnParser args) {
+	protected void StartMain() {
 //		if(gcServer.server != null) throw new UnsupportedOperationException("Cannot redefine singleton gcServer; already running");
 //		pxnLog.addLogHandler(
 //			"console",
@@ -35,68 +33,24 @@ public class Main extends pxnMain {
 //		);
 		// start gc server
 		getAppInstance();
-		// process args
-		args.reset();
-		while(args.next()) {
-			String arg = args.getNext();
-			switch(arg.toLowerCase()) {
-			// version
-			case "--version":
-				System.out.println("GrowControl "+gcServer.version+" Server");
-				System.exit(0);
-			// no console
-			case "--no-console":
-				gcServer.get().setConsoleEnabled(false);
-				addArgsMsg("no-console");
-				break;
-			// debug mode
-			case "--debug":
-				gcServer.get().setForceDebug(true);
-				addArgsMsg("debug");
-				break;
-			// configs path
-			case "--configs-path":
-				if(!args.next()) {
-					System.out.println("Incomplete! --configs-path argument");
-					break;
-				}
-				gcServer.get().setConfigsPath(args.getPart());
-				System.out.println("Set configs path to: "+args.getPart());
-				addArgsMsg("configs-path");
-				break;
-			case "--plugins-path":
-				// plugins path
-				if(!args.next()) {
-					System.out.println("Incomplete! --configs-path argument");
-					break;
-				}
-				gcServerPluginManager.get(args.getPart());
-				System.out.println("Set plugins path to: "+args.getPart());
-				addArgsMsg("plugins-path");
-			default:
-				System.out.println("Unknown argument: "+arg);
-				break;
-			}
-		}
-		// queue welcome message
-		pxnThreadQueue.addToMain("server-welcome", new Runnable() {
-			@Override
-			public void run() {
-				// welcome message
-				displayLogoHeader();
-				displayStartupVars();
-pxnUtils.Sleep(2000);
-			}
-		});
+		// welcome message
+		displayLogoHeader();
+		displayStartupVars();
+		// parse command args
+		ProcessArgs();
 		// queue server startup
 		pxnThreadQueue.addToMain("server-startup", new Runnable() {
 			@Override
 			public void run() {
-				// start server
-				gcServer.get().Start();
+				try {
+					// start server
+					gcServer.get().Start();
+				} catch (Exception e) {
+					pxnLog.get().fatal("Failed to start server!", e);
+					System.exit(1);
+				}
 			}
 		});
-pxnUtils.Sleep(5000);
 		// start/hand-off thread to main queue
 		pxnThreadQueue.getMain().run();
 		// main thread ended
@@ -104,6 +58,59 @@ pxnUtils.Sleep(5000);
 		System.out.println();
 		System.out.println();
 		System.exit(0);
+	}
+	private void ProcessArgs() {
+		synchronized(args) {
+			// process args
+			args.reset();
+			while(args.hasNext()) {
+				String arg = args.getNext();
+				if(arg.startsWith("--"))
+					arg = arg.toLowerCase();
+				switch(arg) {
+				// version
+				case "--version":
+				case "-V":
+					System.out.println("GrowControl "+gcServer.version+" Server");
+					System.exit(0);
+					// no console
+				case "--no-console":
+				case "-n":
+					gcServer.get().setConsoleEnabled(false);
+					addArgsMsg("no-console");
+					break;
+					// debug mode
+				case "--debug":
+				case "-d":
+					gcServer.get().setForceDebug(true);
+					addArgsMsg("debug");
+					break;
+					// configs path
+				case "--configs-path":
+					if(!args.next()) {
+						System.out.println("Incomplete! --configs-path argument");
+						break;
+					}
+					gcServer.get().setConfigsPath(args.getPart());
+					System.out.println("Set configs path to: "+args.getPart());
+					addArgsMsg("configs-path");
+					break;
+				case "--plugins-path":
+				case "-p":
+					// plugins path
+					if(!args.next()) {
+						System.out.println("Incomplete! --configs-path argument");
+						break;
+					}
+					gcServerPluginManager.get(args.getPart());
+					System.out.println("Set plugins path to: "+args.getPart());
+					addArgsMsg("plugins-path");
+				default:
+					System.out.println("Unknown argument: "+arg);
+					break;
+				}
+			}
+		}
 	}
 
 
