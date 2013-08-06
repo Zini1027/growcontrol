@@ -5,6 +5,7 @@ import com.growcontrol.gcCommon.pxnLogger.pxnConsole;
 import com.growcontrol.gcCommon.pxnLogger.pxnLevel;
 import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
+import com.growcontrol.gcServer.ServerConfig;
 
 
 public abstract class pxnApp {
@@ -52,13 +53,13 @@ public abstract class pxnApp {
 		Thread.currentThread().setName("Main-"+getAppName()+"-Thread");
 		// single instance lock
 		pxnUtils.lockInstance(getAppName()+".lock");
-		pxnLog.get().Major("Starting "+getAppName());
+		pxnLog.get().Major("Starting "+getAppName()+"..");
 		pxnUtils.addLibraryPath("lib");
 		// query time server
 		pxnClock clock = pxnClock.getBlocking();
 		if(startTime == -1)
 			startTime = clock.Millis();
-System.out.println(startTime);
+//System.out.println(startTime);
 	}
 	// start console input thread
 	protected void StartConsole() {
@@ -112,11 +113,13 @@ System.out.println(startTime);
 
 
 	// log level
-	public void setLogLevel(String levelStr) {
+	public void updateLogLevel() {
 		if(forceDebug) {
 			pxnLog.get().setLevel(pxnLevel.DEBUG);
 			return;
 		}
+		if(!ServerConfig.isLoaded()) return;
+		String levelStr = ServerConfig.get().LogLevel();
 		if(levelStr != null && !levelStr.isEmpty()) {
 			pxnLog.get().setLevel(
 				pxnLevel.parse(levelStr)
@@ -130,7 +133,7 @@ System.out.println(startTime);
 	}
 	public void setForceDebug(boolean enabled) {
 		this.forceDebug = enabled;
-		this.setLogLevel(null);
+		updateLogLevel();
 	}
 	public void setConfigsPath(String path) {
 		this.configsPath = path;

@@ -27,6 +27,13 @@ public class ServerConfig {
 			serverConfig = new ServerConfig(dirPath);
 		return serverConfig;
 	}
+	public static boolean isLoaded() {
+		if(serverConfig == null)
+			return false;
+		if(serverConfig.config == null)
+			return false;
+		return serverConfig.config.isLoaded();
+	}
 
 
 	// load config.yml

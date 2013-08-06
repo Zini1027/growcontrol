@@ -60,6 +60,10 @@ public class pxnConfig {
 		if(jar != null) jar.close();
 		return config;
 	}
+	// is loaded
+	public boolean isLoaded() {
+		return !data.isEmpty();
+	}
 
 
 	// config instance
