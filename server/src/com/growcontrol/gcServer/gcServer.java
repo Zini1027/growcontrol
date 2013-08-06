@@ -29,6 +29,9 @@ public class gcServer extends pxnApp {
 	public static gcServer get() {
 		return (gcServer) instance;
 	}
+	protected gcServer() {
+		super();
+	}
 
 
 	@Override
@@ -61,7 +64,7 @@ System.exit(0);
 			return;
 		}
 		// set log level
-		setLogLevel(config.LogLevel());
+		updateLogLevel();
 		// init listeners
 		ServerListeners.get();
 		// start console input thread
@@ -115,7 +118,7 @@ System.exit(0);
 //log.severe("Listing Com Ports:");
 //for(Map.Entry<String, String> entry : Serial.listPorts().entrySet())
 //log.severe(entry.getKey()+" - "+entry.getValue());
-		log.Major("[[ GC Server Running! ]]");
+		log.Major("GC Server Running!");
 
 
 //TODO: remove temp scheduled task
@@ -123,7 +126,7 @@ System.exit(0);
 //pxnSchedulerTask task = new pxnSchedulerTask(true, true) {
 //	@Override
 //	public void run() {
-//		System.out.println("333333333 tick");
+//		pxnLog.get().Publish("333333333 tick");
 //	}
 //	@Override
 //	public String getTaskName() {
@@ -210,7 +213,7 @@ System.exit(0);
 		// trigger event
 		if(!ServerListeners.get().triggerCommand(line)) {
 			// command not found
-			pxnLog.get().warning("Unknown command: "+line);
+			pxnLog.get().Publish("Unknown command: "+line);
 		}
 	}
 
