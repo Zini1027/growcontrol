@@ -103,10 +103,11 @@ public class pxnConsole implements Runnable {
 			pxnLog.get().exception(new NullPointerException("reader not set!"));
 			return;
 		}
+		String line;
 		while(!stopping) {
+			line = null;
 			if(thread != null && thread.isInterrupted()) break;
 			// wait for commands
-			String line = null;
 			try {
 				System.out.print('\r');
 				line = reader.readLine();

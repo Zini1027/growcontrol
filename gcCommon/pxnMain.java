@@ -5,7 +5,7 @@ import com.growcontrol.gcCommon.pxnParser.pxnParser;
 
 
 public abstract class pxnMain {
-	protected static pxnMain instance = null;
+	protected static pxnMain mainInstance = null;
 
 	// new app instance
 	protected abstract pxnApp getAppInstance();
@@ -18,25 +18,25 @@ public abstract class pxnMain {
 
 	protected static void Init(pxnMain main, String[] args) {
 		if(main == null) throw new NullPointerException("main cannot be null!");
-		setInstance(main);
+		setMainInstance(main);
 		// init logger
 		pxnLog.get();
 		try {
 			// start app main
-			instance.args = new pxnParser( "args:- "+pxnUtils.addStringSet("", args, " ") );
-			instance.StartMain();
+			mainInstance.args = new pxnParser( "args:- "+pxnUtils.addStringSet("", args, " ") );
+			mainInstance.StartMain();
 		} catch (Exception e) {
 			pxnLog.get().fatal("Failed to execute StartMain()", e);
 		}
 	}
-	private static synchronized void setInstance(pxnMain main) {
+	private static synchronized void setMainInstance(pxnMain main) {
 		// already running?
-		if(instance != null) {
+		if(mainInstance != null) {
 			//throw new UnsupportedOperationException("cannot redefine singleton instance of this app; already running!");
 			System.out.println("Program already started?");
 			System.exit(1);
 		}
-		instance = main;
+		mainInstance = main;
 	}
 	@Override
 	public Object clone() throws CloneNotSupportedException {

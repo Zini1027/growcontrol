@@ -9,7 +9,7 @@ import com.growcontrol.gcServer.ServerConfig;
 
 
 public abstract class pxnApp {
-	protected static pxnApp instance = null;
+	protected static pxnApp appInstance = null;
 
 	// runtime args
 	protected boolean consoleEnabled = true;
@@ -29,19 +29,19 @@ public abstract class pxnApp {
 
 	// app instance
 	public static pxnApp get() {
-		return instance;
+		return appInstance;
 	}
 	protected pxnApp() {
-		setInstance(this);
+		setAppInstance(this);
 	}
-	private static synchronized void setInstance(pxnApp app) {
+	private static synchronized void setAppInstance(pxnApp app) {
 		// already running?
-		if(instance != null) {
+		if(appInstance != null) {
 			//throw new UnsupportedOperationException("cannot redefine singleton instance of this app; already running!");
 			System.out.println("Program already started?");
 			System.exit(1);
 		}
-		instance = app;
+		appInstance = app;
 	}
 	@Override
 	public Object clone() throws CloneNotSupportedException {
