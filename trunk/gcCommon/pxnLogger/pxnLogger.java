@@ -1,8 +1,11 @@
 package com.growcontrol.gcCommon.pxnLogger;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import jline.console.ConsoleReader;
 
 import com.growcontrol.gcCommon.pxnLogger.handlers.pxnLogHandler;
 import com.growcontrol.gcCommon.pxnLogger.handlers.pxnLogHandlerConsole;
@@ -102,14 +105,19 @@ public class pxnLogger extends pxnLogPrinter implements pxnLoggerInterface {
 	}
 	@Override
 	public void setLevel(pxnLevel level) {
+		if(level.equals(pxnLevel.OFF))
+			pxnLog.get().Publish(level, "Set log level: "+pxnLevel.OFF.toString());
+		setLevels(level);
+		pxnLog.get().Publish(level, "Set log level: "+level.toString());
+	}
+	private void setLevels(pxnLevel level) {
 		if(level == null) throw new NullPointerException("level cannot be null!");
 		this.level = level;
 		// set child levels
 		synchronized(loggers) {
 			for(pxnLogger log : loggers.values())
-				log.setLevel(level);
+				log.setLevels(level);
 		}
-		pxnLog.get().Publish(level, "Set log level: "+level.toString());
 	}
 	@Override
 	public void setLevel(String handlerName, pxnLevel level) {
@@ -153,10 +161,8 @@ public class pxnLogger extends pxnLogPrinter implements pxnLoggerInterface {
 	}
 	@Override
 	public void Major(String msg) {
-//TODO:
-Publish(msg);
-//if(msg == null) msg = "[null]";
-//printRaw("[[ "+msg+" ]]");
+		if(msg == null) msg = "<null>";
+		Publish(" [[ "+msg+" ]]");
 	}
 	@Override
 	public void Publish(pxnLevel level, String msg) {
@@ -165,6 +171,18 @@ Publish(msg);
 	@Override
 	public void Publish(pxnLevel level, String msg, Throwable ex) {
 		Publish(pxnLogRecord.Create(this, level, msg, ex));
+	}
+
+
+	// clear screen
+	public static void ClearScreen() {
+		ConsoleReader reader = pxnConsole.getReader();
+		try {
+			reader.clearScreen();
+			reader.flush();
+		} catch (IOException e) {
+			pxnLog.get().exception(e);
+		}
 	}
 
 

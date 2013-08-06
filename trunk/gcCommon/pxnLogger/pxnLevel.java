@@ -3,6 +3,8 @@ package com.growcontrol.gcCommon.pxnLogger;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.growcontrol.gcCommon.pxnUtils;
+
 
 public class pxnLevel implements java.io.Serializable {
 	private static final long serialVersionUID = 6L;
@@ -24,30 +26,65 @@ public class pxnLevel implements java.io.Serializable {
 	private final String name;
 	private final int value;
 
+	private static volatile int min = 0;
+	private static volatile int max = 0;
+
 
 	protected pxnLevel(String name, int value) {
 		if(name == null || name.isEmpty()) throw new NullPointerException("name cannot be null!");
 		this.name = name.toUpperCase();
 		this.value = value;
+		// min/max values
+		if(value != Integer.MIN_VALUE && value != Integer.MAX_VALUE) {
+			if(value < min) min = value;
+			if(value > max) max = value;
+		}
+		// known levels
 		synchronized(knownLevels) {
 			knownLevels.add(this);
 		}
 	}
 
 
-	public static pxnLevel findLevel(int value) {
-//TODO:
-		return null;
-	}
+	// parse string to level
 	public static pxnLevel parse(String name) {
 		if(name == null || name.isEmpty()) return null;
+		if(pxnUtils.isNumeric(name)) {
+			Integer i = pxnUtils.toNumber(name);
+			if(i != null)
+				return findLevel(i);
+		}
 		name = name.toUpperCase();
+		if(name.equals("ON"))
+			return pxnLevel.ALL;
 		synchronized(knownLevels) {
 			for(pxnLevel level : knownLevels)
 				if(name.equals(level.getName()))
 					return level;
 		}
 		return null;
+	}
+	// find closest level by value, without going under
+	public static pxnLevel findLevel(int value) {
+		if(value == pxnLevel.OFF.getValue()) return pxnLevel.OFF;
+		if(value == pxnLevel.ALL.getValue()) return pxnLevel.ALL;
+		pxnLevel level = null;
+		int offBy = 0;
+		for(pxnLevel l : knownLevels) {
+			if(l.equals(pxnLevel.OFF) || l.equals(pxnLevel.ALL)) continue;
+			int lvl = l.getValue();
+			// too high
+			if(lvl > value) continue;
+			int ob = value - lvl;
+			if(level == null || ob < offBy) {
+				level = l;
+				offBy = ob;
+				continue;
+			}
+		}
+		if(level == null)
+			return pxnLevel.ALL;
+		return level;
 	}
 
 

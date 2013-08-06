@@ -47,11 +47,12 @@ public final class pxnLogRecord implements java.io.Serializable {
 			line.append(formatDate(millis)).append(" ").append("[").append(level.toString()).append("] ");
 			// get log name tree
 			String logTree = "";
-			if(this.log != null) {
+			if(this.log != null && !this.log.getName().equals(pxnLog.MainLoggerName)) {
 				logTree = this.log.getNameFormatted()+" ";
 				pxnLogger p = log.getParent();
 				while(p != null) {
-//					logTree = p.getNameFormatted()+" "+logTree;
+					if(p.getName().equals(pxnLog.MainLoggerName))
+						break;
 					logTree = p.getNameFormatted()+logTree;
 					p = p.getParent();
 				}

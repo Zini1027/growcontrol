@@ -20,7 +20,7 @@ import com.growcontrol.gcCommon.pxnUtils;
 //	line = reader.readLine("password> ", mask);
 //if (line.equalsIgnoreCase("quit") || line.equalsIgnoreCase("exit")) break;
 public class pxnConsole implements Runnable {
-	public static final String defaultPrompt = ">";
+	public static final String defaultPrompt = "> ";
 
 	// console instance
 	private static pxnConsole console = null;
@@ -46,7 +46,7 @@ public class pxnConsole implements Runnable {
 
 
 	// jline console reader
-	public static ConsoleReader getReader() {
+	public static synchronized ConsoleReader getReader() {
 		if(reader == null) {
 			try {
 				reader = new ConsoleReader();
@@ -60,6 +60,8 @@ public class pxnConsole implements Runnable {
 				e.printStackTrace();
 			}
 		}
+		if(reader == null)
+			pxnLog.get().exception(new NullPointerException("reader not set!"));
 		return reader;
 	}
 
@@ -97,18 +99,28 @@ public class pxnConsole implements Runnable {
 			if(running) return;
 			running = true;
 		}
+		if(getReader() == null) {
+			pxnLog.get().exception(new NullPointerException("reader not set!"));
+			return;
+		}
 		while(!stopping) {
 			if(thread != null && thread.isInterrupted()) break;
 			// wait for commands
 			String line = null;
 			try {
+				System.out.print('\r');
 				line = reader.readLine();
 			} catch (IOException e) {
-				pxnLog.get().exception(e);
-				pxnUtils.Sleep(200);
 				line = null;
+				pxnLog.get().severe("Failed to get console input.", e);
+				pxnUtils.Sleep(200);
+				continue;
+			} catch (Exception e) {
+				line = null;
+				pxnLog.get().fatal("Failed to get console input.", e);
+				break;
 			}
-			if(line == null) break;
+			if(line == null) continue;
 			if(!line.isEmpty())
 				pxnApp.get().ProcessCommand(line);
 		}

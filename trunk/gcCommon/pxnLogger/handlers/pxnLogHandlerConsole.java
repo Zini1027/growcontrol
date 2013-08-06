@@ -1,13 +1,20 @@
 package com.growcontrol.gcCommon.pxnLogger.handlers;
 
+import java.io.IOException;
+
+import jline.console.ConsoleReader;
+
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
+import com.growcontrol.gcCommon.pxnLogger.pxnConsole;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogRecord;
 
 
 public class pxnLogHandlerConsole implements pxnLogHandler {
 	private static final String handlerName = "CONSOLE";
+
+	private final ConsoleReader reader;
 
 
 	// handler instance
@@ -18,9 +25,10 @@ public class pxnLogHandlerConsole implements pxnLogHandler {
 		return handler;
 	}
 	private pxnLogHandlerConsole() {
+		reader = pxnConsole.getReader();
 		AnsiConsole.systemInstall();
 		System.out.println();
-		System.out.flush();
+		Flush();
 	}
 
 
@@ -44,39 +52,44 @@ public class pxnLogHandlerConsole implements pxnLogHandler {
 	// print to console
 	@Override
 	public void Publish(pxnLogRecord rec) {
-		for(String line : rec.getMessage()) {
-			System.out.println(
-				Ansi.ansi().render(line).toString()
-			);
+		String[] msgLines = rec.getMessage();
+		if(msgLines.length == 0) return;
+		// print single line
+		if(msgLines.length == 1) {
+			Publish(msgLines[0]);
+			return;
 		}
-//ConsoleReader reader = new ConsoleReader();
-//try {
-//reader.printString(jline.ConsoleReader.RESET_LINE+"");
-//reader.printString(msg);
-//reader.printNewline();
-//reader.flushConsole();
-////reader.drawLine();
-////reader.redrawLine();
-//try {
-//	reader.drawLine();
-//} catch (Throwable e) {
-//	reader.getCursorBuffer().clearBuffer();
-//}
-//reader.flushConsole();
-//} catch (IOException e) {
-//e.printStackTrace();
-//System.out.print(msg);
-//}
+		// print multiple lines
+		String msg = "";
+		for(String line : msgLines) {
+			// trim line endings from end
+			while(line.endsWith("\n") || line.endsWith("\r"))
+				line = line.substring(0, line.length() - 1);
+			if(!msg.isEmpty())
+				msg += "\n";
+			msg += Ansi.ansi().render(line).toString();
+		}
+		Publish(msg);
 	}
 	@Override
-	public void Publish(String msg) {
-		System.out.println(msg);
+	public synchronized void Publish(String msg) {
+		try {
+			System.out.println("\r"+msg);
+			reader.drawLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Flush();
 	}
 
 
 	@Override
 	public void Flush() {
-		System.out.flush();
+		try {
+			reader.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 

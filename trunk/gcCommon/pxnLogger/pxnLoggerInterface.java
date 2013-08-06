@@ -12,7 +12,6 @@ public interface pxnLoggerInterface {
 
 	// parent logger
 	public pxnLogger getParent();
-//	public List<pxnLogHandler> getHandlers();
 
 	// name
 	public String getName();
