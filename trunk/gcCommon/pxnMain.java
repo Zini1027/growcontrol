@@ -9,9 +9,10 @@ public abstract class pxnMain {
 
 	// new app instance
 	protected abstract pxnApp getAppInstance();
-	protected abstract void StartMain(pxnParser args);
+	protected abstract void StartMain();
 
 	// command line arguments
+	protected pxnParser args = null;
 	protected static volatile String argsMsg = "";
 
 
@@ -20,13 +21,13 @@ public abstract class pxnMain {
 		setInstance(main);
 		// init logger
 		pxnLog.get();
-boolean b = true; if(b) return;
-		// start app main
-		instance.StartMain(
-			new pxnParser(
-				pxnUtils.addStringSet("", args, " ")
-			)
-		);
+		try {
+			// start app main
+			instance.args = new pxnParser( "args:- "+pxnUtils.addStringSet("", args, " ") );
+			instance.StartMain();
+		} catch (Exception e) {
+			pxnLog.get().fatal("Failed to execute StartMain()", e);
+		}
 	}
 	private static synchronized void setInstance(pxnMain main) {
 		// already running?
