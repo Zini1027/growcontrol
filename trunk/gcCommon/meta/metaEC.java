@@ -1,23 +1,49 @@
 package com.growcontrol.gcCommon.meta;
 
-
-public class DataEC implements DataType {
-
-	protected long value;
+import com.growcontrol.gcCommon.pxnUtils;
 
 
+public class metaEC extends pxnMeta {
+	private static final long serialVersionUID = 7L;
+
+	protected volatile Long value = null;
+
+
+	public metaEC(String name) {
+		super(name);
+	}
+	public metaEC(String name, String value) {
+		super(name);
+		set(value);
+	}
+	public metaEC(String name, Long value) {
+		super(name);
+		set(value);
+	}
+
+
+	// set value
+	public void set(Long value) {
+		if(value == null) {
+			this.value = null;
+			return;
+		}
+		this.value = pxnUtils.MinMax((long) value, 0, 5000);
+	}
+	@Override
+	public void set(String value) {
+//TODO:
+	}
+
+
+	// get value
+	public Long get() {
+		return value;
+	}
 	@Override
 	public String toString() {
-		return toString(null);
-	}
-	@Override
-	public String toString(String arg) {
-		return Long.toString(this.value);
-	}
-
-
-	public void set(long value) {
-		this.value = value;
+		if(value == null) return null;
+		return Long.toString(value);
 	}
 
 

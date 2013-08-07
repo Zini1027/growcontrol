@@ -3,43 +3,59 @@ package com.growcontrol.gcCommon.meta;
 import com.growcontrol.gcCommon.pxnUtils;
 
 
-public class DataVariable implements DataType {
+public class metaVariable extends pxnMeta {
+	private static final long serialVersionUID = 7L;
 
-	protected Integer value = null;
-	protected int min = 0;
-	protected int max = 1;
-	protected int disabled = -1;
+	protected volatile Integer value = null;
+	protected volatile Integer override = null;
+	protected volatile int min = 0;
+	protected volatile int max = 1;
 
 
-	public int getValue() {
-		if(this.value == null)
-			return this.disabled;
-		return pxnUtils.MinMax((int) this.value, this.min, this.max);
-	}
-	@Override
-	public String toString() {
-		return toString(null);
-	}
-	@Override
-	public String toString(String arg) {
-		return Integer.toString(getValue());
+	public metaVariable(String name) {
+		super(name);
 	}
 
 
+
+
+	// set value
 	public void set(Integer value) {
 		this.value = value;
 	}
+	@Override
+	public void set(String value) {
+		Integer i = pxnUtils.toNumber(value);
+		if(i == null) return;
+		set(i);
+	}
 
 
-	public void setMinValue(int value) {
-		this.min = value;
+	// get value
+	public Integer get() {
+		if(override != null)
+			return pxnUtils.MinMax((int) override, min, max);
+		if(value == null)
+			return null;
+		return pxnUtils.MinMax((int) value, min, max);
 	}
-	public void setMaxValue(int value) {
-		this.max = value;
+	@Override
+	public String toString() {
+		Integer v = get();
+		if(v == null) return null;
+		return Integer.toString(v);
 	}
-	public void setDisabledValue(int value) {
-		this.disabled = value;
-	}
+
+
+//	public void setMinValue(int value) {
+//		this.min = value;
+//	}
+//	public void setMaxValue(int value) {
+//		this.max = value;
+//	}
+//	public void setDisabledValue(int value) {
+//		this.disabled = value;
+//	}
 
 
 }
