@@ -16,7 +16,7 @@ import com.growcontrol.gcServer.serverSocket.gcPacketReader;
 
 public class gcServer extends pxnApp {
 	public static final String appName = "gcServer";
-	public static final String version = "3.0.6";
+	public static final String version = "3.0.7";
 
 	// server socket pool
 	private pxnSocketServer socket = null;
