@@ -198,21 +198,44 @@ public final class pxnUtils {
 	}
 
 
-	public static boolean isNumeric(String text) {
-		if(text == null || text.isEmpty()) return false;
-		try {
-			Integer.parseInt(text);
-		} catch (Exception ignore) {
-			return false;
-		}
-		return true;
+	// integer
+	public static boolean isNumeric(String value) {
+		if(value == null || value.isEmpty()) return false;
+		return !(toNumber(value) == null);
 	}
-	public static Integer toNumber(String text) {
+	public static Integer toNumber(String value) {
 		try {
-			return Integer.parseInt(text);
+			return Integer.parseInt(value);
 		} catch (Exception ignore) {
 			return null;
 		}
+	}
+	// boolean
+	public static boolean isBoolean(String value) {
+		return !(toBoolean(value) == null);
+	}
+	public static Boolean toBoolean(String value) {
+		if(value == null || value.isEmpty()) return null;
+		value = value.toLowerCase();
+		switch(value) {
+		// true;
+		case "1":
+		case "t":
+		case "true":
+		case "on":
+		case "enabled":
+			return true;
+		// false
+		case "0":
+		case "f":
+		case "false":
+		case "off":
+		case "disabled":
+			return false;
+		default:
+			break;
+		}
+		return null;
 	}
 
 

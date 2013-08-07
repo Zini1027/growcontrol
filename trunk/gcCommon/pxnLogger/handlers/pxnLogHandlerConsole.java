@@ -73,6 +73,9 @@ public class pxnLogHandlerConsole implements pxnLogHandler {
 	}
 	@Override
 	public synchronized void Publish(String msg) {
+		if(msg == null) return;
+		if(msg.length() < reader.getPrompt().length()+2)
+			msg += "    ";
 		try {
 			System.out.println("\r"+msg);
 			reader.drawLine();
