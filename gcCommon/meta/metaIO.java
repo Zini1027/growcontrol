@@ -1,23 +1,46 @@
 package com.growcontrol.gcCommon.meta;
 
-
-public class DataIO implements DataType {
-
-	protected Boolean value = null;
+import com.growcontrol.gcCommon.pxnUtils;
 
 
-	@Override
-	public String toString() {
-		return toString(null);
+public class metaIO extends pxnMeta {
+	private static final long serialVersionUID = 7L;
+
+	protected volatile Boolean value = null;
+
+
+	public metaIO(String name) {
+		super(name);
 	}
-	@Override
-	public String toString(String arg) {
-		return Boolean.toString(this.value);
+	public metaIO(String name, String value) {
+		super(name);
+		set(value);
+	}
+	public metaIO(String name, Boolean value) {
+		super(name);
+		set(value);
 	}
 
 
+	// set value
 	public void set(Boolean value) {
 		this.value = value;
+	}
+	@Override
+	public void set(String value) {
+		Boolean b = pxnUtils.toBoolean(value);
+		if(b == null) return;
+		set(b);
+	}
+
+
+	// get value
+	public Boolean get() {
+		return value;
+	}
+	@Override
+	public String toString() {
+		return Boolean.toString(value);
 	}
 
 
