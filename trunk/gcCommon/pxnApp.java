@@ -2,10 +2,8 @@ package com.growcontrol.gcCommon;
 
 import com.growcontrol.gcCommon.pxnClock.pxnClock;
 import com.growcontrol.gcCommon.pxnLogger.pxnConsole;
-import com.growcontrol.gcCommon.pxnLogger.pxnLevel;
 import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
-import com.growcontrol.gcServer.ServerConfig;
 
 
 public abstract class pxnApp {
@@ -23,6 +21,7 @@ public abstract class pxnApp {
 	public abstract String getAppName();
 	public abstract String getVersion();
 
+	public abstract void updateLogLevel();
 	public abstract void ProcessCommand(String line);
 	protected abstract void doShutdown(int step);
 
@@ -109,22 +108,6 @@ public abstract class pxnApp {
 	}
 	public long getUptime() {
 		return pxnClock.get().Millis() - getStartTime();
-	}
-
-
-	// log level
-	public void updateLogLevel() {
-		if(forceDebug) {
-			pxnLog.get().setLevel(pxnLevel.DEBUG);
-			return;
-		}
-		if(!ServerConfig.isLoaded()) return;
-		String levelStr = ServerConfig.get().LogLevel();
-		if(levelStr != null && !levelStr.isEmpty()) {
-			pxnLog.get().setLevel(
-				pxnLevel.parse(levelStr)
-			);
-		}
 	}
 
 
