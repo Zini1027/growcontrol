@@ -8,6 +8,8 @@ import com.growcontrol.gcClient.clientSocket.gcPacketReader;
 import com.growcontrol.gcClient.clientSocket.gcPacketSender;
 import com.growcontrol.gcCommon.pxnApp;
 import com.growcontrol.gcCommon.pxnUtils;
+import com.growcontrol.gcCommon.pxnLogger.pxnLevel;
+import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 import com.growcontrol.gcCommon.pxnScheduler.pxnScheduler;
 import com.growcontrol.gcCommon.pxnScheduler.pxnTicker;
@@ -19,10 +21,8 @@ import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
 
 public class gcClient extends pxnApp {
 	public static final String appName = "gcClient";
-	public static final String version = "3.0.5";
+	public static final String version = "3.0.7";
 	public static final String defaultPrompt = "";
-
-	protected static gcClient client = null;
 
 	// client socket
 	private pxnSocketClient socket = null;
@@ -33,18 +33,91 @@ public class gcClient extends pxnApp {
 	private List<String> zones = new ArrayList<String>();
 
 
-	public gcClient() {
-	}
+	// client instance
 	public static gcClient get() {
-		return client;
+		return (gcClient) appInstance;
+	}
+	public gcClient() {
+		super();
 	}
 
 
+	@Override
+	public String getAppName() {
+		return appName;
+	}
+	@Override
+	public String getVersion() {
+		return version;
+	}
+
+
+	// init client
+	@Override
+	public void Start() {
+		super.Start();
+		pxnLogger log = pxnLog.get();
+if(!consoleEnabled) {
+System.out.println("Console input is disabled due to noconsole command argument.");
+//TODO: currently no way to stop the server with no console input
+System.exit(0);
+}
+
+		log.info("GrowControl "+version+" Client is starting..");
+		// load configs
+		ClientConfig config = ClientConfig.get(configsPath);
+		if(config==null || config.config==null) {
+			log.fatal("Failed to load config.yml, exiting..");
+			System.exit(1);
+			return;
+		}
+		// set log level
+		updateLogLevel();
+		// init listeners
+		ClientListeners.get();
+		// start console input thread
+		StartConsole();
+
+		// load scheduler
+		log.info("Starting schedulers..");
+		pxnScheduler.get(getAppName()).start();
+		// load ticker
+		pxnTicker.get();
+
+		// load plugins
+		try {
+			gcClientPluginManager pluginManager = gcClientPluginManager.get("plugins/");
+			pluginManager.LoadPluginsDir();
+			pluginManager.InitPlugins();
+			pluginManager.EnablePlugins();
+		} catch (Exception e) {
+			log.exception(e);
+			Shutdown();
+			System.exit(1);
+		}
+
+		// start gui manager
+		guiManager.get();
+		log.Publish("[[ GC Client Running! ]]");
+
+		// show connect window
+//		state.setStateClosed();
+//		// connect to server
+//		conn = new connection("192.168.3.3", 1142);
+//		conn.sendPacket(clientPacket.sendHELLO(version, "lorenzo", "pass"));
+
+	}
+
+
+	// connect to server
 	public void Connect(String host, int port, String user, String pass) {
 		pxnThreadQueue.addToMain("SocketConnect",
 			new doConnect(host, port, user, pass));
 	}
+
+
 	private class doConnect implements Runnable {
+	
 		public pxnSocketClient socket = null;
 		private final String host;
 		private final int    port;
@@ -52,6 +125,8 @@ public class gcClient extends pxnApp {
 		private final String user;
 @SuppressWarnings("unused")
 		private final String pass;
+
+
 		public doConnect(String host, int port, String user, String pass) {
 			if(host == null || host.isEmpty())
 				host = "127.0.0.1";
@@ -63,10 +138,12 @@ public class gcClient extends pxnApp {
 			this.user = user;
 			this.pass = pass;
 		}
+
+
 		// connect to server
 		@Override
 		public synchronized void run() {
-pxnLogger.get().info("Connecting..");
+pxnLog.get().info("Connecting..");
 			// create socket
 			if(socket == null)
 				socket = new pxnSocketClient();
@@ -81,7 +158,7 @@ pxnLogger.get().info("Connecting..");
 			});
 			socket.Start();
 			if(!pxnSocketState.CONNECTED.equals(socket.getState())) {
-				pxnLogger.get().warning("Failed to connect!");
+				pxnLog.get().warning("Failed to connect!");
 				return;
 			}
 			// send HELLO packet
@@ -90,83 +167,10 @@ pxnLogger.get().info("Connecting..");
 				gcClient.version);
 //				connectInfo.username,
 //				connectInfo.password);
-pxnLogger.get().severe("CONNECTED!!!!!!!!!!!!!!!!!!!");
-		}
-//		Start();
-	}
-
-
-	// init client
-	@Override
-	public void Start() {
-		super.Start();
-		pxnLogger log = pxnLogger.get();
-if(!consoleEnabled) {
-System.out.println("Console input is disabled due to noconsole command argument.");
-//TODO: currently no way to stop the server with no console input
-System.exit(0);
-}
-
-		log.info("GrowControl "+version+" Client is starting..");
-		// load configs
-		ClientConfig config = ClientConfig.get(configsPath);
-		if(config==null || config.config==null) {
-			log.severe("Failed to load config.yml, exiting..");
-			System.exit(1);
-			return;
-		}
-		// set log level
-		setLogLevel(config.LogLevel());
-		// init listeners
-		ClientListeners.get();
-		// start console input thread
-		StartConsole();
-
-		// load scheduler
-		pxnScheduler.get(getAppName()).start();
-		// load ticker
-		pxnTicker.get();
-
-		// load plugins
-		try {
-			gcClientPluginManager pluginManager = gcClientPluginManager.get("plugins/");
-			pluginManager.LoadPluginsDir();
-			pluginManager.InitPlugins();
-			pluginManager.EnablePlugins();
-		} catch (Exception e) {
-			log.exception(e);
-			Shutdown();
-			return;
+pxnLog.get().severe("CONNECTED!!!!!!!!!!!!!!!!!!!");
 		}
 
-		// start gui manager
-		guiManager.get();
 
-
-
-
-
-
-
-		// load plugins
-//		try {
-//			pluginManager.LoadPlugins();
-//			pluginManager.EnablePlugins();
-//		} catch (Exception e) {
-//			log.exception(e);
-//			Shutdown();
-//			return;
-//e.printStackTrace();
-//System.exit(1);
-//		}
-
-		// show connect window
-//		state.setStateClosed();
-//		// connect to server
-//		conn = new connection("192.168.3.3", 1142);
-//		conn.sendPacket(clientPacket.sendHELLO(version, "lorenzo", "pass"));
-
-		log.printRaw("[[ GC Client Running! ]]");
 	}
 
 
@@ -175,7 +179,7 @@ System.exit(0);
 		switch(step) {
 		// first step (announce)
 		case 10:
-			pxnLogger.get().info("Stopping GC Client..");
+			pxnLog.get().info("Stopping GC Client..");
 			break;
 		case 9:
 			// close socket
@@ -225,28 +229,37 @@ System.exit(0);
 	}
 
 
+	// log level
+	@Override
+	protected void updateLogLevel() {
+		if(forceDebug) {
+			pxnLog.get().setLevel(pxnLevel.DEBUG);
+			return;
+		}
+		if(!ClientConfig.isLoaded()) return;
+		String levelStr = ClientConfig.get().LogLevel();
+		if(levelStr != null && !levelStr.isEmpty()) {
+			pxnLog.get().setLevel(
+				pxnLevel.parse(levelStr)
+			);
+		}
+	}
+
+
 	// process command
 	@Override
-	public void processCommand(String line) {
+	public void ProcessCommand(String line) {
 		if(line == null) throw new NullPointerException("line cannot be null");
 		line = line.trim();
 		if(line.isEmpty()) return;
 		// trigger event
 		if(!ClientListeners.get().triggerCommand(line)) {
 			// command not found
-			pxnLogger.get().warning("Unknown command: "+line);
+			pxnLog.get().warning("Unknown command: "+line);
 		}
 	}
 
 
-	@Override
-	public String getAppName() {
-		return appName;
-	}
-	@Override
-	public String getVersion() {
-		return version;
-	}
 
 
 	// get zones

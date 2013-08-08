@@ -28,7 +28,7 @@ import javax.swing.SwingUtilities;
 
 import net.miginfocom.swing.MigLayout;
 
-import com.growcontrol.gcClient.Main;
+import com.growcontrol.gcClient.guiUtils;
 import com.growcontrol.gcClient.frames.gcFrameInterface;
 
 
@@ -226,7 +226,7 @@ public class LoginFrame extends JFrame implements gcFrameInterface {
 		JPanel panel = newPanel(LoginHandler.CONN.CONNECT);
 		panel.setLayout(new FlowLayout(FlowLayout.CENTER));
 		panel.setBackground(Color.DARK_GRAY);
-		ImageIcon loading = Main.loadImageResource("resources/icon-loading-animated.gif");
+		ImageIcon loading = guiUtils.loadImageResource("resources/icon-loading-animated.gif");
 		JLabel labelAnimation = new JLabel();
 		labelAnimation.setIcon(loading);
 		panel.add(labelAnimation);

@@ -10,11 +10,10 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import com.growcontrol.gcClient.Main;
 import com.growcontrol.gcClient.gcClient;
 import com.growcontrol.gcClient.frames.gcFrameHandlerInterface;
 import com.growcontrol.gcCommon.pxnUtils;
-import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 
 
 public class LoginHandler implements gcFrameHandlerInterface, KeyEventDispatcher {
@@ -47,7 +46,7 @@ public class LoginHandler implements gcFrameHandlerInterface, KeyEventDispatcher
 	@Override
 	public synchronized void Show() {
 		synchronized(modeLock) {
-			pxnLogger.get().info("Displaying window: Login");
+			pxnLog.get().info("Displaying window: Login");
 			if(connMode == null)
 				connMode = CONN.WAITING;
 			try {
@@ -60,7 +59,7 @@ public class LoginHandler implements gcFrameHandlerInterface, KeyEventDispatcher
 					}
 				});
 			} catch (InvocationTargetException e) {
-				pxnLogger.get().exception(e);
+				pxnLog.get().exception(e);
 			} catch (InterruptedException ignore) {}
 		}
 	}
@@ -71,11 +70,11 @@ public class LoginHandler implements gcFrameHandlerInterface, KeyEventDispatcher
 			public void run() {
 				if(frame == null)
 					return;
-				pxnLogger.get().info("Closing window: Login");
+				pxnLog.get().info("Closing window: Login");
 				synchronized(frame) {
 					frame.dispose();
 					frame = null;
-Main.Shutdown();
+gcClient.get().Shutdown();
 				}
 			}
 		});
@@ -106,7 +105,7 @@ frame.DisplayCard(connMode);
 
 	// button click event
 	public void ButtonClicked(ActionEvent event, String buttonName) {
-		pxnLogger.get().info("Button pressed: "+buttonName);
+		pxnLog.get().info("Button pressed: "+buttonName);
 		switch(buttonName) {
 		case "Save":
 			frame.setButtonName("Connect");

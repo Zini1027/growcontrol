@@ -4,7 +4,7 @@ import java.io.File;
 
 import javax.swing.ImageIcon;
 
-import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 
 
 public class guiUtils {
@@ -24,7 +24,7 @@ public class guiUtils {
 			try {
 				image = new ImageIcon(path);
 				if(image != null) {
-					pxnLogger.get().debug("Loaded image file: "+path);
+					pxnLog.get().debug("Loaded image file: "+path);
 					return image;
 				}
 			} catch(Exception ignore) {}
@@ -34,11 +34,11 @@ public class guiUtils {
 			image = new ImageIcon(ClassLoader.getSystemResource(path));
 //			image = new ImageIcon(guiManager.get().getClass().getResource(path));
 			if(image != null) {
-				pxnLogger.get().debug("Loaded image resource: "+path);
+				pxnLog.get().debug("Loaded image resource: "+path);
 				return image;
 			}
 		} catch(Exception ignore) {}
-		pxnLogger.get().warning("Failed to load image: "+path);
+		pxnLog.get().warning("Failed to load image: "+path);
 		return null;
 	}
 
