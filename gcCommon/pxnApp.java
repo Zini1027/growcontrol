@@ -21,7 +21,7 @@ public abstract class pxnApp {
 	public abstract String getAppName();
 	public abstract String getVersion();
 
-	public abstract void updateLogLevel();
+	protected abstract void updateLogLevel();
 	public abstract void ProcessCommand(String line);
 	protected abstract void doShutdown(int step);
 

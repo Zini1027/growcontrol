@@ -26,12 +26,7 @@ public class Main extends pxnMain {
 	@Override
 	protected void StartMain() {
 //		if(gcServer.server != null) throw new UnsupportedOperationException("Cannot redefine singleton gcServer; already running");
-//		pxnLog.addLogHandler(
-//			"console",
-//			new pxnLogConsole(pxnLogger.getReader(),
-//			new pxnLevel(pxnLevel.pxnLevel.DEBUG))
-//		);
-		// start gc server
+		// init gc server
 		getAppInstance();
 		// welcome message
 		displayLogoHeader();
@@ -73,19 +68,19 @@ public class Main extends pxnMain {
 				case "-V":
 					System.out.println("GrowControl "+gcServer.version+" Server");
 					System.exit(0);
-					// no console
+				// no console
 				case "--no-console":
 				case "-n":
 					gcServer.get().setConsoleEnabled(false);
 					addArgsMsg("no-console");
 					break;
-					// debug mode
+				// debug mode
 				case "--debug":
 				case "-d":
 					gcServer.get().setForceDebug(true);
 					addArgsMsg("debug");
 					break;
-					// configs path
+				// configs path
 				case "--configs-path":
 					if(!args.next()) {
 						System.out.println("Incomplete! --configs-path argument");
@@ -95,9 +90,9 @@ public class Main extends pxnMain {
 					System.out.println("Set configs path to: "+args.getPart());
 					addArgsMsg("configs-path");
 					break;
+				// plugins path
 				case "--plugins-path":
 				case "-p":
-					// plugins path
 					if(!args.next()) {
 						System.out.println("Incomplete! --configs-path argument");
 						break;
@@ -105,6 +100,7 @@ public class Main extends pxnMain {
 					gcServerPluginManager.get(args.getPart());
 					System.out.println("Set plugins path to: "+args.getPart());
 					addArgsMsg("plugins-path");
+				// unknown
 				default:
 					System.out.println("Unknown argument: "+arg);
 					break;
