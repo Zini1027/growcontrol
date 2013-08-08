@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.growcontrol.gcCommon.pxnApp;
+import com.growcontrol.gcCommon.pxnLogger.pxnLevel;
 import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 import com.growcontrol.gcCommon.pxnScheduler.pxnScheduler;
@@ -199,6 +200,23 @@ System.exit(0);
 //			}
 //		});
 //	}
+
+
+	// log level
+	@Override
+	public void updateLogLevel() {
+		if(forceDebug) {
+			pxnLog.get().setLevel(pxnLevel.DEBUG);
+			return;
+		}
+		if(!ServerConfig.isLoaded()) return;
+		String levelStr = ServerConfig.get().LogLevel();
+		if(levelStr != null && !levelStr.isEmpty()) {
+			pxnLog.get().setLevel(
+				pxnLevel.parse(levelStr)
+			);
+		}
+	}
 
 
 	// process command
