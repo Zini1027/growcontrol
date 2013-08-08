@@ -60,7 +60,7 @@ System.exit(0);
 		// load configs
 		ServerConfig config = ServerConfig.get(configsPath);
 		if(config==null || config.config==null) {
-			log.severe("Failed to load config.yml, exiting..");
+			log.fatal("Failed to load config.yml, exiting..");
 			System.exit(1);
 			return;
 		}
@@ -92,7 +92,7 @@ System.exit(0);
 		} catch (Exception e) {
 			log.exception(e);
 			Shutdown();
-			return;
+			System.exit(1);
 		}
 
 //		// load devices
@@ -204,7 +204,7 @@ System.exit(0);
 
 	// log level
 	@Override
-	public void updateLogLevel() {
+	protected void updateLogLevel() {
 		if(forceDebug) {
 			pxnLog.get().setLevel(pxnLevel.DEBUG);
 			return;
