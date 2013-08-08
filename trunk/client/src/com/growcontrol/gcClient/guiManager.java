@@ -9,8 +9,8 @@ public class guiManager {
 
 	// display mode
 	public enum GUI {LOGIN, DASH};
-	private static volatile GUI guiMode     = null;
-	private static volatile GUI lastGuiMode = null;
+	private static volatile GUI startupMode      = null;
+	private static volatile GUI startupMode_Last = null;
 //	private final Object modeLock = new Object();
 
 	// frames
@@ -24,7 +24,7 @@ public class guiManager {
 		return manager;
 	}
 	private guiManager() {
-		doUpdate();
+		Update();
 	}
 	public static void Shutdown() {
 		if(manager != null)
@@ -38,22 +38,42 @@ public class guiManager {
 	}
 
 
-	public void doUpdate() {
-		getMode();
-		synchronized(guiMode) {
-			// update gui mode
-			if(guiMode != lastGuiMode) {
-				switch(guiMode) {
-				case LOGIN:
-					getLoginHandler().Show();
-					break;
-				case DASH:
-					getDashboardHandler().Show();
-					break;
-				}
-				lastGuiMode = guiMode;
+	// update display mode
+	public void Update() {
+		Update(null);
+	}
+	public void Update(GUI mode) {
+		if(mode != null) startupMode = mode;
+		if(getStartupMode().equals(startupMode_Last)) return;
+		synchronized(startupMode) {
+			// close old frames
+			switch(startupMode_Last) {
+			case LOGIN:
+				if(loginHandler != null)
+					loginHandler.Close();
+				break;
+			case DASH:
+				if(dashHandler != null)
+					dashHandler.Close();
+				break;
 			}
+			// load new frames
+			switch(startupMode) {
+			case LOGIN:
+				getLoginHandler().Show();
+				break;
+			case DASH:
+				getDashboardHandler().Show();
+				break;
+			}
+			startupMode_Last = startupMode;
 		}
+	}
+	// get/set gui mode
+	public synchronized GUI getStartupMode() {
+		if(startupMode == null)
+			startupMode = GUI.LOGIN;
+		return startupMode;
 	}
 
 
@@ -66,21 +86,6 @@ public class guiManager {
 		if(dashHandler == null)
 			dashHandler = DashboardHandler.get();
 		return dashHandler;
-	}
-
-
-	// get/set gui mode
-	public synchronized GUI getMode() {
-		if(guiMode == null)
-			guiMode = GUI.LOGIN;
-		return guiMode;
-	}
-	public GUI setMode(GUI mode) {
-		synchronized(guiMode) {
-			lastGuiMode = guiMode;
-			guiMode = mode;
-			return lastGuiMode;
-		}
 	}
 
 

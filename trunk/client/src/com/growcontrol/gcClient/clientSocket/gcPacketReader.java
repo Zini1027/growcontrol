@@ -1,6 +1,6 @@
 package com.growcontrol.gcClient.clientSocket;
 
-import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnParser.pxnParser;
 import com.growcontrol.gcCommon.pxnSocket.processor.pxnSocketProcessor;
 import com.growcontrol.gcCommon.pxnSocket.worker.pxnSocketWorker;
@@ -20,7 +20,7 @@ System.out.println("PROCESSING: "+line.getOriginal());
 		String first = line.getFirst();
 		switch(first.toUpperCase()) {
 		case "HEY":
-pxnLogger.get(logName).severe("Got HEY packet!");
+pxnLog.get(logName).severe("Got HEY packet!");
 			// request zones list
 			gcPacketSender.sendLIST(worker, "zones");
 			// request client plugins list
@@ -34,7 +34,7 @@ System.out.println("Got PLUGIN packet! "+line.getRest());
 			break;
 		default:
 			// unknown packet
-			pxnLogger.get(logName).warning("Unknown Packet: "+line.getOriginal());
+			pxnLog.get(logName).warning("Unknown Packet: "+line.getOriginal());
 			break;
 		}
 	}

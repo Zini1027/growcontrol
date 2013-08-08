@@ -1,7 +1,7 @@
 package com.growcontrol.gcClient;
 
 import com.growcontrol.gcCommon.pxnConfig.pxnConfig;
-import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 
 
 public class ClientConfig {
@@ -24,6 +24,13 @@ public class ClientConfig {
 			clientConfig = new ClientConfig(dirPath);
 		return clientConfig;
 	}
+	public static boolean isLoaded() {
+		if(clientConfig == null)
+			return false;
+		if(clientConfig.config == null)
+			return false;
+		return clientConfig.config.isLoaded();
+	}
 
 
 	// load config.yml
@@ -33,7 +40,7 @@ public class ClientConfig {
 		try {
 			config = pxnConfig.loadFile(configsPath, "config.yml");
 		} catch (Exception e) {
-			pxnLogger.get().exception(e);
+			pxnLog.get().exception(e);
 		}
 	}
 

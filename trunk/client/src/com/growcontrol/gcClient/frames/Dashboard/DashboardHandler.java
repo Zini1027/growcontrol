@@ -6,7 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import com.growcontrol.gcClient.frames.gcFrameHandlerInterface;
-import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
+import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 
 
 public class DashboardHandler implements gcFrameHandlerInterface {
@@ -34,7 +34,7 @@ public class DashboardHandler implements gcFrameHandlerInterface {
 	@Override
 	public void Show() {
 		synchronized(modeLock) {
-			pxnLogger.get().info("Displaying window: Dashboard");
+			pxnLog.get().info("Displaying window: Dashboard");
 			if(dashMode == null)
 				dashMode = DASH.ROOM;
 			try {
@@ -46,7 +46,7 @@ public class DashboardHandler implements gcFrameHandlerInterface {
 					}
 				});
 			} catch (InvocationTargetException e) {
-				pxnLogger.get().exception(e);
+				pxnLog.get().exception(e);
 			} catch (InterruptedException ignore) {}
 		}
 	}
@@ -57,7 +57,7 @@ public class DashboardHandler implements gcFrameHandlerInterface {
 			public void run() {
 				if(frame == null)
 					return;
-				pxnLogger.get().info("Closing window: Dashboard");
+				pxnLog.get().info("Closing window: Dashboard");
 				synchronized(frame) {
 					frame.dispose();
 					frame = null;
