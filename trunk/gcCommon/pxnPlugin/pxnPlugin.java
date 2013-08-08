@@ -11,8 +11,13 @@ public abstract class pxnPlugin {
 	private pxnPluginManager pluginManager = null;
 	private pxnPluginYML yml = null;
 
+	// plugin name
+	public abstract String getName();
+	// version
+	public abstract String getVersion();
+
+
 	// load/unload plugin
-	public abstract String getPluginName();
 	public abstract void onEnable();
 	public abstract void onDisable();
 
@@ -64,7 +69,7 @@ public abstract class pxnPlugin {
 	private pxnLogger log = null;
 	public pxnLogger getLogger() {
 		if(log == null)
-			log = pxnLog.get("plugin-"+getPluginName());
+			log = pxnLog.get("plugin-"+getName());
 		return log;
 	}
 
