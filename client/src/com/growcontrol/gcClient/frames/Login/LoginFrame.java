@@ -36,6 +36,8 @@ public class LoginFrame extends JFrame implements gcFrameInterface {
 	private static final long serialVersionUID = 1L;
 	private final LoginHandler handler;
 
+	private static final String IMAGE_LOADING = "images/icon-loading-animated.gif";
+
 	protected CardLayout cardLayout = new CardLayout();
 	protected HashMap<String, JPanel> panels = new HashMap<String, JPanel>();
 
@@ -226,7 +228,7 @@ public class LoginFrame extends JFrame implements gcFrameInterface {
 		JPanel panel = newPanel(LoginHandler.CONN.CONNECT);
 		panel.setLayout(new FlowLayout(FlowLayout.CENTER));
 		panel.setBackground(Color.DARK_GRAY);
-		ImageIcon loading = guiUtils.loadImageResource("resources/icon-loading-animated.gif");
+		ImageIcon loading = guiUtils.loadImageResource(IMAGE_LOADING);
 		JLabel labelAnimation = new JLabel();
 		labelAnimation.setIcon(loading);
 		panel.add(labelAnimation);
