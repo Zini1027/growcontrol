@@ -129,4 +129,14 @@ public abstract class pxnApp {
 	}
 
 
+	// plugins path
+	public String getPluginsPath() {
+		return "plugins/";
+	}
+	public String getPluginPath(String pluginName) {
+		return getPluginsPath()+pluginName+"/";
+	}
+
+
+
 }

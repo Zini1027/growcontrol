@@ -168,6 +168,7 @@ pxnLog.get().info("Connecting..");
 //				connectInfo.username,
 //				connectInfo.password);
 pxnLog.get().severe("CONNECTED!!!!!!!!!!!!!!!!!!!");
+			guiManager.get().Update(guiManager.GUI.DASH);
 		}
 
 
@@ -258,8 +259,6 @@ pxnLog.get().severe("CONNECTED!!!!!!!!!!!!!!!!!!!");
 			pxnLog.get().warning("Unknown command: "+line);
 		}
 	}
-
-
 
 
 	// get zones
