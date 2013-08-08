@@ -186,8 +186,8 @@ public class pxnPluginManager {
 					// enable plugin
 					holder.plugin.doEnable();
 					// getPluginName matches plugin.yml
-					if(!holder.pluginName.equals(holder.plugin.getPluginName())) {
-						log.warning("Plugin name doesn't match plugin.yml! "+holder.pluginName+" | "+holder.plugin.getPluginName());
+					if(!holder.pluginName.equals(holder.plugin.getName())) {
+						log.warning("Plugin name doesn't match plugin.yml! "+holder.pluginName+" | "+holder.plugin.getName());
 						failed++;
 					}
 					successful++;
