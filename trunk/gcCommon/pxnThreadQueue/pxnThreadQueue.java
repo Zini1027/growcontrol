@@ -7,6 +7,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import com.growcontrol.gcCommon.TimeU;
+import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
@@ -68,6 +69,16 @@ public class pxnThreadQueue implements Runnable {
 	}
 	public int activeCount() {
 		return active;
+	}
+
+
+	// max threads
+	public int getMax() {
+		return maxThreads;
+	}
+	public void setMax(int maxThreads) {
+		if(queueName.equalsIgnoreCase("main")) return;
+		this.maxThreads = pxnUtils.MinMax(maxThreads, 1, 100);
 	}
 
 

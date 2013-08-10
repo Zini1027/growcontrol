@@ -1,7 +1,10 @@
 package com.growcontrol.gcCommon;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.io.StringWriter;
@@ -13,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 
 import com.growcontrol.gcCommon.pxnLogger.pxnLog;
@@ -96,6 +101,81 @@ public final class pxnUtils {
 			pxnLog.get().exception(e);
 		}
 		return pid;
+	}
+
+
+	// build path+file
+	public static String BuildFilePath(String filePath, String fileName) {
+		if(fileName == null)   throw new NullPointerException("fileName cannot be null!");
+		if(fileName.isEmpty()) throw new NullPointerException("fileName cannot be empty!");
+		if(!fileName.endsWith(".yml")) fileName += ".yml";
+		if(filePath == null || filePath.isEmpty())
+			return fileName;
+		if(filePath.endsWith("/") || filePath.endsWith("\\") || fileName.startsWith("/") || fileName.startsWith("\\"))
+			return filePath+fileName;
+		return filePath+File.separator+fileName;
+	}
+	// open file
+	public static InputStream OpenFile(String fileStr) {
+		if(fileStr == null | fileStr.isEmpty()) return null;
+		return OpenFile(new File(fileStr));
+	}
+	public static InputStream OpenFile(File file) {
+		if(file == null) return null;
+		try {
+			if(!file.exists()) throw new FileNotFoundException("File not found! "+file.getAbsoluteFile());
+			return new FileInputStream(file);
+		} catch (FileNotFoundException ignore) {
+			pxnLog.get().warning("Failed to load config file: "+file.getAbsoluteFile());
+		}
+		return null;
+	}
+	// load resource
+	public static InputStream OpenResource(String fileStr) {
+		if(fileStr == null || fileStr.isEmpty()) return null;
+		try {
+			return pxnUtils.class.getResourceAsStream(fileStr);
+		} catch(Exception ignore) {
+			pxnLog.get().debug("Not found as a resource!");
+		}
+		return null;
+	}
+	// load yml from jar
+	public static InputJar OpenJarResource(File jarFile, String fileName) {
+		if(jarFile  == null)   throw new NullPointerException("jarFile cannot be null!");
+		if(fileName == null)   throw new NullPointerException("fileName cannot be null!");
+		if(fileName.isEmpty()) throw new NullPointerException("fileName cannot be empty!");
+		JarFile jar = null;
+		InputStream fileInput = null;
+		try {
+			jar = new JarFile(jarFile);
+			JarEntry entry = jar.getJarEntry(fileName);
+			if(entry != null)
+				fileInput = jar.getInputStream(entry);
+		} catch (IOException ignore) {}
+		return new InputJar(jar, fileInput);
+	}
+	public static class InputJar {
+		public JarFile jar;
+		public InputStream fileInput;
+		public InputJar(JarFile jar, InputStream fileInput) {
+			this.jar = jar;
+			this.fileInput = fileInput;
+		}
+		public void Close() {
+			if(jar != null) {
+				try {
+					jar.close();
+				} catch (IOException ignore) {}
+				jar = null;
+			}
+			if(fileInput != null) {
+				try {
+					fileInput.close();
+				} catch (IOException ignore) {}
+				fileInput = null;
+			}
+		}
 	}
 
 

@@ -11,15 +11,20 @@ public abstract class pxnPlugin {
 	private pxnPluginManager pluginManager = null;
 	private pxnPluginYML yml = null;
 
-	// plugin name
-	public abstract String getName();
-	// version
-	public abstract String getVersion();
-
 
 	// load/unload plugin
 	public abstract void onEnable();
 	public abstract void onDisable();
+
+
+	// plugin name
+	public String getName() {
+		return getPluginYML().getPluginName();
+	}
+	// version
+	public String getVersion() {
+		return getPluginYML().getPluginVersion();
+	}
 
 
 	// plugin is enabled
