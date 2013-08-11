@@ -1,10 +1,10 @@
 package com.growcontrol.gcCommon.pxnPlugin;
 
 import java.io.File;
-import java.io.IOException;
 
+import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnConfig.pxnConfig;
-import com.growcontrol.gcCommon.pxnLogger.pxnLog;
+import com.growcontrol.gcCommon.pxnConfig.pxnConfigLoader;
 
 
 public class pxnPluginYML {
@@ -12,15 +12,16 @@ public class pxnPluginYML {
 	public pxnConfig config = null;
 
 
-	public pxnPluginYML(File file, String fileName) {
-		if(file     == null) throw new NullPointerException("file cannot be null!");
+	public pxnPluginYML(File jarFile, String fileName) {
+		LoadConfig(jarFile, fileName);
+	}
+	// load plugin.yml
+	public synchronized void LoadConfig(File jarFile, String fileName) {
+		if(jarFile     == null) throw new NullPointerException("file cannot be null!");
 		if(fileName == null) throw new NullPointerException("fileName cannot be null!");
-		try {
-			config = pxnConfig.loadJarResource(file, fileName);
-		} catch (IOException e) {
-			pxnLog.get().exception(e);
-			config = null;
-		}
+		pxnUtils.InputJar input = pxnUtils.OpenJarResource(jarFile, fileName);
+		if(input != null && input.jar != null && input.fileInput != null)
+			config = pxnConfigLoader.LoadConfig(input.fileInput);
 	}
 
 
