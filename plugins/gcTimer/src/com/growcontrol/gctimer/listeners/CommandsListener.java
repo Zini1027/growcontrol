@@ -1,17 +1,15 @@
 package com.growcontrol.gctimer.listeners;
 
-import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
-import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListenerCommand;
-import com.growcontrol.gctimer.gcTimer;
-import com.poixson.pxnCommand.pxnCommand;
-import com.poixson.pxnEvent.pxnEvent.EventPriority;
+import com.growcontrol.gcCommon.pxnCommand.pxnCommandEvent;
+import com.growcontrol.gcCommon.pxnCommand.pxnCommandsHolder;
 
 
-public class CommandsListener extends gcServerListenerCommand {
+public class CommandsListener extends pxnCommandsHolder {
 
 
-	public CommandsListener() {
-		setPriority(EventPriority.NORMAL);
+	@Override
+	protected void initCommands() {
+//		setPriority(EventPriority.NORMAL);
 		// register commands
 		add("timer")
 			.setUsage("");
@@ -19,12 +17,13 @@ public class CommandsListener extends gcServerListenerCommand {
 
 
 	@Override
-	public boolean onCommand(gcServerEventCommand event) {
-		if(event.isHandled())   return false;
-		if(!event.hasCommand()) return false;
-		pxnCommand command = event.getCommand();
-gcTimer.log.severe("gcTimer Command: "+command.toString());
-		return true;
+	public boolean onCommand(pxnCommandEvent event) {
+		return false;
+//		if(event.isHandled())   return false;
+//		if(!event.hasCommand()) return false;
+//		pxnCommand command = event.getCommand();
+//gcTimer.log.severe("gcTimer Command: "+command.toString());
+//		return true;
 //		pxnCommand command = event.getCommand();
 //		String[] args = event.getArgs();
 //		gcTimer.log.severe("PLUGIN COMMAND!!! "+command.toString());

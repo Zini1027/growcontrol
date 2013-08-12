@@ -1,164 +1,136 @@
 package com.growcontrol.gctimer;
 
-import java.util.HashMap;
-import java.util.List;
-
-import com.growcontrol.gcServer.devices.gcServerDevice;
-import com.growcontrol.gcServer.devices.gcServerDevice.RunMode;
-import com.growcontrol.gcServer.logger.gcLogger;
 import com.growcontrol.gcServer.serverPlugin.gcServerPlugin;
+import com.growcontrol.gctimer.config.TimerDAO;
 import com.growcontrol.gctimer.listeners.CommandsListener;
-import com.growcontrol.gctimer.timers.deviceTimer;
-import com.growcontrol.gctimer.timers.timerClock;
-import com.growcontrol.gctimer.timers.timerSequencer;
-import com.growcontrol.gctimer.timers.timerTicker;
-import com.poixson.pxnConfig.pxnConfig;
 
 
 public class gcTimer extends gcServerPlugin {
-	// plugin name
-	private static final String PLUGIN_NAME = "gcTimer";
 
-	// logger
-	public static gcLogger log = getLogger(PLUGIN_NAME);
+	private static gcTimer instance = null;
 
-	// listeners
-	private static CommandsListener commandsListener = new CommandsListener();
-//	private static DeviceListener deviceListener = new DeviceListener();
+	// commands listeners
+	private CommandsListener commandsListener = new CommandsListener();
+//	private DeviceListener deviceListener = new DeviceListener();
 
 	// timer types
-	public static enum TimerType{CLOCK, TICKER, SEQUENCER};
+	public static enum Type {CLOCK, TICKER, SEQUENCER};
 	// timer instances
-	private static HashMap<String, deviceTimer> timersMap = new HashMap<String, deviceTimer>();
+//	private static HashMap<String, deviceTimer> timersMap = new HashMap<String, deviceTimer>();
 
 
-	@Override
-	public String getPluginName() {
-		// plugin name
-		return PLUGIN_NAME;
+	public static gcTimer get() {
+		return instance;
 	}
+	public gcTimer() {
+		super();
+		if(instance == null)
+			instance = this;
+	}
+
+
+	// load/unload plugin
 	@Override
 	public void onEnable() {
 		// register listeners
-		registerCommandListener(commandsListener);
+		register(commandsListener);
 //		registerListenerTick(this);
 //		registerListenerDevice(deviceListener);
-		// load timers from configs
-		LoadConfig();
+		// load configs
+		Config.get();
+		if(!Config.isLoaded()) {
+			getLogger().severe("Failed to load timers.yml");
+			return;
+		}
+
+		// load timers
+		LoadTimers();
+
+		// register timer devices
+//		for(String line : ) {
+//		}
 	}
 	@Override
 	public void onDisable() {
-		log.info("gcTimer disabled!");
+		UnloadTimers();
+		getLogger().info("gcTimer disabled!");
 	}
 
 
 	// load timers
-	private static void LoadConfig() {
-		pxnConfig config = pxnConfig.loadFile("plugins/gcTimer", "config.yml");
-		if(config == null) {
-			log.severe("Failed to load config.yml");
-			return;
+	private void LoadTimers() {
+		for(TimerDAO timer : Config.Timers()) {
+			getLogger().config("Timer: "+timer.name);
 		}
-		List<String> timerConfigs = config.getStringList("timers");
-		if(timerConfigs == null) {
-			log.severe("Failed to load timers from config.yml");
-			return;
-		}
-		// load timer configs
-		for(String timer : timerConfigs)
-			loadTimerConfig(timer);
 	}
-	private static void loadTimerConfig(String configFile) {
-		if(!configFile.endsWith(".yml")) configFile += ".yml";
-		pxnConfig config = pxnConfig.loadFile("plugins/gcTimer/timers", configFile);
-		if(config == null) {
-			log.severe("Failed to load "+configFile);
-			return;
-		}
-		String name = configFile.substring(0, configFile.lastIndexOf("."));
-		String title = config.getString("Title");
-		String type = config.getString("Type");
-		String cycle = config.getString("Cycle");
-		// load new timer
-		deviceTimer timer = newTimer(name, title, type);
-		if(timer == null) {
-			log.severe("Failed to load timer! "+configFile);
-			return;
-		}
-		// timer duration
-		String durationStr = config.getString("Duration");
-		if(durationStr == null) durationStr = Integer.toString(config.getInt("Duration"));
-		timer.setDuration(durationStr);
-		// load ticker spans
-		if(timer.getTimerType().equals(TimerType.TICKER)) {
-			try {
-				for(String line : config.getStringList("Spans")) {
-					if(line.isEmpty()) continue;
-					if(!line.contains("-")) {
-						log.warning("Timer spans line ignored: "+line);
-						continue;
-					}
-					long onTick = -1;
-					long offTick = -1;
-					try {
-						onTick = Long.valueOf( line.substring(0, line.indexOf("-")).trim() );
-					} catch(Exception ignore) {}
-					try {
-						offTick = Long.valueOf( line.substring(line.indexOf("-")+1).trim() );
-					} catch(Exception ignore) {}
-					// add ticker span
-					((timerTicker) timer).addSpan(onTick, offTick);
-				}
-			} catch(Exception ignore) {}
-		}
-		// load output commands
-		List<String> outputCommands = config.getStringList("Outputs");
-		timer.addOutputCommands(outputCommands);
-		// run mode (cycle)
-		RunMode runMode = gcServerDevice.RunModeFromString(cycle);
-		// start the timer!
-		((gcServerDevice) timer).StartDevice(runMode);
+	private void UnloadTimers() {
+		//TODO:
 	}
 
 
-	// create new timer
-	public static deviceTimer newTimer(String name, String title, String type) {
-		return newTimer(name, title, timerTypeFromString(type));
-	}
-	public static deviceTimer newTimer(String name, String title, TimerType type) {
-		if(name==null || title==null || type==null) return null;
-		deviceTimer timer = null;
-		synchronized(timersMap) {
-			if(timersMap.containsKey(name)) {
-				log.warning("A timer named \""+name+"\" already exists!");
-				return null;
-			}
-			if(type.equals(TimerType.CLOCK))
-				timer = new timerClock(name, title);
-			else if(type.equals(TimerType.TICKER))
-				timer = new timerTicker(name, title);
-			else if(type.equals(TimerType.SEQUENCER))
-				timer = new timerSequencer(name, title);
-			else				log.severe("Unknown timer type: "+type.toString());
-			if(timer == null)	log.severe("Unable to create new timer!");
-			// add to hash map
-			timersMap.put(name, timer);
+	// timer type
+	public static gcTimer.Type ParseTimerType(String value) {
+		if(value == null) return null;
+		switch(value.toUpperCase()) {
+		case "TICKER":
+			return gcTimer.Type.TICKER;
+		case "CLOCK":
+			return gcTimer.Type.CLOCK;
+		case "SEQUENCER":
+			return gcTimer.Type.SEQUENCER;
 		}
-		return timer;
-	}
-
-
-	// enum from string
-	public static TimerType timerTypeFromString(String type) {
-		if(type == null) return null;
-		if(type.equalsIgnoreCase("clock"))
-			return TimerType.CLOCK;
-		else if(type.equalsIgnoreCase("ticker") || type.equalsIgnoreCase("tick"))
-			return TimerType.TICKER;
-		else if(type.equalsIgnoreCase("sequencer") || type.equalsIgnoreCase("seq"))
-			return TimerType.SEQUENCER;
 		return null;
 	}
+	public static String TimerTypeToString(gcTimer.Type type) {
+		if(type == null) return null;
+		switch(type) {
+		case TICKER:
+			return "TICKER";
+		case CLOCK:
+			return "CLOCK";
+		case SEQUENCER:
+			return "SEQUENCER";
+		}
+		return null;
+	}
+
+
+//		// load output commands
+//		List<String> outputCommands = config.getStringList("Outputs");
+//		timer.addOutputCommands(outputCommands);
+//		// run mode (cycle)
+//		RunMode runMode = gcServerDevice.RunModeFromString(cycle);
+//		// start the timer!
+//		((gcServerDevice) timer).StartDevice(runMode);
+//	}
+
+
+//	// create new timer
+//	public deviceTimer newTimer(String name, String title, String type) {
+//		return null;
+//		return newTimer(name, title, timerTypeFromString(type));
+//	}
+//	public deviceTimer newTimer(String name, String title, TimerType type) {
+//		if(name==null || title==null || type==null) return null;
+//		deviceTimer timer = null;
+//		synchronized(timersMap) {
+//			if(timersMap.containsKey(name)) {
+//				getLogger().warning("A timer named \""+name+"\" already exists!");
+//				return null;
+//			}
+//			if(type.equals(TimerType.CLOCK))
+//				timer = new timerClock(name, title);
+//			else if(type.equals(TimerType.TICKER))
+//				timer = new timerTicker(name, title);
+//			else if(type.equals(TimerType.SEQUENCER))
+//				timer = new timerSequencer(name, title);
+//			else				getLogger().severe("Unknown timer type: "+type.toString());
+//			if(timer == null)	getLogger().severe("Unable to create new timer!");
+//			// add to hash map
+//			timersMap.put(name, timer);
+//		}
+//		return timer;
+//	}
 
 
 //	// tick all timer devices

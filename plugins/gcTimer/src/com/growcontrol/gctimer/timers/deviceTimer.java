@@ -2,13 +2,13 @@ package com.growcontrol.gctimer.timers;
 
 import java.util.List;
 
-import com.growcontrol.gctimer.gcTimer.TimerType;
+import com.growcontrol.gctimer.gcTimer;
 
 
 public interface deviceTimer {
 
 
-	public TimerType getTimerType();
+	public gcTimer.Type getTimerType();
 	public void onTick();
 
 	public void setDuration(String duration);
