@@ -74,7 +74,7 @@ public abstract class pxnPlugin {
 	private pxnLogger log = null;
 	public pxnLogger getLogger() {
 		if(log == null)
-			log = pxnLog.get("plugin-"+getName());
+			log = pxnLog.get(getName());
 		return log;
 	}
 

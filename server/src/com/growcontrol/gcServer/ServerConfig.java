@@ -1,111 +1,105 @@
 package com.growcontrol.gcServer;
 
-import java.util.Collection;
-
 import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnConfig.pxnConfig;
+import com.growcontrol.gcCommon.pxnConfig.pxnConfigLoader;
+import com.growcontrol.gcCommon.pxnLogger.pxnLevel;
 import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 
 
-public class ServerConfig {
-
-	// path to config files
-	protected String configsPath = null;
-	// config loader
-	protected pxnConfig config = null;
-	// instance of this
-	protected static ServerConfig serverConfig = null;
-
-
-	public static ServerConfig get() {
-		if(serverConfig == null)
-			serverConfig = new ServerConfig(null);
-		return serverConfig;
-	}
-	protected static ServerConfig get(String dirPath) {
-		if(serverConfig == null)
-			serverConfig = new ServerConfig(dirPath);
-		return serverConfig;
-	}
-	public static boolean isLoaded() {
-		if(serverConfig == null)
-			return false;
-		if(serverConfig.config == null)
-			return false;
-		return serverConfig.config.isLoaded();
-	}
-
-
-	// load config.yml
-	protected ServerConfig(String dirPath) {
-		if(dirPath != null)
-			configsPath = dirPath;
-		try {
-			config = pxnConfig.loadFile(configsPath, "config.yml");
-		} catch (Exception e) {
-			pxnLog.get().exception(e);
-			config = null;
-		}
-	}
+public final class ServerConfig {
+	private ServerConfig() {}
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		throw new CloneNotSupportedException();
 	}
 
+	private static final String CONFIG_FILE = "config.yml";
+	private static String configPath = null;
 
-	// config has loaded
-	public boolean hasLoaded() {
+	// config dao
+	protected static pxnConfig config = null;
+
+
+	public static synchronized pxnConfig get() {
+		if(config == null) {
+			String fileStr = pxnUtils.BuildFilePath(getPath(), CONFIG_FILE);
+			pxnLog.get().debug("Loading config file: "+fileStr);
+			config = pxnConfigLoader.LoadConfig(fileStr);
+		}
+		return config;
+	}
+	public static boolean isLoaded() {
 		return (config != null);
 	}
 
 
+	// configs path
+	public static String getPath() {
+		if(configPath == null || configPath.isEmpty())
+			return "./";
+		return configPath;
+	}
+	public static void setPath(String path) {
+		configPath = path;
+	}
+
+
 	// version
-	public String Version() {
+	public static String Version() {
+		pxnConfig config = get();
 		if(config == null) return null;
 		return config.getString("Version");
 	}
-
-
 	// log level
-	public String LogLevel() {
+	public static pxnLevel LogLevel() {
+		pxnConfig config = get();
 		if(config == null) return null;
-		return config.getString("Log Level");
+		String str = config.getString("Log Level");
+		if(str == null || str.isEmpty()) return null;
+		return pxnLevel.parse(str);
 	}
-
-
 	// tick interval
-	public long TickInterval() {
-		if(config == null) return 1000;
-		return pxnUtils.MinMax(
-			config.getLong("Tick Interval"),
-			1,
-			60000);
+	public static long TickInterval() {
+		long def = 1000;
+		pxnConfig config = get();
+		if(config == null) return def;
+		Long l = config.getLong("Tick Interval");
+		if(l == null) return def;
+		return pxnUtils.MinMax(l.longValue(), 1, 60000);
 	}
-
-
 	// listen port
-	public int ListenPort() {
-		if(config == null) return 1142;
-		return pxnUtils.MinMax(
-			config.getInt("Listen Port"),
-			1,
-			65536);
+	public static int ListenPort() {
+		int def = 1142;
+		pxnConfig config = get();
+		if(config == null) return def;
+		Integer i = config.getInt("Listen Port");
+		if(i == null) return def;
+		return pxnUtils.MinMax(i.intValue(), 1, 65536);
 	}
-
-
-	// zones (rooms)
-	public void PopulateZones(Collection<String> zones) {
-		if(config == null) return;
-		if(zones  == null) throw new NullPointerException("zones list can't be null!");
-		try {
-			zones.addAll(config.getStringList("Zones"));
-//			zones.addAll( pxnUtils.castList(String.class, config.get("Zones")) );
-//			zones.addAll((Collection<? extends String>) config.get("Zones"));
-		} catch(Exception ignore) {
-pxnLog.get().exception(ignore);
-			return;
-		}
-	}
+//	// max logic threads
+//	public static int LogicThreads() {
+//		if(config == null) return 1;
+//		return pxnUtils.MinMax(
+//			config.getInt("Logic Threads"),
+//			1,
+//			100);
+//	}
+//
+//
+//	// zones (rooms)
+//	public static void PopulateZones(Collection<String> zones) {
+//		if(config == null) return;
+//		if(zones  == null) throw new NullPointerException("zones list can't be null!");
+//		try {
+//			zones.addAll(config.getStringList("Zones"));
+////			zones.addAll( pxnUtils.castList(String.class, config.get("Zones")) );
+////			zones.addAll((Collection<? extends String>) config.get("Zones"));
+//		} catch(Exception ignore) {
+//pxnLog.get().debug(ignore);
+//			return;
+//		}
+//	}
 
 
 }

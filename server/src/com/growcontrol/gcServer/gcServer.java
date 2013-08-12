@@ -58,8 +58,8 @@ System.exit(0);
 
 		log.info("GrowControl "+version+" Server is starting..");
 		// load configs
-		ServerConfig config = ServerConfig.get(configsPath);
-		if(config==null || config.config==null) {
+		ServerConfig.get();
+		if(!ServerConfig.isLoaded()) {
 			log.fatal("Failed to load config.yml, exiting..");
 			System.exit(1);
 			return;
@@ -72,14 +72,15 @@ System.exit(0);
 		StartConsole();
 
 		// load zones
-		synchronized(this.zones) {
-			config.PopulateZones(this.zones);
-			log.info("Loaded [ "+Integer.toString(this.zones.size())+" ] zones.");
-		}
+//		synchronized(this.zones) {
+//			config.PopulateZones(this.zones);
+//			log.info("Loaded [ "+Integer.toString(this.zones.size())+" ] zones.");
+//		}
 
 		// load scheduler
 		log.info("Starting schedulers..");
-		pxnScheduler.get(getAppName()).start();
+		pxnScheduler.get(getAppName())
+			.start();
 		// load ticker
 		pxnTicker.get();
 
@@ -102,7 +103,7 @@ System.exit(0);
 		if(socket == null)
 			socket = new pxnSocketServer();
 //		socket.setHost();
-		socket.setPort(config.ListenPort());
+		socket.setPort(ServerConfig.ListenPort());
 		// create processor
 		socket.setFactory(new pxnSocketProcessorFactory() {
 			@Override
@@ -210,12 +211,10 @@ System.exit(0);
 			return;
 		}
 		if(!ServerConfig.isLoaded()) return;
-		String levelStr = ServerConfig.get().LogLevel();
-		if(levelStr != null && !levelStr.isEmpty()) {
-			pxnLog.get().setLevel(
-				pxnLevel.parse(levelStr)
-			);
-		}
+		pxnLevel level = ServerConfig.LogLevel();
+		if(level != null)
+			if(! level.equals(pxnLog.get().getLevel()) )
+				pxnLog.get().setLevel(level);
 	}
 
 
