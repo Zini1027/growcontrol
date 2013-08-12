@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.nio.channels.FileLock;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -319,6 +320,12 @@ public final class pxnUtils {
 	}
 
 
+	// formatDecimal("0.00", double)
+	public static String FormatDecimal(String format, double value) {
+		return (new DecimalFormat(format).format(value));
+	}
+
+
 	// cast a collection to list
 	public static <T> List<T> castList(Class<? extends T> clss, Collection<?> c) {
 		if(clss == null) throw new NullPointerException("clss cannot be null!");
@@ -378,7 +385,7 @@ public final class pxnUtils {
 		return baseString + delim + addThis;
 	}
 	public static String addStringSet(String baseString, List<String> addThis, String delim) {
-		return addStringSet(baseString, (String[]) addThis.toArray(), delim);
+		return addStringSet(baseString, (String[]) addThis.toArray(new String[0]), delim);
 	}
 	public static String addStringSet(String baseString, String[] addThis, String delim) {
 		if(baseString == null) baseString = "";
