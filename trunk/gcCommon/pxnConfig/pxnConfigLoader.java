@@ -25,7 +25,9 @@ public final class pxnConfigLoader {
 		return LoadConfig(file);
 	}
 	public static pxnConfig LoadConfig(String fileStr) {
-		return LoadConfig(pxnUtils.OpenFile(fileStr));
+		InputStream fileInput = pxnUtils.OpenFile(fileStr);
+		if(fileInput == null) return null;
+		return LoadConfig(fileInput);
 	}
 	public static pxnConfig LoadConfig(InputStream fileInput) {
 		if(fileInput == null) throw new NullPointerException("fileInput cannot be null!");
