@@ -52,7 +52,43 @@ public abstract class pxnLogPrinter implements pxnLoggerInterface {
 	// exception
 	@Override
 	public void exception(Throwable ex) {
-		Publish(pxnLevel.ALL, "EXCEPTION", ex);
+		Publish(pxnLevel.ALL,     "EXCEPTION", ex);
+	}
+	@Override
+	public void fatal(Throwable ex) {
+		Publish(pxnLevel.FATAL,   "EXCEPTION", ex);
+	}
+	@Override
+	public void severe(Throwable ex) {
+		Publish(pxnLevel.SEVERE,  "EXCEPTION", ex);
+	}
+	@Override
+	public void warning(Throwable ex) {
+		Publish(pxnLevel.WARNING, "EXCEPTION", ex);
+	}
+	@Override
+	public void info(Throwable ex) {
+		Publish(pxnLevel.INFO,    "EXCEPTION", ex);
+	}
+	@Override
+	public void config(Throwable ex) {
+		Publish(pxnLevel.CONFIG,  "EXCEPTION", ex);
+	}
+	@Override
+	public void debug(Throwable ex) {
+		Publish(pxnLevel.DEBUG,   "EXCEPTION", ex);
+	}
+	@Override
+	public void fine(Throwable ex) {
+		Publish(pxnLevel.FINE,    "EXCEPTION", ex);
+	}
+	@Override
+	public void finer(Throwable ex) {
+		Publish(pxnLevel.FINER,   "EXCEPTION", ex);
+	}
+	@Override
+	public void finest(Throwable ex) {
+		Publish(pxnLevel.FINEST,  "EXCEPTION", ex);
 	}
 
 

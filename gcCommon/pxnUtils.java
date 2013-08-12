@@ -321,8 +321,8 @@ public final class pxnUtils {
 
 	// cast a collection to list
 	public static <T> List<T> castList(Class<? extends T> clss, Collection<?> c) {
-		if(clss == null) throw new NullPointerException("clss can't be null!");
-		if(c    == null) throw new NullPointerException("c can't be null!");
+		if(clss == null) throw new NullPointerException("clss cannot be null!");
+		if(c    == null) throw new NullPointerException("c cannot be null!");
 	    List<T> result = new ArrayList<T>(c.size());
 	    for(Object o : c)
 	    	result.add(clss.cast(o));
@@ -330,8 +330,8 @@ public final class pxnUtils {
 	}
 	@SuppressWarnings("unchecked")
 	public static <T> List<T> castList(Class<? extends T> clss, Object object) {
-		if(clss   == null) throw new NullPointerException("clss can't be null!");
-		if(object == null) throw new NullPointerException("object can't be null!");
+		if(clss   == null) throw new NullPointerException("clss cannot be null!");
+		if(object == null) throw new NullPointerException("object cannot be null!");
 		try {
 			return castList(clss, (Collection<T>) object);
 		} catch(Exception ignore) {

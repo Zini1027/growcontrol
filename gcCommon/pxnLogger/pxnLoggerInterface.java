@@ -47,6 +47,15 @@ public interface pxnLoggerInterface {
 	public void finest   (String msg);
 	// exception
 	public void exception(Throwable ex);
+	public void fatal    (Throwable ex);
+	public void severe   (Throwable ex);
+	public void warning  (Throwable ex);
+	public void info     (Throwable ex);
+	public void config   (Throwable ex);
+	public void debug    (Throwable ex);
+	public void fine     (Throwable ex);
+	public void finer    (Throwable ex);
+	public void finest   (Throwable ex);
 	// message with exception
 	public void exception(String msg, Throwable ex);
 	public void fatal    (String msg, Throwable ex);

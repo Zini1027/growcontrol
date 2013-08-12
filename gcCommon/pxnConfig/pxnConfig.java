@@ -1,6 +1,10 @@
 package com.growcontrol.gcCommon.pxnConfig;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
+import com.growcontrol.gcCommon.pxnUtils;
 
 
 // config file loader
@@ -57,24 +61,36 @@ public class pxnConfig {
 		} catch(Exception ignore) {}
 		return null;
 	}
-//	// get list
-//	public <T> List<T> getList(Class<? extends T> clss, String path) {
-//		try {
-//			return pxnUtils.castList(clss, data.get(path));
-//		} catch (Exception ignore) {
-//ignore.printStackTrace();
-//			return null;
-//		}
-//	}
-//	public List<String> getStringList(String path) {
-//		return getList(String.class, path);
-////		try {
-////			return pxnUtils.castList(String.class, data.get(path));
-//////			return (List<String>) data.get(path);
-////		} catch(Exception ignore) {
-////			return new ArrayList<String>();
-////		}
-//	}
+
+
+	// get list
+	public <T> List<T> getList(Class<? extends T> clss, String path) {
+		try {
+			return pxnUtils.castList(clss, data.get(path));
+		} catch (Exception ignore) {}
+		return null;
+	}
+	public List<String> getStringList(String path) {
+		return getList(String.class, path);
+	}
+
+
+	public List<HashMap<String, Object>> getKeyList(String path) {
+		try {
+			@SuppressWarnings("unchecked")
+			List<HashMap<String, Object>> list = (List<HashMap<String, Object>>) get(path);
+			return list;
+		} catch (Exception ignore) {}
+		return null;
+	}
+	public List<pxnConfig> getConfigList(String path) {
+		List<HashMap<String, Object>> map = getKeyList(path);
+		if(map == null) return null;
+		List<pxnConfig> list = new ArrayList<pxnConfig>();
+		for(HashMap<String, Object> d : map)
+			list.add(new pxnConfig(d));
+		return list;
+	}
 
 
 }

@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 public class TimeUnitTime {
 
 	protected volatile long value = 0;
+	protected volatile boolean isFinal = false;
 
 
 	// new time holder
@@ -21,6 +22,7 @@ public class TimeUnitTime {
 
 	// set time
 	public void set(long value, TimeUnit unit) {
+		if(isFinal) return;
 		if(unit == null) {
 			this.value = 0;
 			return;
@@ -41,9 +43,19 @@ public class TimeUnitTime {
 	}
 
 
+	// final value
+	public TimeUnitTime setFinal() {
+		this.isFinal = true;
+		return this;
+	}
+	public boolean isFinal() {
+		return this.isFinal;
+	}
+
+
 	// parse time duration
 	// example: "5s 3h 10d"
-	public static TimeUnitTime ParseDuration(String str) {
+	public static TimeUnitTime Parse(String str) {
 		if(str == null) throw new NullPointerException("str cannot be null!");
 		if(str.isEmpty()) return null;
 		long value = 0;
