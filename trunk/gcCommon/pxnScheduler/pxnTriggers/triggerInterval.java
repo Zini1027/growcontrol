@@ -25,7 +25,7 @@ public class triggerInterval implements Trigger {
 		if(interval == null) interval = "";
 		this.rawValue = interval.trim().toLowerCase();
 		this.interval.set(
-			TimeUnitTime.ParseDuration(this.rawValue)
+			TimeUnitTime.Parse(this.rawValue)
 		);
 	}
 	public void setTrigger(TimeUnitTime interval) {

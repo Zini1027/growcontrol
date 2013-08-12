@@ -99,6 +99,13 @@ public class pxnLevel implements java.io.Serializable {
 	}
 
 
+	// level equals
+	public boolean equals(pxnLevel level) {
+		if(level == null) return false;
+		return (level.value == this.value);
+	}
+
+
 	// is level loggable
 	public boolean isLoggable(pxnLevel level) {
 		if(level == null) return false;
