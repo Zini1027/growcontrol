@@ -45,12 +45,15 @@ public class pxnCommandListenerGroup extends pxnListenerGroup {
 				if(!(listener instanceof pxnCommandsHolder)) continue;
 				if(!listener.priorityEquals(onlyPriority)) continue;
 				pxnCommandsHolder commandListener = (pxnCommandsHolder) listener;
-				// new event
-				pxnCommandEvent event = pxnCommandEvent.newEvent(line, commandListener);
+				// find command
+				String commandStr = commandListener.getCommand(line);
 				// command/alias not found
+				if(commandStr == null || commandStr.isEmpty()) continue;
+				// new event
+				pxnCommandEvent event = pxnCommandEvent.newEvent(line, commandStr);
 				if(event == null) continue;
-				// run event
 				if(result) event.setHandled();
+				// run event
 				if(commandListener.onCommand(event))
 					event.setHandled();
 				if(event.isHandled()) result = true;

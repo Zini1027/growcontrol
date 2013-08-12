@@ -87,7 +87,7 @@ public class ServerCommands extends pxnCommandsHolder {
 		case "version":
 			return _version();
 		case "say":
-			String msg = commandEvent.commandRaw;
+			String msg = commandEvent.raw;
 			if(msg.contains(" ")) msg = msg.substring(msg.indexOf(" ") + 1);
 			return _say(msg);
 //		// tools

@@ -12,15 +12,23 @@ public class pxnEvent {
 		LOWEST
 	}
 
+	protected boolean handled = false;
+
 
 	// event is handled
-	protected boolean handled = false;
 	public void setHandled() {
-		handled = true;
+		setHandled(true);
+	}
+	public void setHandled(boolean handled) {
+		this.handled = handled;
 	}
 	public boolean isHandled() {
 		return handled;
 	}
+
+
+	// reset for next listener
+	public void reset() {}
 
 
 }
