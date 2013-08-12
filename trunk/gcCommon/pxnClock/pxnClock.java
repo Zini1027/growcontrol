@@ -10,6 +10,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
@@ -121,9 +122,15 @@ socket.setSoTimeout(1000);
 				// calculate local offset
 				time = System.currentTimeMillis();
 				localOffset = ((msg.receiveTimestamp - msg.originateTimestamp) + (msg.transmitTimestamp - fromUnixTimestamp(time))) / 2.0;
-				log.info("Internal time adjusted by "+ (localOffset>0?"+":"") + new DecimalFormat("0.000").format(localOffset) +" seconds");
-				log.debug("System time:   "+timestampToString(time/1000.0));
-				log.debug("Adjusted time: "+getString());
+				// less than 100ms
+				if(localOffset < 0.1) {
+					log.debug("System time only off by "+pxnUtils.formatDecimal("0.000", localOffset)+", not adjusting.");
+					localOffset = 0.0;
+				} else {
+					log.info("Internal time adjusted by "+ (localOffset>0?"+":"") + new DecimalFormat("0.000").format(localOffset) +" seconds");
+					log.debug("System time:   "+timestampToString(time/1000.0));
+					log.debug("Adjusted time: "+getString());
+				}
 				// clean up
 				socket.close();
 				msg = null;
