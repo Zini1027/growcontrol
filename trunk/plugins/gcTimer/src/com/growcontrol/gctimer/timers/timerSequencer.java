@@ -1,7 +1,7 @@
 package com.growcontrol.gctimer.timers;
 
 import com.growcontrol.gcServer.devices.gcServerDeviceBoolean;
-import com.growcontrol.gctimer.gcTimer.TimerType;
+import com.growcontrol.gctimer.gcTimer;
 
 
 public class timerSequencer extends gcServerDeviceBoolean implements deviceTimer {
@@ -11,8 +11,8 @@ public class timerSequencer extends gcServerDeviceBoolean implements deviceTimer
 		super(name);
 	}
 	@Override
-	public TimerType getTimerType() {
-		return TimerType.SEQUENCER;
+	public gcTimer.Type getTimerType() {
+		return gcTimer.Type.SEQUENCER;
 	}
 
 

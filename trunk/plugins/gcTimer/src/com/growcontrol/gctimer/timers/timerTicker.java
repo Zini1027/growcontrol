@@ -3,15 +3,15 @@ package com.growcontrol.gctimer.timers;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcServer.devices.gcServerDeviceBoolean;
 import com.growcontrol.gctimer.gcTimer;
-import com.growcontrol.gctimer.gcTimer.TimerType;
-import com.poixson.pxnUtils;
 
 
 public class timerTicker extends gcServerDeviceBoolean implements deviceTimer {
 
-	private String title = "";
+@SuppressWarnings("unused")
+	private String name = "";
 	private long duration = 0;
 	private long currentTick = 0;
 
@@ -42,13 +42,13 @@ public class timerTicker extends gcServerDeviceBoolean implements deviceTimer {
 			this.title = title;
 	}
 	@Override
-	public TimerType getTimerType() {
-		return TimerType.TICKER;
+	public gcTimer.Type getTimerType() {
+		return gcTimer.Type.TICKER;
 	}
 
 
 	public void StartDevice(RunMode runMode) {
-		gcTimer.log.info("Starting timer: "+title+" [Ticker | cycle | "+Long.toString(duration)+"]");
+//		gcTimer.getLogger().info("Starting timer: "+name+" [Ticker | cycle | "+Long.toString(duration)+"]");
 		super.StartDevice(runMode);
 	}
 
@@ -78,9 +78,9 @@ public class timerTicker extends gcServerDeviceBoolean implements deviceTimer {
 		currentTick++;
 		if(currentTick >= duration) currentTick = 0;
 		// check state
-		if(!updateState(testSpans())) return;
-		if(deviceState)	gcTimer.log.info("Tick "+Long.toString(currentTick)+" "+title+" ON");
-		else			gcTimer.log.info("Tick "+Long.toString(currentTick)+" "+title+" off");
+//		if(!updateState(testSpans())) return;
+//		if(deviceState)	gcTimer.log.info("Tick "+Long.toString(currentTick)+" "+title+" ON");
+//		else			gcTimer.log.info("Tick "+Long.toString(currentTick)+" "+title+" off");
 	}
 
 
