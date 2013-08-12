@@ -8,32 +8,33 @@ import com.growcontrol.gcCommon.pxnListener.pxnEvent;
 
 public class pxnCommandEvent extends pxnEvent {
 
-	public final String commandRaw;
+	// raw command
+	public final String raw;
+	// command string (alias resolved)
 	public final String commandStr;
+	// command arguments
 	public final List<String> args = new ArrayList<String>();
 
 
-	// new command event
-	public static pxnCommandEvent newEvent(String commandRaw, pxnCommandsHolder commandListener) {
-		if(commandRaw == null)      throw new NullPointerException("commandRaw cannot be null!");
-		if(commandRaw.isEmpty())    throw new NullPointerException("commandRaw cannot be empty!");
-		if(commandListener == null) throw new NullPointerException("commandListener cannot be null!");
-		// check for alias, return command
-		String commandStr = commandListener.getCommand(commandRaw);
-		// not found
-		if(commandStr == null) return null;
-		// new event
-		return new pxnCommandEvent(commandRaw, commandStr);
-	}
-	protected pxnCommandEvent(String commandRaw, String commandStr) {
+	// new command event - newEvent(raw, commandListener.getCommand(raw))
+	public static pxnCommandEvent newEvent(String raw, String commandStr) {
+		if(raw == null)   throw new NullPointerException("raw cannot be null!");
+		if(raw.isEmpty()) throw new NullPointerException("raw cannot be empty!");
 		if(commandStr == null)   throw new NullPointerException("commandStr cannot be null!");
 		if(commandStr.isEmpty()) throw new NullPointerException("commandStr cannot be empty!");
-		if(commandRaw == null)   throw new NullPointerException("commandRaw cannot be null!");
-		if(commandRaw.isEmpty()) throw new NullPointerException("commandRaw cannot be empty!");
-		this.commandRaw = commandRaw;
+		// new event
+		return new pxnCommandEvent(raw, commandStr);
+	}
+	protected pxnCommandEvent(String raw, String commandStr) {
+		if(raw == null)   throw new NullPointerException("raw cannot be null!");
+		if(raw.isEmpty()) throw new NullPointerException("raw cannot be empty!");
+		if(commandStr == null)   throw new NullPointerException("commandStr cannot be null!");
+		if(commandStr.isEmpty()) throw new NullPointerException("commandStr cannot be empty!");
+		this.raw = raw;
 		this.commandStr = commandStr.trim().toLowerCase();
-		String[] tmp = commandRaw.split(" ");
 		// args
+		args.clear();
+		String[] tmp = raw.split(" ");
 		if(tmp.length > 1) {
 			for(int i = 1; i < tmp.length; i++) {
 				if(tmp[i].isEmpty()) continue;
@@ -45,9 +46,7 @@ public class pxnCommandEvent extends pxnEvent {
 
 	public boolean equals(String compareStr) {
 		if(compareStr == null) return false;
-		if(compareStr.trim().toLowerCase() == getCommandStr())
-			return true;
-		return false;
+		return compareStr.trim().toLowerCase().equals( getCommandStr() );
 	}
 	public String getCommandStr() {
 		return this.commandStr;
