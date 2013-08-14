@@ -2,7 +2,6 @@ package com.growcontrol.gcCommon.pxnPlugin;
 
 import java.io.File;
 
-import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnConfig.pxnConfig;
 import com.growcontrol.gcCommon.pxnConfig.pxnConfigLoader;
 
@@ -13,20 +12,18 @@ public class pxnPluginYML {
 
 
 	public pxnPluginYML(File jarFile, String fileName) {
-		LoadConfig(jarFile, fileName);
+		config = pxnConfigLoader.LoadFromJar(jarFile, fileName);
 	}
-	// load plugin.yml
-	public synchronized void LoadConfig(File jarFile, String fileName) {
-		if(jarFile     == null) throw new NullPointerException("file cannot be null!");
-		if(fileName == null) throw new NullPointerException("fileName cannot be null!");
-		pxnUtils.InputJar input = pxnUtils.OpenJarResource(jarFile, fileName);
-		if(input != null && input.jar != null && input.fileInput != null)
-			config = pxnConfigLoader.LoadConfig(input.fileInput);
-	}
-
-
+//	// load plugin.yml
+//	public synchronized void LoadConfig(File jarFile, String fileName) {
+//		if(jarFile     == null) throw new NullPointerException("file cannot be null!");
+//		if(fileName == null) throw new NullPointerException("fileName cannot be null!");
+//		pxnUtils.InputJar input = pxnUtils.OpenJarResource(jarFile, fileName);
+//		if(input != null && input.jar != null && input.fileInput != null)
+//			config = pxnConfigLoader.LoadConfig(input.fileInput);
+//	}
 	// config has loaded
-	public boolean hasLoaded() {
+	public boolean isLoaded() {
 		return (config != null);
 	}
 
