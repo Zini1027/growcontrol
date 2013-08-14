@@ -154,6 +154,8 @@ public final class pxnUtils {
 			if(entry != null)
 				fileInput = jar.getInputStream(entry);
 		} catch (IOException ignore) {}
+		if(fileInput == null)
+			return null;
 		return new InputJar(jar, fileInput);
 	}
 	public static class InputJar {
@@ -162,6 +164,10 @@ public final class pxnUtils {
 		public InputJar(JarFile jar, InputStream fileInput) {
 			this.jar = jar;
 			this.fileInput = fileInput;
+		}
+		@Override
+		public void finalize() {
+			Close();
 		}
 		public void Close() {
 			if(jar != null) {
