@@ -94,7 +94,7 @@ public class pxnPluginManager {
 				try {
 					// load plugin.yml from jar
 					pxnPluginYML yml = new pxnPluginYML(file, "plugin.yml");
-					if(!yml.hasLoaded()) {
+					if(!yml.isLoaded()) {
 						//pxnLogger.get().debug("plugin.yml not found in jar: "+file.toString());
 						throw new FileNotFoundException("File plugin.yml not found in jar! "+file.toString());
 						//continue;
