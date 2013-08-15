@@ -16,10 +16,14 @@ public class gcServerPluginManager extends pxnPluginManager {
 	public static gcServerPluginManager get() {
 		return get(null);
 	}
-	public static synchronized gcServerPluginManager get(String pluginsPath) {
-		if(manager == null)
-			if(pluginsPath != null && !pluginsPath.isEmpty())
-				manager = new gcServerPluginManager(pluginsPath);
+	public static gcServerPluginManager get(String pluginsPath) {
+		if(manager == null) {
+			synchronized(lock) {
+				if(manager == null)
+					if(pluginsPath != null && !pluginsPath.isEmpty())
+						manager = new gcServerPluginManager(pluginsPath);
+			}
+		}
 		return (gcServerPluginManager) manager;
 	}
 	protected gcServerPluginManager(String pluginsPath) {
@@ -48,8 +52,8 @@ public class gcServerPluginManager extends pxnPluginManager {
 	// 2 | filename
 	public List<String[]> getClientPlugins() {
 		List<String[]> clientPlugins = new ArrayList<String[]>();
-		synchronized(this.plugins) {
-			for(PluginHolder holder : this.plugins.values()) {
+		synchronized(plugins) {
+			for(PluginHolder holder : plugins.values()) {
 				String mainClass = holder.mainClasses.get(mainClass_Client);
 				if(mainClass == null || mainClass.isEmpty())
 					continue;

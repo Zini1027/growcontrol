@@ -8,6 +8,7 @@ public final class pxnSocketUtils {
 		throw new CloneNotSupportedException();
 	}
 
+	// unique socket id
 	private static volatile int nextSocketId = 0;
 
 	public static final int MAXPORT = 65536;

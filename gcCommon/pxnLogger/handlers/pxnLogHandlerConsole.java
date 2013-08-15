@@ -14,14 +14,19 @@ import com.growcontrol.gcCommon.pxnLogger.pxnLogRecord;
 public class pxnLogHandlerConsole implements pxnLogHandler {
 	private static final String handlerName = "CONSOLE";
 
+	// handler instance
+	private static volatile pxnLogHandlerConsole handler = null;
+	private static final Object lock = new Object();
 	private final ConsoleReader reader;
 
 
-	// handler instance
-	private static pxnLogHandlerConsole handler = null;
-	public static synchronized pxnLogHandlerConsole get() {
-		if(handler == null)
-			handler = new pxnLogHandlerConsole();
+	public static pxnLogHandlerConsole get() {
+		if(handler == null) {
+			synchronized(lock) {
+				if(handler == null)
+					handler = new pxnLogHandlerConsole();
+			}
+		}
 		return handler;
 	}
 	private pxnLogHandlerConsole() {
@@ -43,6 +48,7 @@ public class pxnLogHandlerConsole implements pxnLogHandler {
 	}
 
 
+	// handler name
 	@Override
 	public String getName() {
 		return handlerName;

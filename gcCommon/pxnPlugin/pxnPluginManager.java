@@ -15,17 +15,24 @@ import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 public class pxnPluginManager {
 
-	protected static pxnPluginManager manager = null;
+	protected static volatile pxnPluginManager manager = null;
+	protected static final Object lock = new Object();
 	protected final String pluginsPath;
+
+	protected HashMap<String, PluginHolder> plugins = new HashMap<String, PluginHolder>();
 
 
 	public static pxnPluginManager get() {
 		return get(null);
 	}
-	public static synchronized pxnPluginManager get(String pluginsPath) {
-		if(manager == null)
-			if(pluginsPath != null && !pluginsPath.isEmpty())
-				manager = new pxnPluginManager(pluginsPath);
+	public static pxnPluginManager get(String pluginsPath) {
+		if(manager == null) {
+			synchronized(lock) {
+				if(manager == null)
+					if(pluginsPath != null && !pluginsPath.isEmpty())
+						manager = new pxnPluginManager(pluginsPath);
+			}
+		}
 		return manager;
 	}
 	protected pxnPluginManager(String pluginsPath) {
@@ -41,7 +48,6 @@ public class pxnPluginManager {
 
 
 	// plugins (info and instance)
-	protected HashMap<String, PluginHolder> plugins = new HashMap<String, PluginHolder>();
 	protected class PluginHolder {
 		public final String pluginName;
 		public pxnPlugin plugin = null;
@@ -56,17 +62,17 @@ public class pxnPluginManager {
 
 
 	// load jars from dir
-	public synchronized void LoadPluginsDir() {
+	public void LoadPluginsDir() {
 		LoadPluginsDir(new String[] {null});
 	}
-	public synchronized void LoadPluginsDir(String mainClassFieldName) {
+	public void LoadPluginsDir(String mainClassFieldName) {
 		LoadPluginsDir(new String[] {mainClassFieldName});
 	}
-	public synchronized void LoadPluginsDir(String[] mainClassFieldNames) {
+	public void LoadPluginsDir(String[] mainClassFieldNames) {
 		if(mainClassFieldNames == null || mainClassFieldNames.length == 0 ||
 				(mainClassFieldNames.length == 1 && mainClassFieldNames[0] == null))
 			mainClassFieldNames = new String[] {"Main Class"};
-		synchronized(this.plugins) {
+		synchronized(plugins) {
 			String path = this.pluginsPath;
 			if(path == null || path.isEmpty())
 				path = "plugins/";
@@ -101,7 +107,7 @@ public class pxnPluginManager {
 					}
 					String pluginName = yml.getPluginName();
 					// plugin already loaded
-					if(this.plugins.containsKey(pluginName)) {
+					if(plugins.containsKey(pluginName)) {
 						pxnLog.get().warning("Duplicate plugin already loaded: "+pluginName);
 						failed++;
 						continue;
@@ -117,7 +123,7 @@ public class pxnPluginManager {
 							continue;
 						holder.mainClasses.put(fieldName, value);
 					}
-					this.plugins.put(pluginName, holder);
+					plugins.put(pluginName, holder);
 					successful++;
 				} catch(Exception e) {
 					pxnLog.get().exception("Failed to load plugin! "+file.toString(), e);
@@ -137,11 +143,11 @@ public class pxnPluginManager {
 	public void InitPlugins(String mainClassFieldName) {
 		if(mainClassFieldName == null || mainClassFieldName.isEmpty())
 			mainClassFieldName = "Main Class";
-		synchronized(this.plugins){
+		synchronized(plugins){
 			pxnLogger log = pxnLog.get();
 			int successful = 0;
 			int failed = 0;
-			for(PluginHolder holder : this.plugins.values()) {
+			for(PluginHolder holder : plugins.values()) {
 				if(!holder.file.isFile()) {
 					log.warning("jar file not found: "+holder.file);
 					failed++;
@@ -177,8 +183,8 @@ public class pxnPluginManager {
 		pxnLogger log = pxnLog.get();
 		int successful = 0;
 		int failed = 0;
-		synchronized(this.plugins) {
-			for(PluginHolder holder : this.plugins.values()) {
+		synchronized(plugins) {
+			for(PluginHolder holder : plugins.values()) {
 				if(holder.plugin == null) continue;
 				// plugin already enabled
 				if(holder.plugin.isEnabled()) continue;
@@ -208,8 +214,8 @@ public class pxnPluginManager {
 		pxnLogger log = pxnLog.get();
 		int successful = 0;
 		int failed     = 0;
-		synchronized(this.plugins) {
-			for(PluginHolder holder : this.plugins.values()) {
+		synchronized(plugins) {
+			for(PluginHolder holder : plugins.values()) {
 				if(holder.plugin == null) continue;
 				// plugin already disabled
 				if(!holder.plugin.isEnabled()) continue;
@@ -231,10 +237,10 @@ public class pxnPluginManager {
 	// unload plugins
 	public void UnloadPlugins() {
 		DisablePlugins();
-		synchronized(this.plugins) {
-			for(Entry<String, PluginHolder> entry : this.plugins.entrySet())
-				this.plugins.put(entry.getKey(), null);
-			this.plugins.clear();
+		synchronized(plugins) {
+			for(Entry<String, PluginHolder> entry : plugins.entrySet())
+				plugins.put(entry.getKey(), null);
+			plugins.clear();
 		}
 	}
 

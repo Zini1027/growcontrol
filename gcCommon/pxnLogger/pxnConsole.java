@@ -23,45 +23,50 @@ public class pxnConsole implements Runnable {
 	public static final String defaultPrompt = "> ";
 
 	// console instance
-	private static pxnConsole console = null;
+	private static volatile pxnConsole console = null;
+	private static final Object lock = new Object();
+
 	// jLine reader
-	private static ConsoleReader reader = null;
-//	// jAnsi
-//	private static PrintWriter out = null;
+	private static volatile ConsoleReader reader = null;
 
 	private Thread thread = null;
 	private volatile boolean stopping = false;
 	private volatile Boolean running = false;
 
 
-	public static synchronized pxnConsole get() {
-		if(console == null)
-			console = new pxnConsole();
+	public static pxnConsole get() {
+		if(console == null) {
+			synchronized(lock) {
+				if(console == null)
+					console = new pxnConsole();
+			}
+		}
 		return console;
 	}
 	private pxnConsole() {
 		pxnLogger.Init();
-//		out = new PrintWriter(AnsiConsole.out);
 	}
 
 
 	// jline console reader
-	public static synchronized ConsoleReader getReader() {
+	public static ConsoleReader getReader() {
 		if(reader == null) {
-			try {
-				reader = new ConsoleReader();
-				reader.setBellEnabled(false);
-				reader.setPrompt(defaultPrompt);
-				FileHistory history = new FileHistory(new File("history.txt"));
-				history.setMaxSize(100);
-				reader.setHistory(history);
-				reader.setHistoryEnabled(true);
-			} catch (IOException e) {
-				e.printStackTrace();
+			synchronized(lock) {
+				if(reader == null) {
+					try {
+						reader = new ConsoleReader();
+						reader.setBellEnabled(false);
+						reader.setPrompt(defaultPrompt);
+						FileHistory history = new FileHistory(new File("history.txt"));
+						history.setMaxSize(100);
+						reader.setHistory(history);
+						reader.setHistoryEnabled(true);
+					} catch (IOException e) {
+						pxnLog.get().exception(e);
+					}
+				}
 			}
 		}
-		if(reader == null)
-			pxnLog.get().exception(new NullPointerException("reader not set!"));
 		return reader;
 	}
 
@@ -137,10 +142,13 @@ public class pxnConsole implements Runnable {
 	}
 	public static void Close() {
 		if(console == null) return;
-		console.stopping = true;
-		if(console.running)
-			console.thread.interrupt();
-		AnsiConsole.systemUninstall();
+		synchronized(lock) {
+			if(console == null) return;
+			console.stopping = true;
+			if(console.running)
+				console.thread.interrupt();
+			AnsiConsole.systemUninstall();
+		}
 	}
 
 

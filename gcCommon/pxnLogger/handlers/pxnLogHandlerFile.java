@@ -6,24 +6,35 @@ import com.growcontrol.gcCommon.pxnLogger.pxnLogRecord;
 public class pxnLogHandlerFile implements pxnLogHandler {
 	private static final String handlerName = "FILE";
 
-
 	// handler instance
-	private static pxnLogHandlerFile handler = null;
-	public static synchronized pxnLogHandlerFile get() {
-		if(handler == null)
-			handler = new pxnLogHandlerFile();
+	private static volatile pxnLogHandlerFile handler = null;
+	private static final Object lock = new Object();
+
+
+	public static pxnLogHandlerFile get() {
+		if(handler == null) {
+			synchronized(lock) {
+				if(handler == null)
+					handler = new pxnLogHandlerFile();
+			}
+		}
 		return handler;
 	}
+	private pxnLogHandlerFile() {}
 
 
-	private pxnLogHandlerFile() {
-	}
 	// close
 	@Override
 	public void Close() {
+//TODO:
+	}
+	@Override
+	protected void finalize() {
+		Close();
 	}
 
 
+	// handler name
 	@Override
 	public String getName() {
 		return handlerName;

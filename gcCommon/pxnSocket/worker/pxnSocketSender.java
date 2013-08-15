@@ -11,13 +11,13 @@ import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 
 
 public class pxnSocketSender extends pxnSocketWorkerThread {
-	private final String logName;
 	private static final String EOL = "\r\n";
+	private final String logName;
 
-	private BlockingQueue<String> queueOut = null;
-	private PrintWriter out = null;
+	private volatile BlockingQueue<String> queueOut = null;
+	private volatile PrintWriter out = null;
 
-	private Boolean running = false;
+	private volatile Boolean running = false;
 
 
 	public pxnSocketSender(pxnSocketWorker worker, Socket socket) {

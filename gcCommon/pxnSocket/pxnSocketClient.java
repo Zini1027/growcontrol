@@ -20,24 +20,23 @@ public class pxnSocketClient implements pxnSocket {
 
 	// socket state
 	private volatile pxnSocketState state = pxnSocketState.CLOSED;
-//	private volatile boolean stopping = false;
 
 	// worker
 	private pxnSocketWorker worker = null;
 	// processor factory
-	private pxnSocketProcessorFactory factory = null;
+	private volatile pxnSocketProcessorFactory factory = null;
 
 
-	public pxnSocketClient() {
-	}
+	public pxnSocketClient() {}
 
 
 	// connect to host (blocking)
 	@Override
-	public synchronized void Start() {
+	public void Start() {
 		synchronized(state) {
+			// not closed
 			if(!pxnSocketState.CLOSED.equals(state)) return;
-//			stopping = false;
+			// waiting for user
 			state = pxnSocketState.WAITING;
 		}
 		pxnLog.get(logName).info("Connecting to host: "+host+":"+Integer.toString(port));
@@ -57,19 +56,19 @@ return;
 //TODO:
 //gcClient.setConnectState(ConnectState.CONNECTED);
 			return;
-		} catch (UnknownHostException e) {
+		} catch (UnknownHostException ignore) {
 			// unknown host
-			pxnLog.get(logName).exception(e);
+			pxnLog.get(logName).warning("Unknown host!");
 //TODO:
 //gcClient.setConnectState(ConnectState.CLOSED);
-		} catch (SocketTimeoutException e) {
+		} catch (SocketTimeoutException ignore) {
 			// connect timeout
-			pxnLog.get(logName).exception(e);
+			pxnLog.get(logName).warning("Connection timeout!");
 //TODO:
 //gcClient.setConnectState(ConnectState.CLOSED);
-		} catch(ConnectException e) {
+		} catch(ConnectException ignore) {
 			// connection refused
-			pxnLog.get(logName).exception(e);
+			pxnLog.get(logName).warning("Connection refused!");
 //TODO:
 //JOptionPane.showMessageDialog(null, e.getMessage(), "Connection failed!", JOptionPane.ERROR_MESSAGE);
 //gcClient.setConnectState(ConnectState.CLOSED);
@@ -91,9 +90,9 @@ return;
 	@Override
 	public void Close() {
 		synchronized(state) {
-//			stopping = true;
 			state = pxnSocketState.CLOSED;
-			worker.Close();
+			if(worker != null)
+				worker.Close();
 		}
 	}
 	// close all sockets
@@ -127,6 +126,7 @@ return;
 	@Override
 	public void setHost(String host) {
 		synchronized(state) {
+			// not closed
 			if(!pxnSocketState.CLOSED.equals(state)) return;
 			this.host = pxnSocketUtils.prepHost(host);
 		}
@@ -141,6 +141,7 @@ return;
 	@Override
 	public void setPort(int port) {
 		synchronized(state) {
+			// not closed
 			if(!pxnSocketState.CLOSED.equals(state)) return;
 			this.port = pxnSocketUtils.prepPort(port);
 		}
@@ -155,6 +156,7 @@ return;
 	@Override
 	public void setFactory(pxnSocketProcessorFactory factory) {
 		synchronized(state) {
+			// not closed
 			if(!pxnSocketState.CLOSED.equals(state)) return;
 			this.factory = factory;
 		}
