@@ -5,7 +5,8 @@ import com.growcontrol.gcClient.frames.Login.LoginHandler;
 
 
 public class guiManager {
-	public static guiManager manager = null;
+	private static volatile guiManager manager = null;
+	private static final Object lock = new Object();
 
 	// display mode
 	public enum GUI {LOGIN, DASH};
@@ -14,21 +15,27 @@ public class guiManager {
 //	private final Object modeLock = new Object();
 
 	// frames
-	protected LoginHandler     loginHandler = null;
-	protected DashboardHandler dashHandler  = null;
+	protected volatile LoginHandler     loginHandler = null;
+	protected volatile DashboardHandler dashHandler  = null;
 
 
-	public static synchronized guiManager get() {
-		if(manager == null)
-			manager = new guiManager();
+	public static guiManager get() {
+		if(manager == null) {
+			synchronized(lock) {
+				if(manager == null)
+					manager = new guiManager();
+			}
+		}
 		return manager;
 	}
 	private guiManager() {
 		Update();
 	}
 	public static void Shutdown() {
-		if(manager != null)
-			get().doShutdown();
+		synchronized(lock) {
+			if(manager != null)
+				get().doShutdown();
+		}
 	}
 	private void doShutdown() {
 		if(loginHandler != null)

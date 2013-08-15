@@ -12,8 +12,7 @@ public abstract class ConnectState {
 	protected State state = null;
 
 
-	public ConnectState() {
-	}
+	public ConnectState() {}
 	public ConnectState(State state) {
 		if(state == null)
 			this.state = null;

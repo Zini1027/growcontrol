@@ -10,8 +10,7 @@ public class gcPacketReader implements pxnSocketProcessor {
 	private static final String logName = "gcPacketReader";
 
 
-	public gcPacketReader() {
-	}
+	public gcPacketReader() {}
 
 
 	@Override
@@ -41,8 +40,7 @@ System.out.println("Got PLUGIN packet! "+line.getRest());
 
 
 	@Override
-	public void Closing() {
-	}
+	public void Closing() {}
 
 
 //private boolean sendingFile = false;
