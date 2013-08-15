@@ -13,10 +13,14 @@ public class gcClientPluginManager extends pxnPluginManager {
 	public static gcClientPluginManager get() {
 		return get(null);
 	}
-	public static synchronized gcClientPluginManager get(String pluginsPath) {
-		if(manager == null)
-			if(pluginsPath != null && !pluginsPath.isEmpty())
-				manager = new gcClientPluginManager(pluginsPath);
+	public static gcClientPluginManager get(String pluginsPath) {
+		if(manager == null) {
+			synchronized(lock) {
+				if(manager == null)
+					if(pluginsPath != null && !pluginsPath.isEmpty())
+						manager = new gcClientPluginManager(pluginsPath);
+			}
+		}
 		return (gcClientPluginManager) manager;
 	}
 	protected gcClientPluginManager(String pluginsPath) {

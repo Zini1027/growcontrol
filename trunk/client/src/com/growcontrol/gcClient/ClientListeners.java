@@ -5,28 +5,29 @@ import com.growcontrol.gcCommon.pxnCommand.pxnCommandsHolder;
 
 
 public class ClientListeners {
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
+	}
 
 	// single instance
-	private static ClientListeners listeners = null;
-
-	// client commands
-	private ClientCommands commands;
+	private static volatile ClientListeners listeners = null;
+	private static final Object lock = new Object();
 
 
 	public static synchronized ClientListeners get() {
-		if(listeners == null)
-			listeners = new ClientListeners();
+		if(listeners == null) {
+			synchronized(lock) {
+				if(listeners == null)
+					listeners = new ClientListeners();
+			}
+		}
 		return listeners;
 	}
 	// init listeners
 	private ClientListeners() {
 		// client commands listener
-		commands = new ClientCommands();
-		register(commands);
-	}
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		throw new CloneNotSupportedException();
+		register(ClientCommands.get());
 	}
 
 

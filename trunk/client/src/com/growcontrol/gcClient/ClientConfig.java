@@ -1,59 +1,58 @@
 package com.growcontrol.gcClient;
 
 import com.growcontrol.gcCommon.pxnConfig.pxnConfig;
-import com.growcontrol.gcCommon.pxnLogger.pxnLog;
+import com.growcontrol.gcCommon.pxnConfig.pxnConfigLoader;
 
 
-public class ClientConfig {
-
-	// path to config files
-	protected String configsPath = null;
-	// config loader
-	protected pxnConfig config = null;
-	// instance of this
-	protected static ClientConfig clientConfig = null;
-
-
-	public static ClientConfig get() {
-		if(clientConfig == null)
-			clientConfig = new ClientConfig(null);
-		return clientConfig;
+public final class ClientConfig {
+	private ClientConfig() {}
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
 	}
-	protected static ClientConfig get(String dirPath) {
-		if(clientConfig == null)
-			clientConfig = new ClientConfig(dirPath);
-		return clientConfig;
+
+	private static final String CONFIG_FILE = "config.yml";
+	private static volatile String configPath = null;
+
+	// config dao
+	private static volatile pxnConfig config = null;
+	private static final Object lock = new Object();
+
+
+	public static pxnConfig get() {
+		if(config == null) {
+			synchronized(lock) {
+				if(config == null)
+					config = pxnConfigLoader.Load(configPath, CONFIG_FILE);
+			}
+		}
+		return config;
 	}
 	public static boolean isLoaded() {
-		if(clientConfig == null)
-			return false;
-		if(clientConfig.config == null)
-			return false;
-		return clientConfig.config.isLoaded();
+		return (config != null);
 	}
 
 
-	// load config.yml
-	protected ClientConfig(String dirPath) {
-		if(dirPath != null)
-			configsPath = dirPath;
-		try {
-			config = pxnConfig.loadFile(configsPath, "config.yml");
-		} catch (Exception e) {
-			pxnLog.get().exception(e);
-		}
+	// configs path
+	public static String getPath() {
+		if(configPath == null || configPath.isEmpty())
+			return "./";
+		return configPath;
+	}
+	public static void setPath(String path) {
+		configPath = path;
 	}
 
 
 	// version
-	public String Version() {
+	public static String Version() {
+		pxnConfig config = get();
 		if(config == null) return null;
 		return config.getString("Version");
 	}
-
-
 	// log level
-	public String LogLevel() {
+	public static String LogLevel() {
+		pxnConfig config = get();
 		if(config == null) return null;
 		return config.getString("Log Level");
 	}

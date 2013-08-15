@@ -25,12 +25,12 @@ public class gcClient extends pxnApp {
 	public static final String defaultPrompt = "";
 
 	// client socket
-	private pxnSocketClient socket = null;
+	private volatile pxnSocketClient socket = null;
 //	// client connection state
 //	private final gcConnectState state = new gcConnectState();
 
 	// zones
-	private List<String> zones = new ArrayList<String>();
+	private final List<String> zones = new ArrayList<String>();
 
 
 	// client instance
@@ -65,8 +65,8 @@ System.exit(0);
 
 		log.info("GrowControl "+version+" Client is starting..");
 		// load configs
-		ClientConfig config = ClientConfig.get(configsPath);
-		if(config==null || config.config==null) {
+		ClientConfig.get();
+		if(!ClientConfig.isLoaded()) {
 			log.fatal("Failed to load config.yml, exiting..");
 			System.exit(1);
 			return;
@@ -80,7 +80,8 @@ System.exit(0);
 
 		// load scheduler
 		log.info("Starting schedulers..");
-		pxnScheduler.get(getAppName()).start();
+		pxnScheduler.get(getAppName())
+			.start();
 		// load ticker
 		pxnTicker.get();
 
@@ -238,7 +239,7 @@ pxnLog.get().severe("CONNECTED!!!!!!!!!!!!!!!!!!!");
 			return;
 		}
 		if(!ClientConfig.isLoaded()) return;
-		String levelStr = ClientConfig.get().LogLevel();
+		String levelStr = ClientConfig.LogLevel();
 		if(levelStr != null && !levelStr.isEmpty()) {
 			pxnLog.get().setLevel(
 				pxnLevel.parse(levelStr)
