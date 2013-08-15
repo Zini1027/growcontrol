@@ -10,9 +10,14 @@ import com.growcontrol.gcCommon.pxnScheduler.pxnTriggers.triggerInterval;
 
 
 public class pxnTicker extends pxnSchedulerTask {
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
+	}
 
 	// instance
-	private static pxnTicker ticker = null;
+	private static volatile pxnTicker ticker = null;
+	private static final Object lock = new Object();
 
 	protected List<pxnTickerTask> tasks = new ArrayList<pxnTickerTask>();
 
@@ -20,8 +25,12 @@ public class pxnTicker extends pxnSchedulerTask {
 
 
 	public static pxnTicker get() {
-		if(ticker == null)
-			ticker = new pxnTicker();
+		if(ticker == null) {
+			synchronized(lock) {
+				if(ticker == null)
+					ticker = new pxnTicker();
+			}
+		}
 		return ticker;
 	}
 	protected pxnTicker() {
@@ -35,10 +44,6 @@ public class pxnTicker extends pxnSchedulerTask {
 	@Override
 	public String getTaskName() {
 		return "gcTicker";
-	}
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		throw new CloneNotSupportedException();
 	}
 
 

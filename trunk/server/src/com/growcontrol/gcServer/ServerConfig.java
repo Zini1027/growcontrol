@@ -4,7 +4,6 @@ import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnConfig.pxnConfig;
 import com.growcontrol.gcCommon.pxnConfig.pxnConfigLoader;
 import com.growcontrol.gcCommon.pxnLogger.pxnLevel;
-import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 
 
 public final class ServerConfig {
@@ -15,17 +14,19 @@ public final class ServerConfig {
 	}
 
 	private static final String CONFIG_FILE = "config.yml";
-	private static String configPath = null;
+	private static volatile String configPath = null;
 
 	// config dao
-	protected static pxnConfig config = null;
+	protected static volatile pxnConfig config = null;
+	protected static final Object lock = new Object();
 
 
-	public static synchronized pxnConfig get() {
+	public static pxnConfig get() {
 		if(config == null) {
-			String fileStr = pxnUtils.BuildFilePath(getPath(), CONFIG_FILE);
-			pxnLog.get().debug("Loading config file: "+fileStr);
-			config = pxnConfigLoader.LoadConfig(fileStr);
+			synchronized(lock) {
+				if(config == null)
+					config = pxnConfigLoader.Load(getPath(), CONFIG_FILE);
+			}
 		}
 		return config;
 	}

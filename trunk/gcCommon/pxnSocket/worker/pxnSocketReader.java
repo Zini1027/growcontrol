@@ -13,9 +13,9 @@ import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
 public class pxnSocketReader extends pxnSocketWorkerThread {
 	private final String logName;
 
-	private BufferedReader in = null;
+	private volatile BufferedReader in = null;
 
-	private Boolean running = false;
+	private volatile Boolean running = false;
 
 
 	public pxnSocketReader(pxnSocketWorker worker, Socket socket) {

@@ -11,8 +11,7 @@ public class gcPacketReader implements pxnSocketProcessor {
 	private static final String logName = "gcPacketReader";
 
 
-	public gcPacketReader() {
-	}
+	public gcPacketReader() {}
 
 
 	@Override
@@ -75,8 +74,7 @@ pxnLog.get(logName).severe("SENDING FILE");
 
 
 	@Override
-	public void Closing() {
-	}
+	public void Closing() {}
 
 
 }

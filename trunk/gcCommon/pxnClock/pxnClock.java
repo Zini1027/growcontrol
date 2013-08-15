@@ -17,14 +17,15 @@ import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 public class pxnClock {
 	// instance
-	private static pxnClock clock = null;
+	private static volatile pxnClock clock = null;
+	private static final Object lock = new Object();
 
-	protected boolean enableNTP  = true;
+	protected volatile boolean enableNTP  = true;
 	protected volatile boolean active = false;
-	protected String timeServer = "pool.ntp.org";
+	protected volatile String timeServer = "pool.ntp.org";
 
-	protected double localOffset = 0.0;
-	protected double lastChecked = 0.0; // system time
+	protected volatile double localOffset = 0.0;
+	protected volatile double lastChecked = 0.0; // system time
 
 	// instance lock
 	protected final Object threadLock = new Object();
@@ -34,8 +35,12 @@ public class pxnClock {
 	// get clock
 	public static pxnClock get(boolean blocking) {
 		if(clock == null) {
-			clock = new pxnClock();
-			clock.update(blocking);
+			synchronized(lock) {
+				if(clock == null) {
+					clock = new pxnClock();
+					clock.update(blocking);
+				}
+			}
 		}
 		return clock;
 	}
@@ -102,43 +107,57 @@ public class pxnClock {
 	// run time query
 	protected void doUpdate() {
 		if(!enableNTP) return;
-		synchronized(threadLock) {
-			pxnLogger log = pxnLog.get();
-			double time = System.currentTimeMillis();
-			if(lastChecked != 0.0 && ((time-lastChecked)/1000.0) < 60.0) return;
-			lastChecked = time;
+		synchronized(lock) {
+			if(active) return;
 			active = true;
-			try {
-				DatagramSocket socket;
-				socket = new DatagramSocket();
-socket.setSoTimeout(1000);
-				InetAddress address = InetAddress.getByName(timeServer);
-				byte[] buf = new ntpMessage().toByteArray();
-				DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 123);
-				ntpMessage.encodeTimestamp(packet.getData(), 40, fromUnixTimestamp());
-				socket.send(packet);
-				socket.receive(packet);
-				ntpMessage msg = new ntpMessage(packet.getData());
-				// calculate local offset
-				time = System.currentTimeMillis();
-				localOffset = ((msg.receiveTimestamp - msg.originateTimestamp) + (msg.transmitTimestamp - fromUnixTimestamp(time))) / 2.0;
-				// less than 100ms
-				if(localOffset < 0.1 && localOffset > -0.1) {
-					log.debug("System time only off by "+pxnUtils.FormatDecimal("0.000", localOffset)+", not adjusting.");
-					localOffset = 0.0;
-				} else {
-					log.info("Internal time adjusted by "+(localOffset>0 ? "+" : "-")+pxnUtils.FormatDecimal("0.000", localOffset)+" seconds");
-					log.debug("System time:   "+timestampToString(time/1000.0));
-					log.debug("Adjusted time: "+getString());
-				}
-				// clean up
+		}
+		double time = System.currentTimeMillis();
+		if(lastChecked != 0.0 && ((time-lastChecked)/1000.0) < 60.0) return;
+		lastChecked = time;
+		DatagramSocket socket = null;;
+		try {
+			socket = new DatagramSocket();
+socket.setSoTimeout(500);
+			InetAddress address = InetAddress.getByName(timeServer);
+			byte[] buf = new ntpMessage().toByteArray();
+			DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 123);
+			ntpMessage.encodeTimestamp(packet.getData(), 40, fromUnixTimestamp());
+			socket.send(packet);
+			socket.receive(packet);
+			ntpMessage msg = new ntpMessage(packet.getData());
+			// calculate local offset
+			time = System.currentTimeMillis();
+			localOffset = ((msg.receiveTimestamp - msg.originateTimestamp) + (msg.transmitTimestamp - fromUnixTimestamp(time))) / 2.0;
+			// less than 100ms
+			if(localOffset < 0.1 && localOffset > -0.1) {
+				pxnLog.get().debug("System time only off by "+pxnUtils.FormatDecimal("0.000", localOffset)+", not adjusting.");
+				localOffset = 0.0;
+			} else {
+				pxnLogger log = pxnLog.get();
+				log.info("Internal time adjusted by "+(localOffset>0 ? "+" : "-")+pxnUtils.FormatDecimal("0.000", localOffset)+" seconds");
+				log.debug("System time:   "+timestampToString(time/1000.0));
+				log.debug("Adjusted time: "+getString());
+			}
+			// clean up
+			msg = null;
+			packet = null;
+			address = null;
+		} catch (UnknownHostException | SocketTimeoutException e) {
+			localOffset = 0.0;
+			pxnLog.get().exception(e);
+		} catch (IOException e) {
+			localOffset = 0.0;
+			pxnLog.get().exception(e);
+		} catch (Exception e) {
+			localOffset = 0.0;
+			pxnLog.get().exception(e);
+		} finally {
+			// clean up
+			if(socket != null)
 				socket.close();
-				msg = null;
-				packet = null;
-				socket = null;
-				address = null;
-				active = false;
-				return;
+			socket = null;
+		}
+		active = false;
 //double destinationTimestamp = fromUnixTimestamp();
 //double roundTripDelay = (destinationTimestamp-msg.originateTimestamp) - (msg.transmitTimestamp-msg.receiveTimestamp);
 //double localClockOffset = ((msg.receiveTimestamp - msg.originateTimestamp) + (msg.transmitTimestamp - destinationTimestamp)) / 2;
@@ -146,15 +165,6 @@ socket.setSoTimeout(1000);
 //System.out.println("Dest. timestamp:     " + NtpMessage.timestampToString(destinationTimestamp));
 //System.out.println("Round-trip delay: " + new DecimalFormat("0.00").format(roundTripDelay*1000) + " ms");
 //System.out.println("Local clock offset: " + new DecimalFormat("0.00").format(localClockOffset*1000) + " ms");
-			} catch (UnknownHostException | SocketTimeoutException e) {
-				log.exception(e);
-			} catch (IOException e) {
-				log.exception(e);
-			} catch (Exception e) {
-				log.exception(e);
-			}
-			active = false;
-		}
 	}
 	// has update run?
 	public boolean hasUpdated() {

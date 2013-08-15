@@ -20,10 +20,10 @@ public class gcServer extends pxnApp {
 	public static final String version = "3.0.7";
 
 	// server socket pool
-	private pxnSocketServer socket = null;
+	private volatile pxnSocketServer socket = null;
 
 	// zones
-	private List<String> zones = new ArrayList<String>();
+	private final List<String> zones = new ArrayList<String>();
 
 
 	// server instance

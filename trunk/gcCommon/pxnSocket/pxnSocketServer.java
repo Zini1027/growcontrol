@@ -32,19 +32,20 @@ public class pxnSocketServer implements pxnSocket {
 	// workers
 	private final List<pxnSocketWorker> workers = new ArrayList<pxnSocketWorker>();
 	// processor factory
-	private pxnSocketProcessorFactory factory = null;
+	private volatile pxnSocketProcessorFactory factory = null;
 
 
-	public pxnSocketServer() {
-	}
+	public pxnSocketServer() {}
 
 
 	// start listening (threaded)
 	@Override
-	public synchronized void Start() {
+	public void Start() {
 		synchronized(state) {
+			// not closed
 			if(!pxnSocketState.CLOSED.equals(state)) return;
 			stopping = false;
+			// waiting for user
 			state = pxnSocketState.WAITING;
 		}
 		pxnLog.get(logName).info("Listening on port: "+Integer.toString(port));
@@ -58,18 +59,20 @@ public class pxnSocketServer implements pxnSocket {
 			return;
 		}
 		// start listener thread
-		if(listenerThread == null)
+		if(listenerThread == null) {
 			listenerThread = new Thread(new Runnable() {
 				@Override
 				public void run() {
 					runListener();
 				}
 			});
+		}
 		listenerThread.start();
 	}
 	// listener thread
 	private void runListener() {
 		synchronized(state) {
+			// not waiting for user
 			if(!pxnSocketState.WAITING.equals(state)) return;
 			if(listenerSocket == null) return;
 		}

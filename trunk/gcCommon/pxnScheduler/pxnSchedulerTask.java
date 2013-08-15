@@ -49,14 +49,15 @@ public abstract class pxnSchedulerTask implements Runnable {
 
 	public pxnSchedulerTask addTrigger(Trigger trigger) {
 		if(trigger == null) return null;
-		synchronized(this.triggers) { 
-			this.triggers.add(trigger);
+		synchronized(triggers) {
+			if(!triggers.contains(trigger))
+				triggers.add(trigger);
 		}
 		return this;
 	}
 	public void clearTriggers() {
-		synchronized(this.triggers) { 
-			this.triggers.clear();
+		synchronized(triggers) { 
+			triggers.clear();
 		}
 	}
 
@@ -64,8 +65,8 @@ public abstract class pxnSchedulerTask implements Runnable {
 	public TimeUnitTime UntilNextTrigger() {
 		if(paused) return null;
 		TimeUnitTime untilNext = null;
-		synchronized(this.triggers) {
-			for(Trigger trigger : this.triggers) {
+		synchronized(triggers) {
+			for(Trigger trigger : triggers) {
 				TimeUnitTime u = trigger.UntilNext();
 				if(untilNext == null) {
 					untilNext = u;
@@ -91,8 +92,8 @@ public abstract class pxnSchedulerTask implements Runnable {
 		// set timeLast
 		long time = getTime();
 		this.timeLast = time;
-		synchronized(this.triggers) {
-			for(Trigger trigger : this.triggers) {
+		synchronized(triggers) {
+			for(Trigger trigger : triggers) {
 				TimeUnitTime untilNext = trigger.UntilNext();
 				if(untilNext.get(TimeU.MS) <= 0)
 					trigger.onTrigger(time);

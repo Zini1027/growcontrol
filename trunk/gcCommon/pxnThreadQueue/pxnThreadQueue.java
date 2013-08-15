@@ -13,6 +13,10 @@ import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
 
 public class pxnThreadQueue implements Runnable {
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
+	}
 
 	protected final List<Thread> threads;
 	protected final String queueName;
@@ -23,12 +27,18 @@ public class pxnThreadQueue implements Runnable {
 	protected volatile int active = 0;
 	protected volatile int runCount = 0;
 
-
 	// main thread
-	protected static pxnThreadQueue mainThread = null;
+	protected static volatile pxnThreadQueue mainThread = null;
+	protected static final Object lock = new Object();
+
+
 	public static pxnThreadQueue getMain() {
-		if(mainThread == null)
-			mainThread = new pxnThreadQueue("main");
+		if(mainThread == null) {
+			synchronized(lock) {
+				if(mainThread == null)
+					mainThread = new pxnThreadQueue("main");
+			}
+		}
 		return mainThread;
 	}
 	public static void addToMain(String name, Runnable runnable) {
@@ -53,10 +63,6 @@ public class pxnThreadQueue implements Runnable {
 				pxnLog.get().debug("("+queueName+") Started thread queue..");
 			}
 		});
-	}
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		throw new CloneNotSupportedException();
 	}
 
 

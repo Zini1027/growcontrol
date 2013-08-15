@@ -6,20 +6,25 @@ import com.growcontrol.gcCommon.pxnListener.pxnListenerGroup;
 
 
 public class pxnCommandListenerGroup extends pxnListenerGroup {
-
-
-	// main listener
-	private static pxnCommandListenerGroup listener = null;
-	public static pxnCommandListenerGroup get() {
-		if(listener == null)
-			listener = new pxnCommandListenerGroup();
-		return listener;
-	}
-	protected pxnCommandListenerGroup() {
-	}
+	protected pxnCommandListenerGroup() {}
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		throw new CloneNotSupportedException();
+	}
+
+	// main listener
+	private static volatile pxnCommandListenerGroup listener = null;
+	private static final Object lock = new Object();
+
+
+	public static pxnCommandListenerGroup get() {
+		if(listener == null) {
+			synchronized(lock) {
+				if(listener == null)
+					listener = new pxnCommandListenerGroup();
+			}
+		}
+		return listener;
 	}
 
 

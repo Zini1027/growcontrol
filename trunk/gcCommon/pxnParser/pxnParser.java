@@ -35,6 +35,11 @@ public class pxnParser {
 		parser = null;
 		return list;
 	}
+	// clone
+	@Override
+	public Object clone() {
+		return new pxnParser(this.original, this.delim);
+	}
 
 
 	// multi-line parser

@@ -13,6 +13,10 @@ import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
 
 
 public class pxnScheduler extends Thread {
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
+	}
 
 	// schedulers by name
 	protected static HashMap<String, pxnScheduler> schedulers = new HashMap<String, pxnScheduler>();
@@ -26,7 +30,7 @@ public class pxnScheduler extends Thread {
 
 	protected volatile boolean running  = false;
 	protected volatile boolean stopping = false;
-	protected TimeUnitTime sleepTime = new TimeUnitTime();
+	protected volatile TimeUnitTime sleepTime = new TimeUnitTime();
 
 
 	// get scheduler
@@ -51,10 +55,6 @@ public class pxnScheduler extends Thread {
 		this.schedulerName = name;
 		this.threadPool = new pxnThreadQueue("scheduler_"+name);
 		pxnLog.get().debug("("+name+") New scheduler created");
-	}
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		throw new CloneNotSupportedException();
 	}
 
 
@@ -105,8 +105,8 @@ public class pxnScheduler extends Thread {
 	// check tasks to run (at least once a second)
 	private List<pxnSchedulerTask> getTasksToRun() {
 		List<pxnSchedulerTask> tasksToRun = new ArrayList<pxnSchedulerTask>();
-		synchronized(this.tasks){ 
-			for(pxnSchedulerTask task : this.tasks){
+		synchronized(tasks){ 
+			for(pxnSchedulerTask task : tasks){
 				// sleeping task
 				if(task.isSleeping > 0) {
 					task.isSleeping -= 1;
@@ -151,8 +151,8 @@ public class pxnScheduler extends Thread {
 	// new task
 	public void newTask(pxnSchedulerTask task) {
 		if(task == null) throw new NullPointerException("task cannot be null!");
-		synchronized(this.tasks) {
-			this.tasks.add(task);
+		synchronized(tasks) {
+			tasks.add(task);
 			pxnLog.get().debug("("+task.getTaskName()+") New task created");
 		}
 	}

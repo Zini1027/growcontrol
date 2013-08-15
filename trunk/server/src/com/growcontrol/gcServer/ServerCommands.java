@@ -11,9 +11,26 @@ import com.growcontrol.gcCommon.pxnLogger.pxnLevel;
 import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 
 
-public class ServerCommands extends pxnCommandsHolder {
+public final class ServerCommands extends pxnCommandsHolder {
+	private ServerCommands() {}
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
+	}
+
+	private static ServerCommands instance = null;
+	private static final Object lock = new Object();
 
 
+	public static ServerCommands get() {
+		if(instance == null) {
+			synchronized(lock) {
+				if(instance == null)
+					instance = new ServerCommands();
+			}
+		}
+		return instance;
+	}
 	@Override
 	public void initCommands() {
 		// server control

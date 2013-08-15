@@ -12,18 +12,23 @@ public final class pxnLog {
 
 	public static final String MainLoggerName = "main";
 	private static pxnLogger mainLogger = null;
+	private static final Object lock = new Object();
 
 
 	// get main logger
-	public static synchronized pxnLogger get() {
-		if(mainLogger == null)
-			mainLogger = new pxnLogger(MainLoggerName, null);
+	public static pxnLogger get() {
+		if(mainLogger == null) {
+			synchronized(lock) {
+				if(mainLogger == null)
+					mainLogger = new pxnLogger(MainLoggerName, null);
+			}
+		}
 		return mainLogger;
 	}
 	// get logger
 	public static pxnLogger get(String name) {
-		pxnLogger log = get();
 		// main logger
+		pxnLogger log = get();
 		if(name == null || name.isEmpty() || name.toLowerCase().equals(MainLoggerName))
 			return log;
 		// child logger
@@ -31,8 +36,8 @@ public final class pxnLog {
 	}
 	// anonymous logger
 	public static pxnLogger getAnon(String name) {
-		pxnLogger log = get();
 		// main logger
+		pxnLogger log = get();
 		if(name == null || name.isEmpty() || name.toLowerCase().equals(MainLoggerName))
 			return log;
 		// child logger
