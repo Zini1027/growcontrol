@@ -3,8 +3,8 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/gcServer"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/gcClient"/>
-	<classpathentry kind="lib" path="/gcServer/lib/RXTXcomm.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/client"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/server"/>
+	<classpathentry kind="lib" path="/server/lib/RXTXcomm.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
