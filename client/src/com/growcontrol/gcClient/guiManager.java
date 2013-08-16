@@ -1,5 +1,7 @@
 package com.growcontrol.gcClient;
 
+import javax.swing.SwingUtilities;
+
 import com.growcontrol.gcClient.frames.Dashboard.DashboardHandler;
 import com.growcontrol.gcClient.frames.Login.LoginHandler;
 
@@ -51,26 +53,43 @@ public class guiManager {
 	}
 	public void Update(GUI mode) {
 		if(mode != null) startupMode = mode;
-		if(getStartupMode().equals(startupMode_Last)) return;
+		if(SwingUtilities.isEventDispatchThread()) {
+			doUpdate();
+		} else {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					doUpdate();
+				}
+			});
+		}
+	}
+	private void doUpdate() {
+		getStartupMode();
 		synchronized(startupMode) {
+			boolean hasChanged = getStartupMode().equals(startupMode_Last);
 			// close old frames
-			switch(startupMode_Last) {
-			case LOGIN:
-				if(loginHandler != null)
-					loginHandler.Close();
-				break;
-			case DASH:
-				if(dashHandler != null)
-					dashHandler.Close();
-				break;
+			if(hasChanged && startupMode_Last != null) {
+				switch(startupMode_Last) {
+				case LOGIN:
+					if(loginHandler != null)
+						loginHandler.Close();
+					break;
+				case DASH:
+					if(dashHandler != null)
+						dashHandler.Close();
+					break;
+				}
 			}
 			// load new frames
 			switch(startupMode) {
 			case LOGIN:
-				getLoginHandler().Show();
+				if(hasChanged)
+					getLoginHandler().Show();
 				break;
 			case DASH:
-				getDashboardHandler().Show();
+				if(hasChanged)
+					getDashboardHandler().Show();
 				break;
 			}
 			startupMode_Last = startupMode;

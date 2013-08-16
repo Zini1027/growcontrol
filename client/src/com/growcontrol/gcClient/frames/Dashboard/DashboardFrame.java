@@ -6,6 +6,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
@@ -23,14 +24,14 @@ import com.growcontrol.gcClient.frames.gcFrameInterface;
 
 public class DashboardFrame extends JFrame implements gcFrameInterface {
 	private static final long serialVersionUID = 1L;
-@SuppressWarnings("unused")
-	private final DashboardHandler handler;
+//	private static final String logName = DashboardHandler.logName;
+//	private final DashboardHandler handler;
 
 //	private JPanel contentPane;
 
 
 	public DashboardFrame(DashboardHandler handler) {
-		this.handler = handler;
+//		this.handler = handler;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Grow Control "+gcClient.version);
 		setBounds(100, 100, 600, 600);
@@ -106,6 +107,25 @@ public class DashboardFrame extends JFrame implements gcFrameInterface {
 		JMenuItem menuFileExit = new JMenuItem("Exit");
 		menuFileExit.setMnemonic(KeyEvent.VK_X);
 		menuFile.add(menuFileExit);
+	// view menu
+	JMenu menuView = new JMenu("View");
+	menuView.setMnemonic(KeyEvent.VK_V);
+	menuBar.add(menuView);
+		// tree view
+		JCheckBoxMenuItem menuViewTree = new JCheckBoxMenuItem("Tree View");
+		menuViewTree.setSelected(true);
+		menuViewTree.setMnemonic(KeyEvent.VK_T);
+		menuView.add(menuViewTree);
+		// room view
+		JCheckBoxMenuItem menuViewRoom = new JCheckBoxMenuItem("Room View");
+		menuViewTree.setSelected(false);
+		menuViewRoom.setMnemonic(KeyEvent.VK_R);
+		menuView.add(menuViewRoom);
+		// floor plan view
+		JCheckBoxMenuItem menuViewFloorPlan = new JCheckBoxMenuItem("Floor Plan View");
+		menuViewTree.setSelected(false);
+		menuViewFloorPlan.setMnemonic(KeyEvent.VK_F);
+		menuView.add(menuViewFloorPlan);
 		return menuBar;
 	}
 	// file->new

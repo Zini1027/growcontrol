@@ -9,7 +9,7 @@ public abstract class ConnectState {
 		CONNECTED,
 		READY
 	};
-	protected State state = null;
+	protected volatile State state = null;
 
 
 	public ConnectState() {}
@@ -23,20 +23,19 @@ public abstract class ConnectState {
 
 	// connection state
 	public State getConnectionState() {
-		synchronized(state) {
-			if(state == null)
-				return State.CLOSED;
-			return state;
-		}
+		if(state == null)
+			return State.CLOSED;
+		return state;
 	}
 	public void setConnectState(State state) {
 		if(state == null) throw new NullPointerException("state can't be null!");
 		synchronized(state) {
 			// no change
-			if(this.state != null)
-				if(this.state.equals(state))
-					return;
+			if(this.state != null && this.state.equals(state))
+				return;
+			// save last state
 			State lastState = this.state;
+			// set new state
 			this.state = state;
 			// do change
 			doChangedState(lastState);
