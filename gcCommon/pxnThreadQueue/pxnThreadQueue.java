@@ -8,6 +8,7 @@ import java.util.concurrent.BlockingQueue;
 
 import com.growcontrol.gcCommon.TimeU;
 import com.growcontrol.gcCommon.pxnUtils;
+import com.growcontrol.gcCommon.pxnClock.pxnCoolDown;
 import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnLogger.pxnLogger;
 
@@ -18,14 +19,20 @@ public class pxnThreadQueue implements Runnable {
 		throw new CloneNotSupportedException();
 	}
 
+	// thread count limits
+	public static final int HardLimit = 100;
+//	public static volatile int GlobalMax = 200;
+
 	protected final List<Thread> threads;
 	protected final String queueName;
+	protected final String logName;
 	protected final BlockingQueue<pxnRunnable> queue = new ArrayBlockingQueue<pxnRunnable>(10);
 
 	protected volatile boolean stopping = false;
 	protected volatile int maxThreads = 1;
 	protected volatile int active = 0;
 	protected volatile int runCount = 0;
+	protected final pxnCoolDown coolMaxReached = pxnCoolDown.get("5s");
 
 	// main thread
 	protected static volatile pxnThreadQueue mainThread = null;
@@ -47,10 +54,14 @@ public class pxnThreadQueue implements Runnable {
 
 
 	public pxnThreadQueue(String name) {
+		if(name == null || name.isEmpty()) throw new NullPointerException("name cannot be null!");
 		this.queueName = name;
+		this.logName = name;
+		getLogger().setBracers("( "," )");
 		// main thread (single)
 		if(name == "main") {
 			threads = null;
+			maxThreads = 1;
 		// thread pool (multi)
 		} else {
 			threads = new ArrayList<Thread>();
@@ -60,7 +71,7 @@ public class pxnThreadQueue implements Runnable {
 		addQueue("Thread-Startup", new Runnable() {
 			@Override
 			public void run() {
-				pxnLog.get().debug("("+queueName+") Started thread queue..");
+				getLogger().debug("Started thread queue..");
 			}
 		});
 	}
@@ -84,7 +95,12 @@ public class pxnThreadQueue implements Runnable {
 	}
 	public void setMax(int maxThreads) {
 		if(queueName.equalsIgnoreCase("main")) return;
-		this.maxThreads = pxnUtils.MinMax(maxThreads, 1, 100);
+		this.maxThreads = pxnUtils.MinMax(maxThreads, 0, HardLimit);
+	}
+
+
+	protected pxnLogger getLogger() {
+		return pxnLog.get(logName);
 	}
 
 
@@ -103,7 +119,7 @@ public class pxnThreadQueue implements Runnable {
 				task = queue.poll(1, TimeU.S);
 				inactiveCount += 1;
 			} catch (InterruptedException e) {
-				pxnLog.get().exception(e);
+				getLogger().exception(e);
 				break;
 			}
 			if(active < 0) active = 0;
@@ -111,7 +127,7 @@ public class pxnThreadQueue implements Runnable {
 			if(task == null) {
 				// inactive thread after 5 minutes
 				if(inactiveCount > 300 && threads != null) {
-					pxnLog.get().info("("+queueName+") Inactive thread");
+					getLogger().info("Inactive thread");
 					break;
 				}
 			// active thread
@@ -119,17 +135,17 @@ public class pxnThreadQueue implements Runnable {
 				runCount++;
 				inactiveCount = 0;
 				active++;
-				pxnLog.get().debug("Running thread task: "+task.getTaskName());
+				getLogger().debug("Running thread task: "+task.getTaskName());
 				Thread.currentThread().setName(task.getTaskName());
 				try {
 					task.run();
 				} catch (Exception e) {
-					pxnLog.get().exception(e);
+					getLogger().exception(e);
 				}
 				active--;
 			}
 		}
-		pxnLog.get().info("("+queueName+") Stopped thread queue");
+		getLogger().info("Stopped thread queue");
 	}
 
 
@@ -158,7 +174,6 @@ public class pxnThreadQueue implements Runnable {
 	}
 	// display threads still running
 	public void displayStillRunning() {
-		pxnLogger log = pxnLog.get();
 		Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
 		List<String> threadNames = new ArrayList<String>();
 		int count = 0;
@@ -172,6 +187,7 @@ public class pxnThreadQueue implements Runnable {
 			count++;
 			threadNames.add(t.getName());
 		}
+		pxnLogger log = getLogger();
 		if(count > 0) {
 			log.severe("Threads still running: ("+count+")");
 			for(String t : threadNames)
@@ -181,20 +197,21 @@ public class pxnThreadQueue implements Runnable {
 
 
 	// add to queue
-	public void addQueue(String name, Runnable runnable) {
-		if(runnable == null) throw new NullPointerException("("+queueName+") runnable can't be null!");
+	public void addQueue(String name, Runnable run) {
+		if(run == null) throw new NullPointerException("run can't be null!");
+		// run in main thread queue
+		if(getMax() <= 0) {
+			addToMain(name, run);
+			return;
+		}
 		try {
-			pxnRunnable run = new pxnRunnable(name, runnable);
-			if(queue.offer(run, 1, TimeU.S)) {
-//				String msg = "("+queueName+") Thread task queued";
-//				if(run.getTaskName() != null && !run.getTaskName().equals(""))
-//					msg += ": "+run.getTaskName();
-//				pxnLogger.get().debug(msg);
-			} else {
-				pxnLog.get().severe("("+queueName+") Thread queue is full!");
-			}
+			pxnRunnable r = new pxnRunnable(name, run);
+			if(queue.offer(r, 1, TimeU.S))
+				getLogger().finer("Thread task queued..");
+			else
+				getLogger().severe("Thread queue is full!!!");
 		} catch (InterruptedException e) {
-			pxnLog.get().exception(e);
+			getLogger().exception(e);
 		}
 		// add new thread (if all are in use)
 		addThread();
@@ -203,7 +220,7 @@ public class pxnThreadQueue implements Runnable {
 
 	// add new thread (if all are in use)
 	protected synchronized void addThread() {
-		if(stopping) return;
+		if(stopping || getMax() <= 0) return;
 		// multi-threaded mode only
 		if(this.threads == null) return;
 		int count = this.threads.size();
@@ -219,13 +236,23 @@ public class pxnThreadQueue implements Runnable {
 			}
 		}
 		// max threads
-		if(count >= maxThreads) return;
+		if(count >= getMax()) {
+			if(coolMaxReached.Again())
+				getLogger().warning("Max threads limit reached!");
+			else
+				getLogger().finest("Max threads limit reached!");
+			return;
+		}
 		// new thread
 		Thread thread = new Thread(this);
 		thread.setName("pxnThreadQueue_"+queueName);
 		this.threads.add(thread);
 		thread.start();
-		pxnLog.get().info("("+queueName+") threads: "+count+" active: "+active+" max: "+maxThreads);
+		getLogger().info(
+			"Threads: "+count+
+			" active: "+Integer.toString(active)+
+			" max: "+Integer.toString(getMax())
+		);
 	}
 
 

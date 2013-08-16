@@ -38,7 +38,7 @@ public class pxnClock {
 			synchronized(lock) {
 				if(clock == null) {
 					clock = new pxnClock();
-					clock.update(blocking);
+					clock.Update(blocking);
 				}
 			}
 		}
@@ -51,37 +51,36 @@ public class pxnClock {
 		return get(true);
 	}
 	// new instance
-	protected pxnClock() {
-	}
+	protected pxnClock() {}
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		throw new CloneNotSupportedException();
 	}
 
 
-	// static update
-	public static double getLocalOffsetNow() {
-		return getLocalOffsetNow(null);
-	}
-	public static double getLocalOffsetNow(String timeServer) {
-		pxnClock clock = new pxnClock();
-		if(timeServer != null && !timeServer.isEmpty())
-			clock.setTimeServer(timeServer);
-		clock.update(false);
-		return clock.getLocalOffset();
-	}
+//	// static update
+//	public static double getLocalOffsetNow() {
+//		return getLocalOffsetNow(null);
+//	}
+//	public static double getLocalOffsetNow(String timeServer) {
+//		pxnClock clock = getBlocking();
+//		if(timeServer != null && !timeServer.isEmpty())
+//			clock.setTimeServer(timeServer);
+//		clock.Update(false);
+//		return clock.getLocalOffset();
+//	}
 
 
 	// update from time server
-	public void update(boolean enabled, boolean threaded) {
+	public void Update(boolean enabled, boolean threaded) {
 		setNTP(enabled);
-		update(threaded);
+		Update(threaded);
 	}
-	public void update(String timeServer, boolean threaded) {
+	public void Update(String timeServer, boolean threaded) {
 		setTimeServer(timeServer);
-		update(threaded);
+		Update(threaded);
 	}
-	public synchronized void update(boolean blocking) {
+	public synchronized void Update(boolean blocking) {
 		if(!enableNTP) return;
 		if(blocking) {
 			// run blocking
