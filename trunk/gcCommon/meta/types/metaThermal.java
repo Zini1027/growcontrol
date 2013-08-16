@@ -1,7 +1,9 @@
-package com.growcontrol.gcCommon.meta;
+package com.growcontrol.gcCommon.meta.types;
+
+import com.growcontrol.gcCommon.meta.pxnMetaType;
 
 
-public class metaThermal extends pxnMeta {
+public class metaThermal extends pxnMetaType {
 	private static final long serialVersionUID = 7L;
 
 	public static enum ThermalUnit {CELSIUS, FAHRENHEIT, KELVIN};

@@ -1,7 +1,9 @@
-package com.growcontrol.gcCommon.meta;
+package com.growcontrol.gcCommon.meta.types;
+
+import com.growcontrol.gcCommon.meta.pxnMetaType;
 
 
-public class metaTrigger extends pxnMeta {
+public class metaTrigger extends pxnMetaType {
 	private static final long serialVersionUID = 7L;
 
 
