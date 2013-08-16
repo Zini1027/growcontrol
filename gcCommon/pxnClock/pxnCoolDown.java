@@ -26,12 +26,19 @@ public class pxnCoolDown {
 
 
 	public boolean Again() {
-		pxnClock.getBlocking();
-		long time = pxnClock.get().Millis();
-		// run again
-		if(time - last > coolTime.get(TimeU.MS)) {
-			last = time;
-			return true;
+		synchronized(lock) {
+			long time = System.currentTimeMillis();
+			// first run
+			if(last == 0L) {
+				last = time;
+				return true;
+			}
+			long timeSinceLast = time - last;
+			// run again
+			if(timeSinceLast > coolTime.get(TimeU.MS)) {
+				last = time;
+				return true;
+			}
 		}
 		// cooling down
 		return false;

@@ -18,8 +18,8 @@ public class pxnLogger extends pxnLogPrinter implements pxnLoggerInterface {
 	private static volatile boolean inited = false;
 
 	private final String name;
-	private volatile String bracerL = "[ ";
-	private volatile String bracerR = " ]";
+	private volatile String bracerL = "[";
+	private volatile String bracerR = "]";
 	private final pxnLogger parent;
 	private pxnLevel level = pxnLevel.INFO;
 	private static boolean debug = false;
@@ -173,7 +173,7 @@ public class pxnLogger extends pxnLogPrinter implements pxnLoggerInterface {
 	@Override
 	public void Major(String msg) {
 		if(msg == null) msg = "<null>";
-		Publish(" "+bracerL.trim()+bracerL+msg+bracerR+bracerR.trim());
+		Publish(" [[ "+msg+" ]]");
 	}
 	@Override
 	public void Publish(pxnLevel level, String msg) {
