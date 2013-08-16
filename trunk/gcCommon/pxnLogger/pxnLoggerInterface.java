@@ -16,6 +16,8 @@ public interface pxnLoggerInterface {
 	// name
 	public String getName();
 	public String getNameFormatted();
+	// bracers
+	public void setBracers(String bracerL, String bracerR);
 	// level
 	public pxnLevel getLevel();
 	public pxnLevel getLevel(String handlerName);
