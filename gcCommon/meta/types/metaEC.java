@@ -1,9 +1,10 @@
-package com.growcontrol.gcCommon.meta;
+package com.growcontrol.gcCommon.meta.types;
 
 import com.growcontrol.gcCommon.pxnUtils;
+import com.growcontrol.gcCommon.meta.pxnMetaType;
 
 
-public class metaEC extends pxnMeta {
+public class metaEC extends pxnMetaType {
 	private static final long serialVersionUID = 7L;
 
 	protected volatile Long value = null;

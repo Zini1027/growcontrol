@@ -1,6 +1,4 @@
-package com.growcontrol.gcCommon.meta;
-
-import com.growcontrol.gcCommon.meta.NTC.ntcCalc;
+package com.growcontrol.gcCommon.meta.types;
 
 
 public class metaThermalNTC extends metaThermal {
