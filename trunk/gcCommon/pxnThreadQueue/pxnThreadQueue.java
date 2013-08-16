@@ -57,7 +57,7 @@ public class pxnThreadQueue implements Runnable {
 		if(name == null || name.isEmpty()) throw new NullPointerException("name cannot be null!");
 		this.queueName = name;
 		this.logName = name;
-		getLogger().setBracers("( "," )");
+		getLogger().setBracers("(", ")");
 		// main thread (single)
 		if(name == "main") {
 			threads = null;
@@ -237,10 +237,12 @@ public class pxnThreadQueue implements Runnable {
 		}
 		// max threads
 		if(count >= getMax()) {
-			if(coolMaxReached.Again())
-				getLogger().warning("Max threads limit reached!");
-			else
-				getLogger().finest("Max threads limit reached!");
+			if(getMax() > 1) {
+				if(coolMaxReached.Again())
+					getLogger().warning("Max threads limit reached!");
+				else
+					getLogger().finest("Max threads limit reached!");
+			}
 			return;
 		}
 		// new thread
