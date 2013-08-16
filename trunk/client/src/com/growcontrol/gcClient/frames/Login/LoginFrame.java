@@ -30,10 +30,12 @@ import net.miginfocom.swing.MigLayout;
 
 import com.growcontrol.gcClient.guiUtils;
 import com.growcontrol.gcClient.frames.gcFrameInterface;
+import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 
 
 public class LoginFrame extends JFrame implements gcFrameInterface {
 	private static final long serialVersionUID = 1L;
+	private static final String logName = LoginHandler.logName;
 	private final LoginHandler handler;
 
 	private static final String IMAGE_LOADING = "images/icon-loading-animated.gif";
@@ -185,9 +187,16 @@ public class LoginFrame extends JFrame implements gcFrameInterface {
 		// connect button
 		buttonConnect = new JButton("Connect");
 		buttonConnect.setDefaultCapable(true);
-		panel.add(buttonConnect, "span 2, center");
+		panel.add(buttonConnect, "span 2, center, gapbottom 100px, tag ok");
 		// action listener
 		buttonConnect.addActionListener(new ActionListener() {
+//TODO:
+//btn.setOnAction(new EventHandler<ActionEvent>() {
+//@Override
+//public void handle(ActionEvent event) {
+//System.out.println("Hello World!");
+//}
+//}); 
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				Object obj = event.getSource();
@@ -260,7 +269,7 @@ public class LoginFrame extends JFrame implements gcFrameInterface {
 	public void DisplayCard(LoginHandler.CONN display) {
 		if(!SwingUtilities.isEventDispatchThread()) throw new ConcurrentModificationException("Cannot call this function directly!");
 		if(display == null) throw new NullPointerException("displayCard can't be null");
-System.out.println("Displaying Card: "+display.toString());
+		pxnLog.get(logName).debug("Displaying card: "+display.toString());
 		try {
 			cardLayout.show(this.getContentPane(), display.toString());
 //			cardLayout.show(panelConnecting.getParent(), cardName);

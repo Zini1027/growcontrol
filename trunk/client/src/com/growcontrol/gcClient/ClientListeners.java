@@ -15,7 +15,7 @@ public class ClientListeners {
 	private static final Object lock = new Object();
 
 
-	public static synchronized ClientListeners get() {
+	public static ClientListeners get() {
 		if(listeners == null) {
 			synchronized(lock) {
 				if(listeners == null)

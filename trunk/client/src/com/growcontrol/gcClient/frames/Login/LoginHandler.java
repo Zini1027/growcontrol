@@ -11,93 +11,124 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import com.growcontrol.gcClient.gcClient;
+import com.growcontrol.gcClient.guiManager;
 import com.growcontrol.gcClient.frames.gcFrameHandlerInterface;
 import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 
 
 public class LoginHandler implements gcFrameHandlerInterface, KeyEventDispatcher {
+	protected static final String logName = "LoginFrame";
 	protected static LoginHandler handler = null;
+	protected static final Object lock = new Object();
 
 	// display mode
 	public enum CONN {WAITING, CONNECT, AUTH, READY};
-	protected volatile CONN connMode     = null;
-	protected volatile CONN lastConnMode = null;
+	private volatile CONN connMode     = null;
+	private volatile CONN lastConnMode = null;
 	private final Object modeLock = new Object();
 
 	// static entries of saved servers list
 	public final String SavedStatic_Unsaved        = "[ Unsaved ]";
-//	public final String SavedStatic_RunServerLocal = "[ Run Internal Server ]";
+//	public final String SavedStatic_RunServerLocal = "[ Standalone ]";
 	public final String SavedStatic_LocalHost      = "[ Local Host ]";
 
 	// objects
-	protected LoginFrame frame = null;
+	protected volatile LoginFrame frame = null;
 
 
 	// login frame handler
-	public static synchronized LoginHandler get() {
-		if(handler == null)
-			handler = new LoginHandler();
+	public static LoginHandler get() {
+		if(handler == null) {
+			synchronized(lock) {
+				if(handler == null)
+					handler = new LoginHandler();
+			}
+		}
 		return handler;
 	}
 	private LoginHandler() {}
 
 
+	// get frame
+	public LoginFrame getLoginFrame() {
+		return (LoginFrame) getFrame();
+	}
 	@Override
-	public synchronized void Show() {
+	public JFrame getFrame() {
+		if(frame == null) {
+			synchronized(lock) {
+				if(frame == null)
+					frame = new LoginFrame(handler);
+			}
+		}
+		return frame;
+	}
+
+
+	// show frame
+	@Override
+	public void Show() {
 		synchronized(modeLock) {
-			pxnLog.get().info("Displaying window: Login");
-			if(connMode == null)
-				connMode = CONN.WAITING;
+			pxnLog.get(logName).info("Displaying window: Login");
+//			if(connMode == null)
+//				connMode = CONN.WAITING;
 			try {
 				SwingUtilities.invokeAndWait(new Runnable() {
 					@Override
 					public void run() {
+						getLoginFrame().DisplayCard(getMode());
 						if(frame == null)
 							frame = new LoginFrame(handler);
-						frame.DisplayCard(connMode);
+						frame.DisplayCard(getMode());
 					}
 				});
 			} catch (InvocationTargetException e) {
-				pxnLog.get().exception(e);
+				pxnLog.get(logName).exception(e);
 			} catch (InterruptedException ignore) {}
 		}
 	}
+
+
+	// close frame
 	@Override
 	public void Close() {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				if(frame == null)
-					return;
-				pxnLog.get().info("Closing window: Login");
-				synchronized(frame) {
-					frame.dispose();
-					frame = null;
-gcClient.get().Shutdown();
-				}
+				doClose();
 			}
 		});
 	}
-	@Override
-	public JFrame getFrame() {
-		synchronized(frame) {
-			return frame;
+	private void doClose() {
+		if(frame != null) {
+			synchronized(modeLock) {
+				pxnLog.get(logName).debug("Closing window: Login");
+				if(frame != null)
+					frame.dispose();
+				frame = null;
+			}
+			// exit if dash not loaded
+			if(!guiManager.get().getStartupMode().equals(guiManager.GUI.DASH))
+				gcClient.get().Shutdown();
 		}
 	}
 
 
 	// get/set gui mode
-	public synchronized CONN getMode() {
-		if(connMode == null)
-			connMode = CONN.WAITING;
-		return connMode;
+	public CONN getMode() {
+		synchronized(modeLock) {
+			if(connMode == null)
+				return CONN.WAITING;
+			return connMode;
+		}
 	}
 	public CONN setMode(CONN mode) {
+		if(mode == null) throw new NullPointerException("mode cannot be null!");
 		synchronized(modeLock) {
 			lastConnMode = connMode;
 			connMode = mode;
-frame.DisplayCard(connMode);
+			frame.DisplayCard(connMode);
 			return lastConnMode;
 		}
 	}
@@ -105,7 +136,7 @@ frame.DisplayCard(connMode);
 
 	// button click event
 	public void ButtonClicked(ActionEvent event, String buttonName) {
-		pxnLog.get().info("Button pressed: "+buttonName);
+		pxnLog.get(logName).debug("Button pressed: "+buttonName);
 		switch(buttonName) {
 		case "Save":
 			frame.setButtonName("Connect");
@@ -125,6 +156,7 @@ frame.DisplayCard(connMode);
 			gcClient.get().Connect(host, port, user, pass);
 			break;
 		case "Cancel":
+			setMode(CONN.WAITING);
 			break;
 		}
 //		if(buttonName.equals("Connect")) {
