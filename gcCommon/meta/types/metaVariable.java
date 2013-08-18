@@ -11,6 +11,7 @@ public class metaVariable extends pxnMetaType {
 	protected volatile Integer override = null;
 	protected volatile int min = 0;
 	protected volatile int max = 1;
+	protected final Object lock = new Object();
 
 
 	public metaVariable(String name) {
@@ -18,15 +19,48 @@ public class metaVariable extends pxnMetaType {
 	}
 
 
-
-
 	// set value
 	public void set(Integer value) {
-		this.value = value;
+		synchronized(lock) {
+			// set null
+			if(value == null) {
+				this.value = null;
+				return;
+			}
+			// set value
+			this.value = pxnUtils.MinMax(value.intValue(), min, max);
+		}
 	}
 	@Override
 	public void set(String value) {
-		Integer i = pxnUtils.toNumber(value);
+		Integer i = null;
+		try {
+			i = pxnUtils.toNumber(value);
+		} catch (Exception ignore) {
+			return;
+		}
+		if(i == null) return;
+		set(i);
+	}
+	// set override
+	public void setOverride(Integer value) {
+		synchronized(lock) {
+			// set null
+			if(value == null) {
+				this.override = null;
+				return;
+			}
+			// set value
+			this.override = pxnUtils.MinMax(value.intValue(), min, max);
+		}
+	}
+	public void setOverride(String value) {
+		Integer i = null;
+		try {
+			i = pxnUtils.toNumber(value);
+		} catch (Exception ignore) {
+			return;
+		}
 		if(i == null) return;
 		set(i);
 	}
@@ -34,16 +68,19 @@ public class metaVariable extends pxnMetaType {
 
 	// get value
 	public Integer get() {
-		if(override != null)
-			return pxnUtils.MinMax((int) override, min, max);
-		if(value == null)
-			return null;
-		return pxnUtils.MinMax((int) value, min, max);
+		synchronized(lock) {
+			if(override != null)
+				return override.intValue();
+			if(value != null)
+				return value.intValue();
+		}
+		return null;
 	}
 	@Override
 	public String toString() {
 		Integer v = get();
-		if(v == null) return null;
+		if(v == null)
+			return null;
 		return Integer.toString(v);
 	}
 
