@@ -9,6 +9,7 @@ public class metaThermal extends pxnMetaType {
 	public static enum ThermalUnit {CELSIUS, FAHRENHEIT, KELVIN};
 
 	protected volatile Double value = null; // temperature C
+	protected final Object lock = new Object();
 
 
 	public metaThermal(String name) {
@@ -27,6 +28,8 @@ public class metaThermal extends pxnMetaType {
 	@Override
 	public void set(String value) {
 //TODO:
+		synchronized(lock) {
+		}
 	}
 	public void setC(double valueC) {
 		set(valueC, ThermalUnit.CELSIUS);
@@ -41,13 +44,20 @@ public class metaThermal extends pxnMetaType {
 
 	// get value
 	public Double get(ThermalUnit unit) {
-		return value;
 //TODO:
+		synchronized(lock) {
+			if(value == null)
+				return null;
+			return value.doubleValue();
+		}
 	}
 	@Override
 	public String toString() {
-		return Double.toString(get(ThermalUnit.CELSIUS))+"C "+
-			Double.toString(get(ThermalUnit.FAHRENHEIT))+"F";
+		Double c = get(ThermalUnit.CELSIUS);
+		Double f = get(ThermalUnit.FAHRENHEIT);
+		String cStr = (c==null ? "<na>" : Double.toString(c));
+		String fStr = (f==null ? "<na>" : Double.toString(f));
+		return cStr+"C "+fStr+"F";
 	}
 	public double getC() {
 		return get(ThermalUnit.CELSIUS);

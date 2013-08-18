@@ -7,6 +7,7 @@ public class metaCommand extends pxnMetaType {
 	private static final long serialVersionUID = 7L;
 
 	protected volatile String commandStr = null;
+	protected final Object lock = new Object();
 
 
 	public metaCommand(String name) {
@@ -21,14 +22,18 @@ public class metaCommand extends pxnMetaType {
 	// set value
 	@Override
 	public void set(String value) {
-		this.commandStr = value;
+		synchronized(lock) {
+			this.commandStr = value;
+		}
 	}
 
 
 	// get value
 	@Override
 	public String toString() {
-		return commandStr;
+		synchronized(lock) {
+			return commandStr;
+		}
 	}
 
 

@@ -4,28 +4,28 @@ import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.meta.pxnMetaType;
 
 
-public class metaEC extends pxnMetaType {
+public class metaPH extends pxnMetaType {
 	private static final long serialVersionUID = 7L;
 
-	protected volatile Long value = null;
+	protected volatile Integer value = null;
 	protected final Object lock = new Object();
 
 
-	public metaEC(String name) {
+	public metaPH(String name) {
 		super(name);
 	}
-	public metaEC(String name, String value) {
+	public metaPH(String name, String value) {
 		super(name);
 		set(value);
 	}
-	public metaEC(String name, Long value) {
+	public metaPH(String name, Integer value) {
 		super(name);
 		set(value);
 	}
 
 
 	// set value
-	public void set(Long value) {
+	public void set(Integer value) {
 		synchronized(lock) {
 			// set null
 			if(value == null) {
@@ -33,29 +33,39 @@ public class metaEC extends pxnMetaType {
 				return;
 			}
 			// set value
-			this.value = pxnUtils.MinMax(value.longValue(), 0L, 5000L);
+			this.value = pxnUtils.MinMax(value.intValue(), 0, 14);
 		}
 	}
 	@Override
 	public void set(String value) {
-//TODO:
+		// set null
+		if(value == null) {
+			set((Integer) null);
+			return;
+		}
+		// set value
+		try {
+			set(Integer.valueOf(
+				value.replace("p", "").replace("h", "").trim()
+			));
+		} catch (Exception ignore) {}
 	}
 
 
 	// get value
-	public Long get() {
+	public Integer get() {
 		synchronized(lock) {
 			if(value == null)
 				return null;
-			return value.longValue();
+			return value.intValue();
 		}
 	}
 	@Override
 	public String toString() {
-		Long value = get();
+		Integer value = get();
 		if(value == null)
 			return null;
-		return Long.toString(get());
+		return Integer.toString(get());
 	}
 
 
