@@ -6,9 +6,6 @@ import com.growcontrol.gcServer.serverPlugin.gcServerPlugin;
 //implements gcServerListenerOutput
 public class ArduinoGC extends gcServerPlugin {
 
-	// command listener
-	protected static volatile Commands commands = new Commands();
-
 //	// controllers map
 //	protected static HashMap<String, ArduinoInterface> controllers = new HashMap<String, ArduinoInterface>();
 
@@ -16,9 +13,7 @@ public class ArduinoGC extends gcServerPlugin {
 	@Override
 	public void onEnable() {
 		// register listeners
-		if(commands == null)
-			commands = new Commands();
-		register(commands);
+		register(Commands.get());
 //		registerListenerOutput(this);
 		// load configs
 		Config.get("plugins/"+getName()+"/");

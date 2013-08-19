@@ -5,9 +5,6 @@ import com.growcontrol.gcServer.serverPlugin.gcServerPlugin;
 
 public class gcPromptDisplay extends gcServerPlugin {
 
-	// commands listener
-	private Commands commands = new Commands();
-
 //	// pin data
 //	private static HashMap<Integer, PromptPin> outputPins = new HashMap<Integer, PromptPin>();
 
@@ -16,9 +13,7 @@ public class gcPromptDisplay extends gcServerPlugin {
 	@Override
 	public void onEnable() {
 		// register listeners
-		if(commands == null)
-			commands = new Commands();
-		register(commands);
+		register(Commands.get());
 //		registerListenerOutput(this);
 		// load configs
 		Config.get("plugins/"+getName()+"/");

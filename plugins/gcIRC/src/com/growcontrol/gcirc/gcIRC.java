@@ -7,17 +7,12 @@ public class gcIRC extends gcServerPlugin {
 
 //	private AutoReconnect autoConnect = null;
 
-	// commands listener
-	private Commands commands = new Commands();
-
 
 	// load/unload plugin
 	@Override
 	public void onEnable() {
 		// register listeners
-		if(commands == null)
-			commands = new Commands();
-		register(commands);
+		register(Commands.get());
 		// load configs
 		Config.get("plugins/"+getName()+"/");
 		if(!Config.isLoaded()) {
