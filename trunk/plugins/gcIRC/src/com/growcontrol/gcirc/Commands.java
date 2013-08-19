@@ -1,4 +1,4 @@
-package com.growcontrol.arduinogc;
+package com.growcontrol.gcirc;
 
 import com.growcontrol.gcCommon.pxnCommand.pxnCommandEvent;
 import com.growcontrol.gcCommon.pxnCommand.pxnCommandsHolder;
@@ -11,8 +11,8 @@ public class Commands extends pxnCommandsHolder {
 	protected void initCommands() {
 //		setPriority(EventPriority.NORMAL);
 		// register commands
-		addCommand("arduinogc")
-			.addAlias("arduino")
+		addCommand("bot")
+			.addAlias("irc")
 			.setUsage("");
 	}
 

@@ -1,4 +1,4 @@
-package com.growcontrol.gcirc;
+package com.growcontrol.gcpromptdisplay;
 
 import com.growcontrol.gcCommon.pxnConfig.pxnConfig;
 import com.growcontrol.gcCommon.pxnConfig.pxnConfigLoader;
@@ -11,7 +11,7 @@ public final class Config {
 		throw new CloneNotSupportedException();
 	}
 
-	public static final String CONFIG_FILE = "bot.yml";
+	public static final String CONFIG_FILE = "prompt.yml";
 	private static volatile String configPath = null;
 
 	// config dao
@@ -43,30 +43,17 @@ public final class Config {
 	}
 
 
-	// host
-	public static String Host() {
+	// version
+	public static String Version() {
 		pxnConfig config = get();
 		if(config == null) return null;
-		return config.getString("Host");
+		return config.getString("Version");
 	}
-	// port
-	public static int Port() {
-		pxnConfig config = get();
-		if(config == null) return 6667;
-		return config.getInt("Port");
-	}
-	// channels
-	public static String[] Channels() {
-		pxnConfig config = get();
-		if(config == null) return null;
-		return config.getStringList("Channels").toArray(new String[0]);
-	}
-	// nick
-	public static String Nick() {
-		pxnConfig config = get();
-		if(config == null) return null;
-		return config.getString("Nick");
-	}
+//	// timer
+//	public static List<TimerDAO> Timers() {
+//		if(config == null) return null;
+//		return TimerDAO.get(config.getConfigList("Timers"));
+//	}
 
 
 }

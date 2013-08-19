@@ -1,116 +1,104 @@
 package com.growcontrol.arduinogc;
 
-import java.util.HashMap;
-import java.util.List;
-
-import com.growcontrol.arduinogc.interfaces.ArduinoInterface;
-import com.growcontrol.arduinogc.interfaces.ArduinoNet;
-import com.growcontrol.arduinogc.interfaces.ArduinoUSB;
-import com.growcontrol.gcServer.logger.gcLogger;
 import com.growcontrol.gcServer.serverPlugin.gcServerPlugin;
-import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListenerOutput;
-import com.poixson.pxnConfig.pxnConfig;
 
 
-public class ArduinoGC extends gcServerPlugin implements gcServerListenerOutput {
+//implements gcServerListenerOutput
+public class ArduinoGC extends gcServerPlugin {
 
-	// plugin name
-	private static final String PLUGIN_NAME = "ArduinoGC";
-	// logger
-	public static gcLogger log = getLogger(PLUGIN_NAME);
+	// command listener
+	protected static volatile Commands commands = new Commands();
 
-	// listeners
-	protected static CommandsListener commands = new CommandsListener();
-
-	// controllers map
-	protected static HashMap<String, ArduinoInterface> controllersMap = new HashMap<String, ArduinoInterface>();
+//	// controllers map
+//	protected static HashMap<String, ArduinoInterface> controllers = new HashMap<String, ArduinoInterface>();
 
 
-	@Override
-	public String getPluginName() {
-		// plugin name
-		return PLUGIN_NAME;
-	}
 	@Override
 	public void onEnable() {
 		// register listeners
-		registerCommandListener(commands);
+		if(commands == null)
+			commands = new Commands();
+		register(commands);
 //		registerListenerOutput(this);
 		// load configs
-		LoadConfig();
+		Config.get("plugins/"+getName()+"/");
+		if(!Config.isLoaded()) {
+			getLogger().severe("Failed to load "+Config.CONFIG_FILE);
+			return;
+		}
 	}
 	@Override
 	public void onDisable() {
-		for(ArduinoInterface controller : controllersMap.values())
-			controller.StopInterface();
-		log.info("ArduinoGC disabled!");
+//		for(ArduinoInterface controller : controllersMap.values())
+//			controller.StopInterface();
+//		getLogger().info("ArduinoGC disabled!");
 	}
 
 
-	// load arduino configs
-	private void LoadConfig() {
-		pxnConfig config = pxnConfig.loadFile("plugins/ArduinoGC", "config.yml");
-		if(config == null) {
-			log.severe("Failed to load config.yml");
-			return;
-		}
-		List<String> controllers = config.getStringList("Controllers");
-		if(controllers == null) {
-			log.severe("Failed to load controllers from config.yml");
-			return;
-		}
-		// load controller configs
-		for(String controller : controllers)
-			LoadArduinoConfig(controller);
-	}
-	private void LoadArduinoConfig(String configFile) {
-		if(!configFile.endsWith(".yml")) configFile += ".yml";
-		pxnConfig config = pxnConfig.loadFile("plugins/ArduinoGC/controllers", configFile);
-		if(config == null) {
-			log.severe("Failed to load "+configFile);
-			return;
-		}
-		String name = configFile.substring(0, configFile.lastIndexOf("."));
-		String title = config.getString("Title");
-		String type = config.getString("Type");
-log.severe("TITLE: "+title);
-log.severe("TYPE:  "+type);
-		// load new controller
-		ArduinoInterface controller = newController(config, name, title, type);
-		if(controller == null) {
-			log.severe("Failed to load controller! "+configFile);
-			return;
-		}
-		controller.StartInterface();
-	}
+//	// load arduino configs
+//	private void LoadConfig() {
+//		pxnConfig config = pxnConfig.loadFile("plugins/ArduinoGC", "config.yml");
+//		if(config == null) {
+//			log.severe("Failed to load config.yml");
+//			return;
+//		}
+//		List<String> controllers = config.getStringList("Controllers");
+//		if(controllers == null) {
+//			log.severe("Failed to load controllers from config.yml");
+//			return;
+//		}
+//		// load controller configs
+//		for(String controller : controllers)
+//			LoadArduinoConfig(controller);
+//	}
+//	private void LoadArduinoConfig(String configFile) {
+//		if(!configFile.endsWith(".yml")) configFile += ".yml";
+//		pxnConfig config = pxnConfig.loadFile("plugins/ArduinoGC/controllers", configFile);
+//		if(config == null) {
+//			log.severe("Failed to load "+configFile);
+//			return;
+//		}
+//		String name = configFile.substring(0, configFile.lastIndexOf("."));
+//		String title = config.getString("Title");
+//		String type = config.getString("Type");
+//log.severe("TITLE: "+title);
+//log.severe("TYPE:  "+type);
+//		// load new controller
+//		ArduinoInterface controller = newController(config, name, title, type);
+//		if(controller == null) {
+//			log.severe("Failed to load controller! "+configFile);
+//			return;
+//		}
+//		controller.StartInterface();
+//	}
 
 
-	// create new controller
-	public static ArduinoInterface newController(pxnConfig config, String name, String title, String type) {
-		return newController(config, name, title, ArduinoInterface.controllerTypeFromString(type));
-	}
-	public static ArduinoInterface newController(pxnConfig config, String name, String title, ArduinoInterface.ControllerType type) {
-		if(config==null || name==null || title==null || type==null) return null;
-		ArduinoInterface controller = null;
-		synchronized(controllersMap) {
-			if(controllersMap.containsKey(name)) {
-				log.warning("A controller named \""+name+"\" already exists!");
-				return null;
-			}
-			if(type.equals(ArduinoInterface.ControllerType.USB)) {
-				String port = config.getString("Port");
-				controller = new ArduinoUSB(port);
-			} else if(type.equals(ArduinoInterface.ControllerType.NET)) {
-				String host = config.getString("Host");
-				int port = config.getInt("Port");
-				controller = new ArduinoNet(host, port);
-			} else					log.severe("Unknown controller type: "+type.toString());
-			if(controller == null)	log.severe("Unable to create new controller!");
-			// add to hash map
-			controllersMap.put(name, controller);
-		}
-		return controller;
-	}
+//	// create new controller
+//	public static ArduinoInterface newController(pxnConfig config, String name, String title, String type) {
+//		return newController(config, name, title, ArduinoInterface.controllerTypeFromString(type));
+//	}
+//	public static ArduinoInterface newController(pxnConfig config, String name, String title, ArduinoInterface.ControllerType type) {
+//		if(config==null || name==null || title==null || type==null) return null;
+//		ArduinoInterface controller = null;
+//		synchronized(controllersMap) {
+//			if(controllersMap.containsKey(name)) {
+//				log.warning("A controller named \""+name+"\" already exists!");
+//				return null;
+//			}
+//			if(type.equals(ArduinoInterface.ControllerType.USB)) {
+//				String port = config.getString("Port");
+//				controller = new ArduinoUSB(port);
+//			} else if(type.equals(ArduinoInterface.ControllerType.NET)) {
+//				String host = config.getString("Host");
+//				int port = config.getInt("Port");
+//				controller = new ArduinoNet(host, port);
+//			} else					log.severe("Unknown controller type: "+type.toString());
+//			if(controller == null)	log.severe("Unable to create new controller!");
+//			// add to hash map
+//			controllersMap.put(name, controller);
+//		}
+//		return controller;
+//	}
 
 
 //	@Override

@@ -1,98 +1,84 @@
 package com.growcontrol.gctimer;
 
 import com.growcontrol.gcServer.serverPlugin.gcServerPlugin;
-import com.growcontrol.gctimer.config.TimerDAO;
-import com.growcontrol.gctimer.listeners.CommandsListener;
 
 
 public class gcTimer extends gcServerPlugin {
 
-	private static gcTimer instance = null;
-
-	// commands listeners
-	private CommandsListener commandsListener = new CommandsListener();
+	// commands listener
+	private static volatile Commands commands = null;
 //	private DeviceListener deviceListener = new DeviceListener();
 
 	// timer types
 	public static enum Type {CLOCK, TICKER, SEQUENCER};
-	// timer instances
+//	// timer instances
 //	private static HashMap<String, deviceTimer> timersMap = new HashMap<String, deviceTimer>();
-
-
-	public static gcTimer get() {
-		return instance;
-	}
-	public gcTimer() {
-		super();
-		if(instance == null)
-			instance = this;
-	}
 
 
 	// load/unload plugin
 	@Override
 	public void onEnable() {
 		// register listeners
-		register(commandsListener);
+		if(commands == null)
+			commands = new Commands();
+		register(commands);
 //		registerListenerTick(this);
 //		registerListenerDevice(deviceListener);
 		// load configs
-		Config.get();
+		Config.get("plugins/"+getName()+"/");
 		if(!Config.isLoaded()) {
-			getLogger().severe("Failed to load timers.yml");
+			getLogger().severe("Failed to load "+Config.CONFIG_FILE);
 			return;
 		}
-
-		// load timers
-		LoadTimers();
-
-		// register timer devices
+//		// load timers
+//		LoadTimers();
+//		// register timer devices
 //		for(String line : ) {
 //		}
 	}
 	@Override
 	public void onDisable() {
-		UnloadTimers();
-		getLogger().info("gcTimer disabled!");
+//		UnloadTimers();
+//		getLogger().info("gcTimer disabled!");
 	}
 
 
-	// load timers
-	private void LoadTimers() {
-		for(TimerDAO timer : Config.Timers()) {
-			getLogger().config("Timer: "+timer.name);
-		}
-	}
-	private void UnloadTimers() {
-		//TODO:
-	}
+//	// load timers
+//	private void LoadTimers() {
+//		for(TimerDAO timer : Config.Timers()) {
+//			getLogger().config("Timer: "+timer.name);
+//		}
+//	}
+//	private void UnloadTimers() {
+//		//TODO:
+//	}
 
 
-	// timer type
-	public static gcTimer.Type ParseTimerType(String value) {
-		if(value == null) return null;
-		switch(value.toUpperCase()) {
-		case "TICKER":
-			return gcTimer.Type.TICKER;
-		case "CLOCK":
-			return gcTimer.Type.CLOCK;
-		case "SEQUENCER":
-			return gcTimer.Type.SEQUENCER;
-		}
-		return null;
-	}
-	public static String TimerTypeToString(gcTimer.Type type) {
-		if(type == null) return null;
-		switch(type) {
-		case TICKER:
-			return "TICKER";
-		case CLOCK:
-			return "CLOCK";
-		case SEQUENCER:
-			return "SEQUENCER";
-		}
-		return null;
-	}
+//	// timer type
+//	public static gcTimer.Type ParseTimerType(String value) {
+//		if(value == null) return null;
+//		switch(value.toUpperCase()) {
+//		case "TICKER":
+//			return gcTimer.Type.TICKER;
+//		case "CLOCK":
+//			return gcTimer.Type.CLOCK;
+//		case "SEQUENCER":
+//			return gcTimer.Type.SEQUENCER;
+//		}
+//		return null;
+//	}
+//	public static String TimerTypeToString(gcTimer.Type type) {
+//		if(type == null) return null;
+//		switch(type) {
+//		case TICKER:
+//			return "TICKER";
+//		case CLOCK:
+//			return "CLOCK";
+//		case SEQUENCER:
+//			return "SEQUENCER";
+//		}
+//		return null;
+//	}
 
 
 //		// load output commands
