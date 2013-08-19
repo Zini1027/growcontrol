@@ -1,24 +1,24 @@
-package com.growcontrol.gctimer.listeners;
+package com.growcontrol.gctimer;
 
 import com.growcontrol.gcCommon.pxnCommand.pxnCommandEvent;
 import com.growcontrol.gcCommon.pxnCommand.pxnCommandsHolder;
 
 
-public class CommandsListener extends pxnCommandsHolder {
+public final class Commands extends pxnCommandsHolder {
 
 
 	@Override
 	protected void initCommands() {
 //		setPriority(EventPriority.NORMAL);
 		// register commands
-		add("timer")
+		addCommand("timer")
 			.setUsage("");
 	}
 
 
 	@Override
 	public boolean onCommand(pxnCommandEvent event) {
-		return false;
+return false;
 //		if(event.isHandled())   return false;
 //		if(!event.hasCommand()) return false;
 //		pxnCommand command = event.getCommand();

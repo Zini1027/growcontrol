@@ -1,9 +1,9 @@
 package com.growcontrol.example;
 
-import com.growcontrol.gcCommon.pxnPlugin.pxnPlugin;
+import com.growcontrol.gcServer.serverPlugin.gcServerPlugin;
 
 
-public class example extends pxnPlugin {
+public class example extends gcServerPlugin {
 
 	// commands listener
 	private Commands commands = new Commands();

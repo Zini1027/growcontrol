@@ -1,30 +1,30 @@
 package com.growcontrol.gcpromptdisplay;
 
-import com.growcontrol.gcServer.serverPlugin.events.gcServerEventCommand;
-import com.growcontrol.gcServer.serverPlugin.listeners.gcServerListenerCommand;
-import com.poixson.pxnCommand.pxnCommand;
-import com.poixson.pxnEvent.pxnEvent.EventPriority;
+import com.growcontrol.gcCommon.pxnCommand.pxnCommandEvent;
+import com.growcontrol.gcCommon.pxnCommand.pxnCommandsHolder;
 
 
-public class CommandsListener extends gcServerListenerCommand {
+public final class Commands extends pxnCommandsHolder {
 
 
-	public CommandsListener() {
-		setPriority(EventPriority.NORMAL);
+	@Override
+	protected void initCommands() {
+//		setPriority(EventPriority.NORMAL);
 		// register commands
-		add("promptdisplay")
+		addCommand("promptdisplay")
 			.addAlias("prompt")
 			.setUsage("");
 	}
 
 
 	@Override
-	public boolean onCommand(gcServerEventCommand event) {
-		if(event.isHandled())   return false;
-		if(!event.hasCommand()) return false;
-		pxnCommand command = event.getCommand();
-gcPromptDisplay.log.severe("gcPromptDisplay Command: "+command.toString());
-		return true;
+	public boolean onCommand(pxnCommandEvent event) {
+return false;
+//		if(event.isHandled())   return false;
+//		if(!event.hasCommand()) return false;
+//		pxnCommand command = event.getCommand();
+//gcPromptDisplay.log.severe("gcPromptDisplay Command: "+command.toString());
+//		return true;
 	}
 
 
