@@ -12,12 +12,17 @@ public class metaThermal extends pxnMetaType {
 	protected final Object lock = new Object();
 
 
+	// new meta object
+	public static metaThermal newValue(Double value, ThermalUnit unit) {
+		metaThermal meta = new metaThermal();
+		meta.set(value, unit);
+		return meta;
+	}
+	// new dao (value holder)
+	public metaThermal() {}
+	// type singleton
 	public metaThermal(String name) {
 		super(name);
-	}
-	public metaThermal(String name, Double value, ThermalUnit unit) {
-		super(name);
-		set(value, unit);
 	}
 
 

@@ -11,16 +11,17 @@ public class metaEC extends pxnMetaType {
 	protected final Object lock = new Object();
 
 
+	// new meta object
+	public static metaEC newValue(Long value) {
+		metaEC meta = new metaEC();
+		meta.set(value);
+		return meta;
+	}
+	// new dao (value holder)
+	public metaEC() {}
+	// type singleton
 	public metaEC(String name) {
 		super(name);
-	}
-	public metaEC(String name, String value) {
-		super(name);
-		set(value);
-	}
-	public metaEC(String name, Long value) {
-		super(name);
-		set(value);
 	}
 
 

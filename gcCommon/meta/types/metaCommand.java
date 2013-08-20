@@ -10,12 +10,17 @@ public class metaCommand extends pxnMetaType {
 	protected final Object lock = new Object();
 
 
+	// new meta object
+	public static metaCommand newValue(String value) {
+		metaCommand meta = new metaCommand();
+		meta.set(value);
+		return meta;
+	}
+	// new dao (value holder)
+	public metaCommand() {}
+	// type singleton
 	public metaCommand(String name) {
 		super(name);
-	}
-	public metaCommand(String name, String commandStr) {
-		super(name);
-		set(commandStr);
 	}
 
 
