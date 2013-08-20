@@ -4,6 +4,7 @@ import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnConfig.pxnConfig;
 import com.growcontrol.gcCommon.pxnConfig.pxnConfigLoader;
 import com.growcontrol.gcCommon.pxnLogger.pxnLevel;
+import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
 
 
 public final class ServerConfig {
@@ -58,7 +59,7 @@ public final class ServerConfig {
 		if(config == null) return null;
 		String str = config.getString("Log Level");
 		if(str == null || str.isEmpty()) return null;
-		return pxnLevel.parse(str);
+		return pxnLevel.Parse(str);
 	}
 	// tick interval
 	public static long TickInterval() {
@@ -77,6 +78,15 @@ public final class ServerConfig {
 		Integer i = config.getInt("Listen Port");
 		if(i == null) return def;
 		return pxnUtils.MinMax(i.intValue(), 1, 65536);
+	}
+	// logic threads (0 uses main thread)
+	public static int LogicThreads() {
+		int def = 0;
+		pxnConfig config = get();
+		if(config == null) return def;
+		Integer i = config.getInt("Logic Threads");
+		if(i == null) return def;
+		return pxnUtils.MinMax(i.intValue(), 0, pxnThreadQueue.HardLimit);
 	}
 //	// max logic threads
 //	public static int LogicThreads() {

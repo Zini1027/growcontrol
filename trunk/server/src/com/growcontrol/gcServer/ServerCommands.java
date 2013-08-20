@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import jline.console.ConsoleReader;
 
+import com.growcontrol.gcCommon.meta.metaType;
 import com.growcontrol.gcCommon.pxnCommand.pxnCommandEvent;
 import com.growcontrol.gcCommon.pxnCommand.pxnCommandsHolder;
 import com.growcontrol.gcCommon.pxnLogger.pxnConsole;
@@ -77,6 +78,9 @@ public final class ServerCommands extends pxnCommandsHolder {
 		addCommand("threads")
 			.setUsage("Displays number of loaded threads, and optional details.");
 //		setAllPriority(EventPriority.LOWEST);
+		addCommand("route")
+			.addAlias("send")
+			.setUsage("Sends an event to the meta data router, which passes to plugins.\nUsage: route <InputName> [MetaType] <Value>");
 	}
 
 
@@ -112,6 +116,8 @@ public final class ServerCommands extends pxnCommandsHolder {
 //			return _ping( (String[]) event.args.toArray());
 		case "threads":
 			return _threads();
+		case "route":
+			return _route(commandEvent);
 		default:
 			break;
 		}
@@ -182,16 +188,16 @@ public final class ServerCommands extends pxnCommandsHolder {
 				_log();
 				return true;
 			}
-			level = pxnLevel.parse(args[0]);
+			level = pxnLevel.Parse(args[0]);
 		} else
 		// 2 args
 		if(args.length == 2 && args[0].equalsIgnoreCase("level")) {
-			level = pxnLevel.parse(args[1]);
+			level = pxnLevel.Parse(args[1]);
 		}
 		// invalid
 		if(level == null)
 			return false;
-		pxnLog.get().setLevel(level);
+		gcServer.get().setLogLevel(level);
 		return true;
 	}
 	private static void _log() {
@@ -228,6 +234,33 @@ public final class ServerCommands extends pxnCommandsHolder {
 
 	// threads command
 	private static boolean _threads() {
+		return true;
+	}
+
+
+	// help command
+	private static boolean _route(pxnCommandEvent commandEvent) {
+		String[] args = commandEvent.getArgs();
+		if(args.length != 3) {
+			pxnLog.get().Publish("Invalid arguments!\n"+commandEvent.command.getUsageStr());
+			return true;
+		}
+		String toName = args[0];
+System.out.println("toName: "+toName);
+System.out.println("meta: "+args[1]);
+//TODO: is this right?
+		metaType meta = metaType.get(args[1]);
+		if(meta == null) {
+			pxnLog.get().Publish("Invalid meta type!");
+//TODO: list meta types
+			return true;
+		}
+System.out.println("Meta: "+meta.toString());
+System.out.println("value: "+args[2]);
+		meta.set(args[2]);
+System.out.println("Value: "+meta.toString());
+		// send to router
+		meta.SendTo(toName);
 		return true;
 	}
 
