@@ -19,6 +19,9 @@ public class gcServer extends pxnApp {
 	public static final String appName = "gcServer";
 	public static final String version = "3.0.7";
 
+	// log level
+	private volatile pxnLevel level = null;
+
 	// server socket pool
 	private volatile pxnSocketServer socket = null;
 
@@ -65,7 +68,10 @@ System.exit(0);
 			return;
 		}
 		// set log level
-		updateLogLevel();
+		UpdateLogLevel();
+		// start logic thread queue
+//TODO:
+//		getLogicQueue();
 		// init listeners
 		ServerListeners.get();
 		// start console input thread
@@ -205,16 +211,22 @@ System.exit(0);
 
 	// log level
 	@Override
-	protected void updateLogLevel() {
+	public void setLogLevel(pxnLevel level) {
+		if(level == null) return;
+		this.level = level;
+		UpdateLogLevel();
+	} 
+	@Override
+	protected void UpdateLogLevel() {
 		if(forceDebug) {
 			pxnLog.get().setLevel(pxnLevel.DEBUG);
 			return;
 		}
-		if(!ServerConfig.isLoaded()) return;
-		pxnLevel level = ServerConfig.LogLevel();
+		if(level == null)
+			if(ServerConfig.isLoaded())
+				level = ServerConfig.LogLevel();
 		if(level != null)
-			if(! level.equals(pxnLog.get().getLevel()) )
-				pxnLog.get().setLevel(level);
+			pxnLog.get().setLevel(level);
 	}
 
 

@@ -5,6 +5,7 @@ import org.fusesource.jansi.AnsiConsole;
 
 import com.growcontrol.gcCommon.pxnApp;
 import com.growcontrol.gcCommon.pxnMain;
+import com.growcontrol.gcCommon.pxnLogger.pxnLevel;
 import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
 import com.growcontrol.gcServer.serverPlugin.gcServerPluginManager;
@@ -79,6 +80,19 @@ public class Main extends pxnMain {
 				case "-d":
 					gcServer.get().setForceDebug(true);
 					addArgsMsg("debug");
+					break;
+				// log level
+				case "--loglevel":
+				case "--log":
+				case "--level":
+				case "-l":
+					if(!args.next()) {
+						System.out.println("Incomplete! --configs-path argument");
+						break;
+					}
+					gcServer.get().setLogLevel(pxnLevel.Parse(args.getPart()));
+//					pxnLog.get().setLevel(pxnLevel.Parse(args.getPart()));
+					addArgsMsg("level");
 					break;
 				// configs path
 				case "--configs-path":
