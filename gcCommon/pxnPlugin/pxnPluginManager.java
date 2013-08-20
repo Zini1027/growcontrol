@@ -101,9 +101,7 @@ public class pxnPluginManager {
 					// load plugin.yml from jar
 					pxnPluginYML yml = new pxnPluginYML(file, "plugin.yml");
 					if(!yml.isLoaded()) {
-						//pxnLogger.get().debug("plugin.yml not found in jar: "+file.toString());
 						throw new FileNotFoundException("File plugin.yml not found in jar! "+file.toString());
-						//continue;
 					}
 					String pluginName = yml.getPluginName();
 					// plugin already loaded
@@ -130,7 +128,7 @@ public class pxnPluginManager {
 					failed++;
 				}
 			}
-			pxnLog.get().info("Found [ "+Integer.toString(successful)+" ] plugins.");
+			pxnLog.get().info("Found [ "+Integer.toString(successful)+" ] plugins");
 			if(failed > 0) pxnLog.get().warning("Failed to preload [ "+Integer.toString(failed)+" ] plugins!");
 		}
 	}
@@ -173,7 +171,7 @@ public class pxnPluginManager {
 					continue;
 				}
 			}
-			if(successful > 0) log.info("Inited [ "+Integer.toString(successful)+" ] plugins.");
+			if(successful > 0) log.info("Inited [ "+Integer.toString(successful)+" ] plugins");
 			if(failed     > 0) log.warning("Failed to init [ "+Integer.toString(failed)+" ] plugins!");
 		}
 	}
@@ -205,7 +203,7 @@ public class pxnPluginManager {
 				}
 			}
 		}
-		if(successful > 0) log.info("Successfully enabled [ "+Integer.toString(successful)+" ] plugins.");
+		if(successful > 0) log.info("Successfully enabled [ "+Integer.toString(successful)+" ] plugins");
 		if(failed     > 0) log.warning("Failed to enable [ "+Integer.toString(failed)+" ] plugins!");
 	}
 
@@ -230,7 +228,7 @@ public class pxnPluginManager {
 				}
 			}
 		}
-		if(successful > 0) log.info("Successfully unloaded [ "+Integer.toString(successful)+" ] plugins.");
+		if(successful > 0) log.info("Successfully unloaded [ "+Integer.toString(successful)+" ] plugins");
 		if(failed     > 0) log.warning("Failed to unload [ "+Integer.toString(failed)+" ] plugins!");
 	}
 

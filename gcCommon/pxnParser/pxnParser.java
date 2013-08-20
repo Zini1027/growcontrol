@@ -43,7 +43,7 @@ public class pxnParser {
 
 
 	// multi-line parser
-	public static String[] parseMultiLine(String data, char delim) {
+	public static String[] parseMultiLine(String data) {
 		if(data == null) throw new NullPointerException("data can't be null!");
 		return data.replaceAll("\r", "").split("\n");
 	}

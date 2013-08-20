@@ -179,11 +179,13 @@ public class pxnThreadQueue implements Runnable {
 		int count = 0;
 		for(Thread t : threadSet) {
 			String threadName = t.getName();
-			if(threadName.equals("Main-Server-Thread"))	continue;
-			if(threadName.equals("Reference Handler"))	continue;
-			if(threadName.equals("process reaper"))		continue;
-			if(threadName.equals("Signal Dispatcher"))	continue;
-			if(threadName.equals("Finalizer"))			continue;
+			if(threadName.equals("Main-Server-Thread"))           continue;
+			if(threadName.equals("Reference Handler"))            continue;
+			if(threadName.equals("NonBlockingInputStreamThread")) continue;
+			if(threadName.equals("process reaper"))               continue;
+			if(threadName.equals("Signal Dispatcher"))            continue;
+			if(threadName.equals("Finalizer"))                    continue;
+			if(threadName.equals("Exit"))                         continue;
 			count++;
 			threadNames.add(t.getName());
 		}

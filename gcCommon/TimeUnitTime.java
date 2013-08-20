@@ -41,6 +41,10 @@ public class TimeUnitTime {
 			return 0;
 		return unit.convert(this.value, TimeUnit.MILLISECONDS);
 	}
+	@Override
+	public String toString() {
+		return Long.toString(get(TimeU.S))+"s";
+	}
 
 
 	// final value

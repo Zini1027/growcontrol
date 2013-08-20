@@ -2,6 +2,7 @@ package com.growcontrol.gcCommon;
 
 import com.growcontrol.gcCommon.pxnClock.pxnClock;
 import com.growcontrol.gcCommon.pxnLogger.pxnConsole;
+import com.growcontrol.gcCommon.pxnLogger.pxnLevel;
 import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
 
@@ -21,7 +22,8 @@ public abstract class pxnApp {
 	public abstract String getAppName();
 	public abstract String getVersion();
 
-	protected abstract void updateLogLevel();
+	public abstract void setLogLevel(pxnLevel level);
+	protected abstract void UpdateLogLevel();
 	public abstract void ProcessCommand(String line);
 	protected abstract void doShutdown(int step);
 
@@ -116,7 +118,7 @@ public abstract class pxnApp {
 	}
 	public void setForceDebug(boolean enabled) {
 		this.forceDebug = enabled;
-		updateLogLevel();
+		UpdateLogLevel();
 	}
 	public void setConfigsPath(String path) {
 		this.configsPath = path;

@@ -21,8 +21,7 @@ public class pxnLogger extends pxnLogPrinter implements pxnLoggerInterface {
 	private volatile String bracerL = "[";
 	private volatile String bracerR = "]";
 	private final pxnLogger parent;
-	private pxnLevel level = pxnLevel.INFO;
-	private static boolean debug = false;
+	private volatile pxnLevel level = pxnLevel.INFO;
 
 
 	protected pxnLogger(String name, pxnLogger parent) {
@@ -116,13 +115,19 @@ public class pxnLogger extends pxnLogPrinter implements pxnLoggerInterface {
 	}
 	@Override
 	public void setLevel(pxnLevel level) {
-		if(level.equals(pxnLevel.OFF))
+		if(level == null) return;
+		if(level.equals(this.level)) return;
+//TODO: figure out why this prints so often
+		if(pxnLevel.OFF.equals(level))
 			pxnLog.get().Publish(level, "Set log level: "+pxnLevel.OFF.toString());
 		setLevels(level);
-		pxnLog.get().Publish(level, "Set log level: "+level.toString());
+		if(!pxnLevel.OFF.equals(level))
+			pxnLog.get().Publish(level, "Set log level: "+level.toString());
 	}
 	private void setLevels(pxnLevel level) {
 		if(level == null) throw new NullPointerException("level cannot be null!");
+		// hasn't changed
+		if(level.equals(this.level)) return;
 		this.level = level;
 		// set child levels
 		synchronized(loggers) {
@@ -134,9 +139,6 @@ public class pxnLogger extends pxnLogPrinter implements pxnLoggerInterface {
 	public void setLevel(String handlerName, pxnLevel level) {
 //TODO:
 		setLevel(level);
-//		if(handlerName.equalsIgnoreCase("CONSOLE"))
-		// update debug mode
-		debug = getLevel().isLoggable(pxnLevel.DEBUG);
 	}
 	// is level loggable
 	@Override
@@ -145,7 +147,7 @@ public class pxnLogger extends pxnLogPrinter implements pxnLoggerInterface {
 	}
 	@Override
 	public boolean isDebug() {
-		return debug;
+		return isLoggable(pxnLevel.DEBUG);
 	}
 
 
