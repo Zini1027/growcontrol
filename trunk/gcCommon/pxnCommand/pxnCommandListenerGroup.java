@@ -51,11 +51,12 @@ public class pxnCommandListenerGroup extends pxnListenerGroup {
 				if(!listener.priorityEquals(onlyPriority)) continue;
 				pxnCommandsHolder commandListener = (pxnCommandsHolder) listener;
 				// find command
-				String commandStr = commandListener.getCommand(line);
+				String commandStr = commandListener.FindCommand(line);
 				// command/alias not found
 				if(commandStr == null || commandStr.isEmpty()) continue;
+				pxnCommand command = commandListener.getCommand(commandStr);
 				// new event
-				pxnCommandEvent event = pxnCommandEvent.newEvent(line, commandStr);
+				pxnCommandEvent event = pxnCommandEvent.newEvent(line, command.clone());
 				if(event == null) continue;
 				if(result) event.setHandled();
 				// run event

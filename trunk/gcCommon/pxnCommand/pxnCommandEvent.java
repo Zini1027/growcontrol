@@ -12,26 +12,27 @@ public class pxnCommandEvent extends pxnEvent {
 	public final String raw;
 	// command string (alias resolved)
 	public final String commandStr;
+	// command object
+	public final pxnCommand command;
 	// command arguments
 	public final List<String> args = new ArrayList<String>();
 
 
 	// new command event - newEvent(raw, commandListener.getCommand(raw))
-	public static pxnCommandEvent newEvent(String raw, String commandStr) {
+	public static pxnCommandEvent newEvent(String raw, pxnCommand command) {
 		if(raw == null)   throw new NullPointerException("raw cannot be null!");
 		if(raw.isEmpty()) throw new NullPointerException("raw cannot be empty!");
-		if(commandStr == null)   throw new NullPointerException("commandStr cannot be null!");
-		if(commandStr.isEmpty()) throw new NullPointerException("commandStr cannot be empty!");
+		if(command == null) throw new NullPointerException("command cannot be null!");
 		// new event
-		return new pxnCommandEvent(raw, commandStr);
+		return new pxnCommandEvent(raw, command);
 	}
-	protected pxnCommandEvent(String raw, String commandStr) {
+	protected pxnCommandEvent(String raw, pxnCommand command) {
 		if(raw == null)   throw new NullPointerException("raw cannot be null!");
 		if(raw.isEmpty()) throw new NullPointerException("raw cannot be empty!");
-		if(commandStr == null)   throw new NullPointerException("commandStr cannot be null!");
-		if(commandStr.isEmpty()) throw new NullPointerException("commandStr cannot be empty!");
+		if(command == null) throw new NullPointerException("command cannot be null!");
 		this.raw = raw;
-		this.commandStr = commandStr.trim().toLowerCase();
+		this.commandStr = command.commandStr;
+		this.command = command;
 		// args
 		args.clear();
 		String[] tmp = raw.split(" ");
