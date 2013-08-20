@@ -11,16 +11,17 @@ public class metaIO extends pxnMetaType {
 	protected final Object lock = new Object();
 
 
+	// new meta object
+	public static metaIO newValue(Boolean value) {
+		metaIO meta = new metaIO();
+		meta.set(value);
+		return meta;
+	}
+	// new dao (value holder)
+	public metaIO() {}
+	// type singleton
 	public metaIO(String name) {
 		super(name);
-	}
-	public metaIO(String name, String value) {
-		super(name);
-		set(value);
-	}
-	public metaIO(String name, Boolean value) {
-		super(name);
-		set(value);
 	}
 
 
@@ -54,7 +55,10 @@ public class metaIO extends pxnMetaType {
 	}
 	@Override
 	public String toString() {
-		return Boolean.toString(get());
+		Boolean b = get();
+		if(b == null)
+			return null;
+		return b.toString();
 	}
 
 

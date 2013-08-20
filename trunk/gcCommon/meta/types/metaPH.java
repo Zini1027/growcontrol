@@ -11,16 +11,17 @@ public class metaPH extends pxnMetaType {
 	protected final Object lock = new Object();
 
 
+	// new meta object
+	public static metaPH newValue(Integer value) {
+		metaPH meta = new metaPH();
+		meta.set(value);
+		return meta;
+	}
+	// new dao (value holder)
+	public metaPH() {}
+	// type singleton
 	public metaPH(String name) {
 		super(name);
-	}
-	public metaPH(String name, String value) {
-		super(name);
-		set(value);
-	}
-	public metaPH(String name, Integer value) {
-		super(name);
-		set(value);
 	}
 
 

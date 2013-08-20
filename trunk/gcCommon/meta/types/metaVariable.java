@@ -14,6 +14,15 @@ public class metaVariable extends pxnMetaType {
 	protected final Object lock = new Object();
 
 
+	// new meta object
+	public static metaVariable newValue(Integer value) {
+		metaVariable meta = new metaVariable();
+		meta.set(value);
+		return meta;
+	}
+	// new dao (value holder)
+	public metaVariable() {}
+	// type singleton
 	public metaVariable(String name) {
 		super(name);
 	}

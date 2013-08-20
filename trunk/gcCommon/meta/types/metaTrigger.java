@@ -7,6 +7,14 @@ public class metaTrigger extends pxnMetaType {
 	private static final long serialVersionUID = 7L;
 
 
+	// new meta object
+	public static metaTrigger newValue() {
+		metaTrigger meta = new metaTrigger();
+		return meta;
+	}
+	// new dao (value holder)
+	public metaTrigger() {}
+	// type singleton
 	public metaTrigger(String name) {
 		super(name);
 	}
@@ -14,8 +22,7 @@ public class metaTrigger extends pxnMetaType {
 
 	// set value
 	@Override
-	public void set(String value) {
-	}
+	public void set(String value) {}
 
 
 	// get value

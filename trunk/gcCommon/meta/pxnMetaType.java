@@ -43,29 +43,8 @@ public abstract class pxnMetaType extends pxnEvent implements java.io.Serializab
 //	}
 
 
-	// send to
-	public void To(String toName) {
-		if(toName == null || toName.isEmpty()) {
-			this.toName = null;
-			return;
-		}
-		this.toName = toName;
-	}
-	// send to router
-	public void Send() {
-		metaRouter.get().Send(toName, this);
-	}
-	public void SendTo(String toName) {
-		To(toName);
-		Send();
-	}
-
-
+	// new dao (value holder)
 	public pxnMetaType() {}
-//	// new meta object
-//	public pxnMetaType(pxnMetaType meta) {
-//		this(getName(meta));
-//	}
 	// type singleton
 	protected pxnMetaType(String name) {
 		registerKnownType(name, this);
@@ -101,6 +80,24 @@ public abstract class pxnMetaType extends pxnEvent implements java.io.Serializab
 			}
 		}
 		return null;
+	}
+
+
+	// send to
+	public void To(String toName) {
+		if(toName == null || toName.isEmpty()) {
+			this.toName = null;
+			return;
+		}
+		this.toName = toName;
+	}
+	// send to router
+	public void Send() {
+		metaRouter.get().Send(toName, this);
+	}
+	public void SendTo(String toName) {
+		To(toName);
+		Send();
 	}
 
 
