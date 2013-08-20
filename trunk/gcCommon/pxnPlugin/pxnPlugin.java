@@ -13,6 +13,7 @@ public abstract class pxnPlugin {
 
 
 	// load/unload plugin
+	public void Init() {}
 	public abstract void onEnable();
 	public abstract void onDisable();
 
