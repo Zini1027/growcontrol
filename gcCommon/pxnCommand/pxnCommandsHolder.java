@@ -23,16 +23,20 @@ public abstract class pxnCommandsHolder extends pxnListener {
 	public pxnCommand addCommand(String commandStr) {
 		if(commandStr == null) return null;
 		commandStr = commandStr.toLowerCase();
-		// command exists
-		if(commands.containsKey(commandStr))
-			return commands.get(commandStr);
-		// new command
-		pxnCommand command = new pxnCommand(commandStr);
-		commands.put(commandStr, command);
+		pxnCommand command = null;
+		synchronized(commands) {
+			// command exists
+			if(commands.containsKey(commandStr))
+				return commands.get(commandStr);
+			// new command
+			command = new pxnCommand(commandStr);
+			commands.put(commandStr, command);
+		}
 		return command;
 	}
 	public pxnCommand addCommand(String commandStr, String usageStr) {
 		pxnCommand command = addCommand(commandStr);
+		if(command == null) return null;
 		if(usageStr == null || usageStr.isEmpty())
 			usageStr = null;
 		command.usageStr = usageStr;
@@ -45,22 +49,16 @@ public abstract class pxnCommandsHolder extends pxnListener {
 	}
 
 
-	// local shorthand
-	protected pxnCommand add(String commandStr) {
-		return addCommand(commandStr);
+	// get command
+	public pxnCommand getCommand(String commandRaw) {
+		String commandStr = FindCommand(commandRaw);
+		if(commandStr == null || commandStr.isEmpty()) return null;
+		return commands.get(commandStr);
 	}
-	protected pxnCommand add(String commandStr, String usageStr) {
-		return addCommand(commandStr, usageStr);
-	}
-
-
 	// get command from raw string
-	public String getCommand(String commandRaw) {
+	public String FindCommand(String commandRaw) {
 		if(commandRaw == null) return null;
-		// trim to first word
-		if(commandRaw.contains(" "))
-			commandRaw = commandRaw.substring(0, commandRaw.indexOf(" "));
-		commandRaw = commandRaw.trim().toLowerCase();
+		commandRaw = PrepCommand(commandRaw);
 		// check command names
 		for(Entry<String, pxnCommand> entry : commands.entrySet())
 			if(entry.getKey().equals(commandRaw))
@@ -71,6 +69,12 @@ public abstract class pxnCommandsHolder extends pxnListener {
 				return entry.getValue().commandStr;
 		// null if not found
 		return null;
+	}
+	private String PrepCommand(String commandRaw) {
+		// trim to first word
+		if(commandRaw.contains(" "))
+			commandRaw = commandRaw.substring(0, commandRaw.indexOf(" "));
+		return commandRaw.trim().toLowerCase();
 	}
 
 
