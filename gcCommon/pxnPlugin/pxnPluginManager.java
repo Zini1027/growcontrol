@@ -165,6 +165,7 @@ public class pxnPluginManager {
 					holder.plugin = (pxnPlugin) classLoader.loadClass(mainClass).newInstance();
 					holder.plugin.setPluginManager(this);
 					holder.plugin.setPluginYML(holder.yml);
+					holder.plugin.Init();
 				} catch(Exception e) {
 					log.warning("Failed to load plugin: "+holder.pluginName);
 					log.exception(e);
