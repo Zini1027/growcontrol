@@ -1,29 +1,19 @@
-package com.growcontrol.gctimer.timers;
+package com.growcontrol.gctimer.timers.Sequencer;
 
-import com.growcontrol.gcServer.devices.gcServerDeviceBoolean;
-import com.growcontrol.gctimer.gcTimer;
-
-
-public class timerSequencer extends gcServerDeviceBoolean implements deviceTimer {
+import com.growcontrol.gctimer.timers.TimerWorker;
 
 
-	public timerSequencer(String name, String title) {
+public class SequencerWorker extends TimerWorker {
+	private static final long serialVersionUID = 1L;
+
+
+	public SequencerWorker(String name) {
 		super(name);
 	}
-	@Override
-	public gcTimer.Type getTimerType() {
-		return gcTimer.Type.SEQUENCER;
-	}
 
 
 	@Override
-	public void setDuration(String duration) {
-	}
-
-
-	// tick the timer
-	@Override
-	public void onTick() {
+	public void Close() {
 	}
 
 
