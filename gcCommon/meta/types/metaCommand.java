@@ -1,9 +1,9 @@
 package com.growcontrol.gcCommon.meta.types;
 
-import com.growcontrol.gcCommon.meta.pxnMetaType;
+import com.growcontrol.gcCommon.meta.metaType;
 
 
-public class metaCommand extends pxnMetaType {
+public class metaCommand extends metaType {
 	private static final long serialVersionUID = 7L;
 
 	protected volatile String commandStr = null;

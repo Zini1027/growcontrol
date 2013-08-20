@@ -71,7 +71,7 @@ public final class metaRouter {
 
 
 	// meta output
-	public boolean Send(String toName, pxnMetaType meta) {
+	public boolean Send(String toName, metaType meta) {
 		synchronized(listeners) {
 			for(Entry<String, metaInput> entry : listeners.entrySet()) {
 				String name = entry.getKey();
