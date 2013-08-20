@@ -8,6 +8,6 @@ public interface metaInput {
 	public String getName();
 
 	// input event
-	public boolean onInput(pxnMetaType meta);
+	public boolean onInput(metaType meta);
 
 }

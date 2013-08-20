@@ -11,18 +11,18 @@ import com.growcontrol.gcCommon.meta.types.metaVariable;
 import com.growcontrol.gcCommon.pxnListener.pxnEvent;
 
 
-public abstract class pxnMetaType extends pxnEvent implements java.io.Serializable {
+public abstract class metaType extends pxnEvent implements java.io.Serializable {
 	private static final long serialVersionUID = 7L;
 
 	// known types
-	private static final transient HashMap<String, pxnMetaType> knownTypes = new HashMap<String, pxnMetaType>();
+	private static final transient HashMap<String, metaType> knownTypes = new HashMap<String, metaType>();
 
 	// default types
-	public static final transient pxnMetaType IO       = new metaIO      ("IO");
-	public static final transient pxnMetaType THERMAL  = new metaThermal ("THERMAL");
-	public static final transient pxnMetaType VARIABLE = new metaVariable("VARIABLE");
-	public static final transient pxnMetaType COMMAND  = new metaCommand ("COMMAND");
-	public static final transient pxnMetaType EC       = new metaEC      ("EC");
+	public static final transient metaType IO       = new metaIO      ("IO");
+	public static final transient metaType THERMAL  = new metaThermal ("THERMAL");
+	public static final transient metaType VARIABLE = new metaVariable("VARIABLE");
+	public static final transient metaType COMMAND  = new metaCommand ("COMMAND");
+	public static final transient metaType EC       = new metaEC      ("EC");
 
 	private volatile String toName = null;
 
@@ -44,12 +44,12 @@ public abstract class pxnMetaType extends pxnEvent implements java.io.Serializab
 
 
 	// new dao (value holder)
-	public pxnMetaType() {}
+	public metaType() {}
 	// type singleton
-	protected pxnMetaType(String name) {
+	protected metaType(String name) {
 		registerKnownType(name, this);
 	}
-	protected static void registerKnownType(String name, pxnMetaType meta) {
+	protected static void registerKnownType(String name, metaType meta) {
 		if(name == null) throw new NullPointerException("name cannot be null!");
 		if(meta == null) throw new NullPointerException("meta cannot be null!");
 		name = name.toUpperCase();
@@ -61,7 +61,7 @@ public abstract class pxnMetaType extends pxnEvent implements java.io.Serializab
 
 
 	// get known type
-	public static pxnMetaType get(String name) {
+	public static metaType get(String name) {
 		if(name == null || name.isEmpty()) return null;
 		synchronized(knownTypes) {
 			if(knownTypes.containsKey(name.toUpperCase()))
@@ -70,10 +70,10 @@ public abstract class pxnMetaType extends pxnEvent implements java.io.Serializab
 		// type not found
 		return null;
 	}
-	public static String getName(pxnMetaType meta) {
+	public static String getName(metaType meta) {
 		synchronized(knownTypes) {
 			if(knownTypes.containsValue(meta)) {
-				for(Entry<String, pxnMetaType> entry : knownTypes.entrySet()) {
+				for(Entry<String, metaType> entry : knownTypes.entrySet()) {
 					if(entry.getValue().equals(meta))
 						return entry.getKey();
 				}
