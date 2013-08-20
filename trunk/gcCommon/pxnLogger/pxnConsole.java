@@ -147,6 +147,9 @@ public class pxnConsole implements Runnable {
 			console.stopping = true;
 			if(console.running)
 				console.thread.interrupt();
+// causes thread to block!
+//			if(reader != null)
+//				reader.shutdown();
 			AnsiConsole.systemUninstall();
 		}
 	}

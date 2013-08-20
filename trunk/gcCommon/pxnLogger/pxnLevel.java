@@ -47,12 +47,12 @@ public class pxnLevel implements java.io.Serializable {
 
 
 	// parse string to level
-	public static pxnLevel parse(String name) {
+	public static pxnLevel Parse(String name) {
 		if(name == null || name.isEmpty()) return null;
 		if(pxnUtils.isNumeric(name)) {
 			Integer i = pxnUtils.toNumber(name);
 			if(i != null)
-				return findLevel(i);
+				return FindLevel(i);
 		}
 		name = name.toUpperCase();
 		if(name.equals("ON"))
@@ -65,7 +65,7 @@ public class pxnLevel implements java.io.Serializable {
 		return null;
 	}
 	// find closest level by value, without going under
-	public static pxnLevel findLevel(int value) {
+	public static pxnLevel FindLevel(int value) {
 		if(value == pxnLevel.OFF.getValue()) return pxnLevel.OFF;
 		if(value == pxnLevel.ALL.getValue()) return pxnLevel.ALL;
 		pxnLevel level = null;
@@ -91,6 +91,7 @@ public class pxnLevel implements java.io.Serializable {
 	public String getName() {
 		return name;
 	}
+	@Override
 	public String toString() {
 		return getName();
 	}
