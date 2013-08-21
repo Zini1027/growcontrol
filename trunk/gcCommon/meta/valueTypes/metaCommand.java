@@ -5,7 +5,7 @@ import com.growcontrol.gcCommon.meta.metaValue;
 import com.growcontrol.gcCommon.meta.valueFactory;
 
 
-public class metaCommand implements metaValue {
+public class metaCommand extends metaValue {
 	private static final long serialVersionUID = 9L;
 
 	// raw value
@@ -19,6 +19,10 @@ public class metaCommand implements metaValue {
 			@Override
 			public metaValue newValue() {
 				return new metaCommand();
+			}
+			@Override
+			public metaValue newValue(String value) {
+				return new metaCommand(value);
 			}
 	});
 
@@ -56,9 +60,15 @@ public class metaCommand implements metaValue {
 	public String getString() {
 		return getValue();
 	}
+	public static String toString(metaCommand meta) {
+		if(meta == null)
+			return null;
+		return meta.getString();
+	}
 
 
 	// set value
+	@Override
 	public void set(String value) {
 		synchronized(lock) {
 			this.value = value;

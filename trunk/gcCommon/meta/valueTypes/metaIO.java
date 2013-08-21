@@ -1,11 +1,12 @@
 package com.growcontrol.gcCommon.meta.valueTypes;
 
+import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.meta.metaType;
 import com.growcontrol.gcCommon.meta.metaValue;
 import com.growcontrol.gcCommon.meta.valueFactory;
 
 
-public class metaIO implements metaValue {
+public class metaIO extends metaValue {
 	private static final long serialVersionUID = 9L;
 
 	// raw value
@@ -20,6 +21,10 @@ public class metaIO implements metaValue {
 			public metaValue newValue() {
 				return new metaIO();
 			}
+			@Override
+			public metaValue newValue(String value) {
+				return new metaIO(value);
+			}
 	});
 
 
@@ -28,6 +33,9 @@ public class metaIO implements metaValue {
 		set((Boolean) null);
 	}
 	public metaIO(Boolean value) {
+		set(value);
+	}
+	public metaIO(String value) {
 		set(value);
 	}
 	public metaIO(metaIO meta) {
@@ -60,6 +68,11 @@ public class metaIO implements metaValue {
 		if(b == null) return null;
 		return (getValue() ? "on" : "off");
 	}
+	public static String toString(metaIO meta) {
+		if(meta == null)
+			return null;
+		return meta.getString();
+	}
 
 
 	// set value
@@ -68,12 +81,13 @@ public class metaIO implements metaValue {
 			this.value = value;
 		}
 	}
+	@Override
 	public void set(String value) {
 		if(value == null || value.isEmpty()) {
 			set((Boolean) null);
 			return;
 		}
-		Boolean b = Boolean.valueOf(value);
+		Boolean b = pxnUtils.toBoolean(value);
 		set(b);
 	}
 

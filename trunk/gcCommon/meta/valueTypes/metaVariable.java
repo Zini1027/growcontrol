@@ -6,7 +6,7 @@ import com.growcontrol.gcCommon.meta.metaValue;
 import com.growcontrol.gcCommon.meta.valueFactory;
 
 
-public class metaVariable implements metaValue {
+public class metaVariable extends metaValue {
 	private static final long serialVersionUID = 9L;
 
 	// raw value
@@ -24,6 +24,10 @@ public class metaVariable implements metaValue {
 			public metaValue newValue() {
 				return new metaVariable();
 			}
+			@Override
+			public metaValue newValue(String value) {
+				return new metaVariable(value);
+			}
 	});
 
 
@@ -32,6 +36,9 @@ public class metaVariable implements metaValue {
 		set((Integer) null);
 	}
 	public metaVariable(Integer value) {
+		set(value);
+	}
+	public metaVariable(String value) {
 		set(value);
 	}
 	public metaVariable(metaVariable meta) {
@@ -65,6 +72,11 @@ public class metaVariable implements metaValue {
 			return null;
 		return Integer.toString(i);
 	}
+	public static String toString(metaVariable meta) {
+		if(meta == null)
+			return null;
+		return meta.getString();
+	}
 	// get percent
 	public Double getPercent() {
 		Integer I = getValue();
@@ -91,6 +103,7 @@ public class metaVariable implements metaValue {
 				);
 		}
 	}
+	@Override
 	public void set(String value) {
 		if(value == null || value.isEmpty()) {
 			set((Integer) null);

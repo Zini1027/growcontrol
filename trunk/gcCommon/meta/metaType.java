@@ -28,6 +28,15 @@ public class metaType implements java.io.Serializable {
 		}
 		pxnLog.get().finer("Added meta type: "+name);
 	}
+	public static metaType Find(String typeStr) {
+		if(typeStr == null || typeStr.isEmpty())
+			return null;
+		synchronized(known) {
+			if(known.containsKey(typeStr))
+				return known.get(typeStr);
+		}
+		return null;
+	}
 
 
 	// new meta type

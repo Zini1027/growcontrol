@@ -5,7 +5,7 @@ import com.growcontrol.gcCommon.meta.metaValue;
 import com.growcontrol.gcCommon.meta.valueFactory;
 
 
-public class metaTrigger implements metaValue {
+public class metaTrigger extends metaValue {
 	private static final long serialVersionUID = 9L;
 
 	protected final Object lock = new Object();
@@ -18,12 +18,17 @@ public class metaTrigger implements metaValue {
 			public metaValue newValue() {
 				return new metaTrigger();
 			}
+			@Override
+			public metaValue newValue(String value) {
+				return new metaTrigger(value);
+			}
 	});
 
 
 	// instance
 	public metaTrigger() {}
 	public metaTrigger(Boolean value) {}
+	public metaTrigger(String value) {}
 	public metaTrigger(metaTrigger meta) {}
 	@Override
 	public metaValue clone() {
@@ -43,9 +48,13 @@ public class metaTrigger implements metaValue {
 	public String getString() {
 		return null;
 	}
+	public static String toString(metaTrigger meta) {
+		return null;
+	}
 
 
 	// set value
+	@Override
 	public void set(String value) {}
 
 
