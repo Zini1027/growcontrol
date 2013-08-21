@@ -1,4 +1,4 @@
-package com.growcontrol.gcCommon.meta.types;
+package com.growcontrol.gcCommon.meta.valueTypes;
 
 
 public class metaThermalNTC extends metaThermal {
@@ -8,9 +8,9 @@ public class metaThermalNTC extends metaThermal {
 //	protected int value = 0;
 
 
-	public metaThermalNTC(String name) {
-		super(name);
-	}
+//	public metaThermalNTC(String name) {
+//		super(name);
+//	}
 
 
 //	public DataThermalNTC setDataValue(int value) {

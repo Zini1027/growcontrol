@@ -1,12 +1,15 @@
-package com.growcontrol.gcCommon.meta.types;
+package com.growcontrol.gcCommon.meta.valueTypes;
 
 import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.meta.metaType;
+import com.growcontrol.gcCommon.meta.metaValue;
+import com.growcontrol.gcCommon.meta.valueFactory;
 
 
-public class metaVariable extends metaType {
-	private static final long serialVersionUID = 7L;
+public class metaVariable implements metaValue {
+	private static final long serialVersionUID = 9L;
 
+	// raw value
 	protected volatile Integer value = null;
 	protected volatile Integer override = null;
 	protected volatile int min = 0;
@@ -14,83 +17,90 @@ public class metaVariable extends metaType {
 	protected final Object lock = new Object();
 
 
-	// new meta object
-	public static metaVariable newValue(Integer value) {
-		metaVariable meta = new metaVariable();
-		meta.set(value);
-		return meta;
+	// static type
+	public static final metaType VARIABLE = new metaType("VARIABLE",
+		new valueFactory() {
+			@Override
+			public metaValue newValue() {
+				return new metaVariable();
+			}
+	});
+
+
+	// instance
+	public metaVariable() {
+		set((Integer) null);
 	}
-	// new dao (value holder)
-	public metaVariable() {}
-	// type singleton
-	public metaVariable(String name) {
-		super(name);
+	public metaVariable(Integer value) {
+		set(value);
+	}
+	public metaVariable(metaVariable meta) {
+		this(meta.getValue());
+	}
+	@Override
+	public metaValue clone() {
+		return new metaVariable(this);
+	}
+
+
+	// type
+	@Override
+	public metaType getType() {
+		return VARIABLE;
+	}
+
+
+	// get value
+	public Integer getValue() {
+		synchronized(lock) {
+			if(value == null)
+				return null;
+			return value.intValue();
+		}
+	}
+	@Override
+	public String getString() {
+		Integer i = getValue();
+		if(i == null)
+			return null;
+		return Integer.toString(i);
+	}
+	// get percent
+	public Double getPercent() {
+		Integer I = getValue();
+		if(I == null)
+			return null;
+		int i = I.intValue();
+		i -= min;
+		double ma = max;
+		double mi = min;
+		return ((ma-mi) / i);
+	}
+	public String getPercentStr() {
+		return Double.toString(getPercent())+"%";
 	}
 
 
 	// set value
 	public void set(Integer value) {
 		synchronized(lock) {
-			// set null
-			if(value == null) {
-				this.value = null;
-				return;
-			}
-			// set value
-			this.value = pxnUtils.MinMax(value.intValue(), min, max);
+			this.value = pxnUtils.MinMax(
+					value.intValue(),
+					min,
+					max
+				);
 		}
 	}
-	@Override
 	public void set(String value) {
-		Integer i = null;
-		try {
-			i = pxnUtils.toNumber(value);
-		} catch (Exception ignore) {
+		if(value == null || value.isEmpty()) {
+			set((Integer) null);
 			return;
 		}
-		if(i == null) return;
-		set(i);
-	}
-	// set override
-	public void setOverride(Integer value) {
-		synchronized(lock) {
-			// set null
-			if(value == null) {
-				this.override = null;
-				return;
-			}
-			// set value
-			this.override = pxnUtils.MinMax(value.intValue(), min, max);
-		}
-	}
-	public void setOverride(String value) {
 		Integer i = null;
 		try {
-			i = pxnUtils.toNumber(value);
-		} catch (Exception ignore) {
-			return;
-		}
-		if(i == null) return;
+			i = Integer.valueOf(value);
+		} catch (Exception ignore) {}
 		set(i);
-	}
-
-
-	// get value
-	public Integer get() {
-		synchronized(lock) {
-			if(override != null)
-				return override.intValue();
-			if(value != null)
-				return value.intValue();
-		}
-		return null;
-	}
-	@Override
-	public String toString() {
-		Integer v = get();
-		if(v == null)
-			return null;
-		return Integer.toString(v);
 	}
 
 

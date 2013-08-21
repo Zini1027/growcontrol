@@ -1,43 +1,67 @@
-package com.growcontrol.gcCommon.meta.types;
+package com.growcontrol.gcCommon.meta.valueTypes;
 
 import com.growcontrol.gcCommon.meta.metaType;
+import com.growcontrol.gcCommon.meta.metaValue;
+import com.growcontrol.gcCommon.meta.valueFactory;
 
 
-public class metaCommand extends metaType {
-	private static final long serialVersionUID = 7L;
+public class metaCommand implements metaValue {
+	private static final long serialVersionUID = 9L;
 
-	protected volatile String commandStr = null;
+	// raw value
+	protected volatile String value = null;
 	protected final Object lock = new Object();
 
 
-	// new meta object
-	public static metaCommand newValue(String value) {
-		metaCommand meta = new metaCommand();
-		meta.set(value);
-		return meta;
-	}
-	// new dao (value holder)
-	public metaCommand() {}
-	// type singleton
-	public metaCommand(String name) {
-		super(name);
-	}
+	// static type
+	public static final metaType COMMAND = new metaType("COMMAND",
+		new valueFactory() {
+			@Override
+			public metaValue newValue() {
+				return new metaCommand();
+			}
+	});
 
 
-	// set value
+	// instance
+	public metaCommand() {
+		set((String) null);
+	}
+	public metaCommand(String value) {
+		set(value);
+	}
+	public metaCommand(metaCommand meta) {
+		this(meta.getValue());
+	}
 	@Override
-	public void set(String value) {
-		synchronized(lock) {
-			this.commandStr = value;
-		}
+	public metaValue clone() {
+		return new metaCommand(this);
+	}
+
+
+	// type
+	@Override
+	public metaType getType() {
+		return COMMAND;
 	}
 
 
 	// get value
-	@Override
-	public String toString() {
+	public String getValue() {
 		synchronized(lock) {
-			return commandStr;
+			return value;
+		}
+	}
+	@Override
+	public String getString() {
+		return getValue();
+	}
+
+
+	// set value
+	public void set(String value) {
+		synchronized(lock) {
+			this.value = value;
 		}
 	}
 
