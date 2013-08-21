@@ -1,27 +1,62 @@
-package com.growcontrol.gcCommon.meta.types;
+package com.growcontrol.gcCommon.meta.valueTypes;
 
-import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.meta.metaType;
+import com.growcontrol.gcCommon.meta.metaValue;
+import com.growcontrol.gcCommon.meta.valueFactory;
 
 
-public class metaIO extends metaType {
-	private static final long serialVersionUID = 7L;
+public class metaIO implements metaValue {
+	private static final long serialVersionUID = 9L;
 
+	// raw value
 	protected volatile Boolean value = null;
 	protected final Object lock = new Object();
 
 
-	// new meta object
-	public static metaIO newValue(Boolean value) {
-		metaIO meta = new metaIO();
-		meta.set(value);
-		return meta;
+	// static type
+	public static final metaType IO = new metaType("IO",
+		new valueFactory() {
+			@Override
+			public metaValue newValue() {
+				return new metaIO();
+			}
+	});
+
+
+	// instance
+	public metaIO() {
+		set((Boolean) null);
 	}
-	// new dao (value holder)
-	public metaIO() {}
-	// type singleton
-	public metaIO(String name) {
-		super(name);
+	public metaIO(Boolean value) {
+		set(value);
+	}
+	public metaIO(metaIO meta) {
+		this(meta.getValue());
+	}
+	@Override
+	public metaValue clone() {
+		return new metaIO(this);
+	}
+
+
+	// type
+	@Override
+	public metaType getType() {
+		return null;
+	}
+
+
+	// get value
+	public Boolean getValue() {
+		synchronized(lock) {
+			if(value == null)
+				return null;
+			return value.booleanValue();
+		}
+	}
+	@Override
+	public String getString() {
+		return (getValue() ? "on" : "off");
 	}
 
 
@@ -31,34 +66,13 @@ public class metaIO extends metaType {
 			this.value = value;
 		}
 	}
-	@Override
 	public void set(String value) {
-		// set null
-		if(value == null) {
+		if(value == null || value.isEmpty()) {
 			set((Boolean) null);
 			return;
 		}
-		// set value
-		Boolean b = pxnUtils.toBoolean(value);
-		if(b == null) return;
+		Boolean b = Boolean.valueOf(value);
 		set(b);
-	}
-
-
-	// get value
-	public Boolean get() {
-		synchronized(lock) {
-			if(value == null)
-				return null;
-			return value.booleanValue();
-		}
-	}
-	@Override
-	public String toString() {
-		Boolean b = get();
-		if(b == null)
-			return null;
-		return b.toString();
 	}
 
 
