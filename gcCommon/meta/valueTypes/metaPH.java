@@ -6,7 +6,7 @@ import com.growcontrol.gcCommon.meta.metaValue;
 import com.growcontrol.gcCommon.meta.valueFactory;
 
 
-public class metaPH implements metaValue {
+public class metaPH extends metaValue {
 	private static final long serialVersionUID = 9L;
 
 	// raw value
@@ -21,6 +21,10 @@ public class metaPH implements metaValue {
 			public metaValue newValue() {
 				return new metaPH();
 			}
+			@Override
+			public metaValue newValue(String value) {
+				return new metaPH(value);
+			}
 	});
 
 
@@ -29,6 +33,9 @@ public class metaPH implements metaValue {
 		set((Integer) null);
 	}
 	public metaPH(Integer value) {
+		set(value);
+	}
+	public metaPH(String value) {
 		set(value);
 	}
 	public metaPH(metaPH meta) {
@@ -62,6 +69,11 @@ public class metaPH implements metaValue {
 			return null;
 		return Integer.toString(i)+"pH";
 	}
+	public static String toString(metaPH meta) {
+		if(meta == null)
+			return null;
+		return meta.getString();
+	}
 
 
 	// set value
@@ -74,6 +86,7 @@ public class metaPH implements metaValue {
 				);
 		}
 	}
+	@Override
 	public void set(String value) {
 		if(value == null || value.isEmpty()) {
 			set((Integer) null);

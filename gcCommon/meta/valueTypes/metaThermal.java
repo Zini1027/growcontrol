@@ -6,7 +6,7 @@ import com.growcontrol.gcCommon.meta.metaValue;
 import com.growcontrol.gcCommon.meta.valueFactory;
 
 
-public class metaThermal implements metaValue {
+public class metaThermal extends metaValue {
 	private static final long serialVersionUID = 9L;
 
 	public static enum ThermalUnit {CELSIUS, FAHRENHEIT, KELVIN};
@@ -23,6 +23,10 @@ public class metaThermal implements metaValue {
 			public metaValue newValue() {
 				return new metaThermal();
 			}
+			@Override
+			public metaValue newValue(String value) {
+				return new metaThermal(value);
+			}
 	});
 
 
@@ -31,6 +35,9 @@ public class metaThermal implements metaValue {
 		set((Double) null);
 	}
 	public metaThermal(Double value) {
+		set(value);
+	}
+	public metaThermal(String value) {
 		set(value);
 	}
 	public metaThermal(metaThermal meta) {
@@ -64,6 +71,11 @@ public class metaThermal implements metaValue {
 			return null;
 		return Double.toString(i)+"c";
 	}
+	public static String toString(metaThermal meta) {
+		if(meta == null)
+			return null;
+		return meta.getString();
+	}
 
 
 	// set value
@@ -76,6 +88,7 @@ public class metaThermal implements metaValue {
 				);
 		}
 	}
+	@Override
 	public void set(String value) {
 		if(value == null || value.isEmpty()) {
 			set((Double) null);

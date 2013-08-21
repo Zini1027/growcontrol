@@ -6,7 +6,7 @@ import com.growcontrol.gcCommon.meta.metaValue;
 import com.growcontrol.gcCommon.meta.valueFactory;
 
 
-public class metaEC implements metaValue {
+public class metaEC extends metaValue {
 	private static final long serialVersionUID = 9L;
 
 	// raw value
@@ -21,6 +21,10 @@ public class metaEC implements metaValue {
 			public metaValue newValue() {
 				return new metaEC();
 			}
+			@Override
+			public metaValue newValue(String value) {
+				return new metaEC(value);
+			}
 	});
 
 
@@ -29,6 +33,9 @@ public class metaEC implements metaValue {
 		set((Integer) null);
 	}
 	public metaEC(Integer value) {
+		set(value);
+	}
+	public metaEC(String value) {
 		set(value);
 	}
 	public metaEC(metaEC meta) {
@@ -65,6 +72,11 @@ public class metaEC implements metaValue {
 			return null;
 		return Integer.toString(i)+"ppm";
 	}
+	public static String toString(metaEC meta) {
+		if(meta == null)
+			return null;
+		return meta.getString();
+	}
 
 
 	// set value
@@ -77,6 +89,7 @@ public class metaEC implements metaValue {
 			);
 		}
 	}
+	@Override
 	public void set(String value) {
 		if(value == null || value.isEmpty()) {
 			set((Integer) null);
