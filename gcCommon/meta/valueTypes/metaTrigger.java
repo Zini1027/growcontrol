@@ -1,35 +1,52 @@
-package com.growcontrol.gcCommon.meta.types;
+package com.growcontrol.gcCommon.meta.valueTypes;
 
 import com.growcontrol.gcCommon.meta.metaType;
+import com.growcontrol.gcCommon.meta.metaValue;
+import com.growcontrol.gcCommon.meta.valueFactory;
 
 
-public class metaTrigger extends metaType {
-	private static final long serialVersionUID = 7L;
+public class metaTrigger implements metaValue {
+	private static final long serialVersionUID = 9L;
+
+	protected final Object lock = new Object();
 
 
-	// new meta object
-	public static metaTrigger newValue() {
-		metaTrigger meta = new metaTrigger();
-		return meta;
-	}
-	// new dao (value holder)
+	// static type
+	public static final metaType TRIGGER = new metaType("TRIGGER",
+		new valueFactory() {
+			@Override
+			public metaValue newValue() {
+				return new metaTrigger();
+			}
+	});
+
+
+	// instance
 	public metaTrigger() {}
-	// type singleton
-	public metaTrigger(String name) {
-		super(name);
+	public metaTrigger(Boolean value) {}
+	public metaTrigger(metaTrigger meta) {}
+	@Override
+	public metaValue clone() {
+		return new metaTrigger(this);
 	}
 
 
-	// set value
+	// type
 	@Override
-	public void set(String value) {}
+	public metaType getType() {
+		return TRIGGER;
+	}
 
 
 	// get value
 	@Override
-	public String toString() {
+	public String getString() {
 		return null;
 	}
+
+
+	// set value
+	public void set(String value) {}
 
 
 }

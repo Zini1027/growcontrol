@@ -42,7 +42,7 @@ public class metaIO implements metaValue {
 	// type
 	@Override
 	public metaType getType() {
-		return null;
+		return IO;
 	}
 
 
@@ -56,6 +56,8 @@ public class metaIO implements metaValue {
 	}
 	@Override
 	public String getString() {
+		Boolean b = getValue();
+		if(b == null) return null;
 		return (getValue() ? "on" : "off");
 	}
 

@@ -1,4 +1,4 @@
-package com.growcontrol.gcCommon.meta.types;
+package com.growcontrol.gcCommon.meta.valueTypes;
 
 
 public class ntcCalc {
