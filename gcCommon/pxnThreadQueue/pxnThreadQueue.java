@@ -75,6 +75,10 @@ public class pxnThreadQueue implements Runnable {
 			}
 		});
 	}
+	public pxnThreadQueue(String name, int maxThreads) {
+		this(name);
+		setMax(maxThreads);
+	}
 
 
 	// run state
