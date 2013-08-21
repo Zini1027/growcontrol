@@ -17,12 +17,13 @@ public final class metaRouter {
 	private static final Object lock = new Object();
 
 	// input listeners
-	private HashMap<String, metaInput> listeners = new HashMap<String, metaInput>();
+	private HashMap<String, valueReceiver> listeners = new HashMap<String, valueReceiver>();
 
 	// logic thread pool
 	private final pxnThreadQueue threads;
 
 
+	// router instance
 	public static metaRouter get() {
 		if(router == null) {
 			synchronized(lock) {
@@ -33,10 +34,8 @@ public final class metaRouter {
 		return router;
 	}
 	private metaRouter() {
-		// logic thread queue
-		threads = new pxnThreadQueue("MetaRouter");
-		// default logic to main thread
-		threads.setMax(0);
+		// logic thread queue (default to main thread)
+		threads = new pxnThreadQueue("MetaRouter", 0);
 	}
 
 
@@ -47,7 +46,7 @@ public final class metaRouter {
 
 
 	// meta input
-	public void register(metaInput listener) {
+	public void register(valueReceiver listener) {
 		if(listener == null) throw new NullPointerException("listener cannot be null!");
 		String name = listener.getName();
 		// check for existing listener
@@ -71,21 +70,21 @@ public final class metaRouter {
 
 
 	// meta output
-	public boolean Send(String toName, metaType meta) {
+	public boolean Send(String toName, metaValue meta) {
 		synchronized(listeners) {
-			for(Entry<String, metaInput> entry : listeners.entrySet()) {
+			for(Entry<String, valueReceiver> entry : listeners.entrySet()) {
 				String name = entry.getKey();
 				if(name == null || name.isEmpty()) continue;
 				if(entry.getValue() == null) continue;
 				// name matches
 				if(!name.equalsIgnoreCase(toName)) continue;
 				// send to meta input listener
-				metaInput listener = entry.getValue();
-				if(listener.onInput(meta))
-					meta.setHandled();
+				valueReceiver listener = entry.getValue();
+				if(listener.onProcess(meta))
+					meta.handled(true);
 			}
 		}
-		return meta.isHandled();
+		return meta.handled();
 	}
 
 
