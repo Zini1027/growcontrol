@@ -12,6 +12,7 @@ public final class metaRouter {
 	public Object clone() throws CloneNotSupportedException {
 		throw new CloneNotSupportedException();
 	}
+	private static final String logName = "MetaRouter";
 
 	private static volatile metaRouter router = null;
 	private static final Object lock = new Object();
@@ -35,7 +36,7 @@ public final class metaRouter {
 	}
 	private metaRouter() {
 		// logic thread queue (default to main thread)
-		threads = new pxnThreadQueue("MetaRouter", 0);
+		threads = new pxnThreadQueue(logName, 0);
 	}
 
 
@@ -45,10 +46,10 @@ public final class metaRouter {
 	}
 
 
-	// meta input
-	public void register(valueReceiver listener) {
+	// meta input listener
+	public void Register(valueReceiver listener) {
 		if(listener == null) throw new NullPointerException("listener cannot be null!");
-		String name = listener.getName();
+		String name = listener.getReceiverName();
 		// check for existing listener
 		synchronized(listeners) {
 			if(listeners.containsKey(name)) {
@@ -80,11 +81,12 @@ public final class metaRouter {
 				if(!name.equalsIgnoreCase(toName)) continue;
 				// send to meta input listener
 				valueReceiver listener = entry.getValue();
-				if(listener.onProcess(meta))
-					meta.handled(true);
+				pxnLog.get(logName).finer("Sending meta "+meta.getType().getString()+" [ "+meta+" ] to [ "+name+" ]");
+				if(listener.onProcessMeta(meta))
+					meta.setHandled();
 			}
 		}
-		return meta.handled();
+		return meta.isHandled();
 	}
 
 

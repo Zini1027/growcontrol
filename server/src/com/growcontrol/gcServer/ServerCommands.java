@@ -80,7 +80,7 @@ public final class ServerCommands extends pxnCommandsHolder {
 //		setAllPriority(EventPriority.LOWEST);
 		addCommand("route")
 			.addAlias("send")
-			.setUsage("Sends an event to the meta data router, which passes to plugins.\nUsage: route <InputName> [MetaType] <Value>");
+			.setUsage("Sends an event to the meta data router, which passes to plugins.\nUsage: route <ReceiverName> [MetaType] <Value>");
 	}
 
 

@@ -1,7 +1,9 @@
 package com.growcontrol.gcCommon.meta;
 
+import com.growcontrol.gcCommon.pxnListener.pxnEvent;
 
-public abstract class metaValue implements java.io.Serializable {
+
+public abstract class metaValue extends pxnEvent implements java.io.Serializable {
 	private static final long serialVersionUID = 9L;
 
 	public abstract metaValue clone();
@@ -28,21 +30,6 @@ public abstract class metaValue implements java.io.Serializable {
 		if(value == null || value.isEmpty())
 			return null;
 		return type.factory.newValue(value);
-	}
-
-
-	// event handled
-	private volatile Boolean handled = false;
-	public boolean handled() {
-		return handled;
-	}
-	public boolean handled(boolean handled) {
-		boolean oldHandled;
-		synchronized(this.handled) {
-			oldHandled = this.handled;
-			this.handled = handled;
-		}
-		return oldHandled;
 	}
 
 
