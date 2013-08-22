@@ -26,6 +26,9 @@ public class metaIO extends metaValue {
 				return new metaIO(value);
 			}
 	});
+	public static void Init() {
+		if(IO == null) System.out.println("Failed to load meta type IO!");
+	}
 
 
 	// instance
@@ -38,8 +41,11 @@ public class metaIO extends metaValue {
 	public metaIO(String value) {
 		set(value);
 	}
-	public metaIO(metaIO meta) {
-		this(meta.getValue());
+	public metaIO(metaValue meta) {
+		if(meta instanceof metaIO)
+			set( ((metaIO) meta).getValue() );
+		else
+			set(meta.getString());
 	}
 	@Override
 	public metaValue clone() {
@@ -66,7 +72,7 @@ public class metaIO extends metaValue {
 	public String getString() {
 		Boolean b = getValue();
 		if(b == null) return null;
-		return (getValue() ? "on" : "off");
+		return (getValue() ? "ON" : "OFF");
 	}
 	public static String toString(metaIO meta) {
 		if(meta == null)

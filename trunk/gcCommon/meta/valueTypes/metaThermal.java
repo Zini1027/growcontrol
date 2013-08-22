@@ -28,6 +28,9 @@ public class metaThermal extends metaValue {
 				return new metaThermal(value);
 			}
 	});
+	public static void Init() {
+		if(THERMAL == null) System.out.println("Failed to load meta type THERMAL!");
+	}
 
 
 	// instance
@@ -40,8 +43,11 @@ public class metaThermal extends metaValue {
 	public metaThermal(String value) {
 		set(value);
 	}
-	public metaThermal(metaThermal meta) {
-		this(meta.getValue());
+	public metaThermal(metaValue meta) {
+		if(meta instanceof metaThermal)
+			set( ((metaThermal) meta).getValue() );
+		else
+			set(meta.getString());
 	}
 	@Override
 	public metaValue clone() {

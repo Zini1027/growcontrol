@@ -52,4 +52,11 @@ public abstract class metaValue implements java.io.Serializable {
 	}
 
 
+	public static String toString(metaValue meta) {
+		if(meta == null)
+			return null;
+		return meta.getString();
+	}
+
+
 }
