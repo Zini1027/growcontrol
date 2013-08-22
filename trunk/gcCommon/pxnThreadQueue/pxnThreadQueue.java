@@ -54,9 +54,14 @@ public class pxnThreadQueue implements Runnable {
 
 
 	public pxnThreadQueue(String name) {
+		this(name, null);
+	}
+	public pxnThreadQueue(String name, Integer maxThreads) {
 		if(name == null || name.isEmpty()) throw new NullPointerException("name cannot be null!");
 		this.queueName = name;
 		this.logName = name;
+		if(maxThreads != null)
+			setMax(maxThreads);
 		getLogger().setBracers("(", ")");
 		// main thread (single)
 		if(name == "main") {
@@ -74,10 +79,6 @@ public class pxnThreadQueue implements Runnable {
 				getLogger().debug("Started thread queue..");
 			}
 		});
-	}
-	public pxnThreadQueue(String name, int maxThreads) {
-		this(name);
-		setMax(maxThreads);
 	}
 
 
@@ -103,6 +104,7 @@ public class pxnThreadQueue implements Runnable {
 	}
 
 
+	// logger
 	protected pxnLogger getLogger() {
 		return pxnLog.get(logName);
 	}
@@ -149,7 +151,7 @@ public class pxnThreadQueue implements Runnable {
 				active--;
 			}
 		}
-		getLogger().info("Stopped thread queue");
+		getLogger().finer("Stopped thread queue");
 	}
 
 
@@ -249,6 +251,7 @@ public class pxnThreadQueue implements Runnable {
 				else
 					getLogger().finest("Max threads limit reached!");
 			}
+			pxnUtils.Sleep(10);
 			return;
 		}
 		// new thread

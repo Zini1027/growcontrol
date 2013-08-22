@@ -143,15 +143,20 @@ public class pxnConsole implements Runnable {
 	public static void Close() {
 		if(console == null) return;
 		synchronized(lock) {
-			if(console == null) return;
-			console.stopping = true;
-			if(console.running)
-				console.thread.interrupt();
-// causes thread to block!
-//			if(reader != null)
-//				reader.shutdown();
-			AnsiConsole.systemUninstall();
+			// save command history
+			if(reader != null) {
+				try {
+					((FileHistory) reader.getHistory()).flush();
+				} catch (IOException ignore) {}
+			}
+			// stop console input
+			if(console != null) {
+				console.stopping = true;
+				if(console.running)
+					console.thread.interrupt();
+			}
 		}
+		AnsiConsole.systemUninstall();
 	}
 
 
