@@ -1,5 +1,13 @@
 package com.growcontrol.gcCommon;
 
+import com.growcontrol.gcCommon.meta.valueTypes.metaCommand;
+import com.growcontrol.gcCommon.meta.valueTypes.metaEC;
+import com.growcontrol.gcCommon.meta.valueTypes.metaIO;
+import com.growcontrol.gcCommon.meta.valueTypes.metaPH;
+import com.growcontrol.gcCommon.meta.valueTypes.metaThermal;
+import com.growcontrol.gcCommon.meta.valueTypes.metaThermalNTC;
+import com.growcontrol.gcCommon.meta.valueTypes.metaTrigger;
+import com.growcontrol.gcCommon.meta.valueTypes.metaVariable;
 import com.growcontrol.gcCommon.pxnLogger.pxnLog;
 import com.growcontrol.gcCommon.pxnParser.pxnParser;
 
@@ -19,6 +27,15 @@ public abstract class pxnMain {
 	protected static void Init(pxnMain main, String[] args) {
 		if(main == null) throw new NullPointerException("main cannot be null!");
 		setMainInstance(main);
+		// init meta types
+		metaCommand.Init();
+		metaEC.Init();
+		metaIO.Init();
+		metaPH.Init();
+		metaThermal.Init();
+		metaThermalNTC.Init();
+		metaTrigger.Init();
+		metaVariable.Init();
 		// init logger
 		pxnLog.get();
 		try {

@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import jline.console.ConsoleReader;
 
-import com.growcontrol.gcCommon.meta.metaType;
+import com.growcontrol.gcCommon.meta.metaValue;
 import com.growcontrol.gcCommon.pxnCommand.pxnCommandEvent;
 import com.growcontrol.gcCommon.pxnCommand.pxnCommandsHolder;
 import com.growcontrol.gcCommon.pxnLogger.pxnConsole;
@@ -246,21 +246,14 @@ public final class ServerCommands extends pxnCommandsHolder {
 			return true;
 		}
 		String toName = args[0];
-System.out.println("toName: "+toName);
-System.out.println("meta: "+args[1]);
-//TODO: is this right?
-		metaType meta = metaType.get(args[1]);
+		metaValue meta = metaValue.newValue(args[1], args[2]);
 		if(meta == null) {
 			pxnLog.get().Publish("Invalid meta type!");
 //TODO: list meta types
 			return true;
 		}
-System.out.println("Meta: "+meta.toString());
-System.out.println("value: "+args[2]);
-		meta.set(args[2]);
-System.out.println("Value: "+meta.toString());
 		// send to router
-		meta.SendTo(toName);
+		meta.Send(toName);
 		return true;
 	}
 
