@@ -29,6 +29,9 @@ public class metaVariable extends metaValue {
 				return new metaVariable(value);
 			}
 	});
+	public static void Init() {
+		if(VARIABLE == null) System.out.println("Failed to load meta type VARIABLE!");
+	}
 
 
 	// instance
@@ -41,8 +44,11 @@ public class metaVariable extends metaValue {
 	public metaVariable(String value) {
 		set(value);
 	}
-	public metaVariable(metaVariable meta) {
-		this(meta.getValue());
+	public metaVariable(metaValue meta) {
+		if(meta instanceof metaVariable)
+			set( ((metaVariable) meta).getValue() );
+		else
+			set(meta.getString());
 	}
 	@Override
 	public metaValue clone() {

@@ -25,6 +25,9 @@ public class metaCommand extends metaValue {
 				return new metaCommand(value);
 			}
 	});
+	public static void Init() {
+		if(COMMAND == null) System.out.println("Failed to load meta type COMMAND!");
+	}
 
 
 	// instance
@@ -34,8 +37,11 @@ public class metaCommand extends metaValue {
 	public metaCommand(String value) {
 		set(value);
 	}
-	public metaCommand(metaCommand meta) {
-		this(meta.getValue());
+	public metaCommand(metaValue meta) {
+		if(meta instanceof metaCommand)
+			set( ((metaCommand) meta).getValue() );
+		else
+			set(meta.getString());
 	}
 	@Override
 	public metaValue clone() {

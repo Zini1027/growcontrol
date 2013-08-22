@@ -26,6 +26,9 @@ public class metaEC extends metaValue {
 				return new metaEC(value);
 			}
 	});
+	public static void Init() {
+		if(EC == null) System.out.println("Failed to load meta type EC!");
+	}
 
 
 	// instance
@@ -38,8 +41,11 @@ public class metaEC extends metaValue {
 	public metaEC(String value) {
 		set(value);
 	}
-	public metaEC(metaEC meta) {
-		this(meta.getValue());
+	public metaEC(metaValue meta) {
+		if(meta instanceof metaEC)
+			set( ((metaEC) meta).getValue() );
+		else
+			set(meta.getString());
 	}
 	@Override
 	public metaValue clone() {

@@ -23,6 +23,9 @@ public class metaTrigger extends metaValue {
 				return new metaTrigger(value);
 			}
 	});
+	public static void Init() {
+		if(TRIGGER == null) System.out.println("Failed to load meta type TRIGGER!");
+	}
 
 
 	// instance

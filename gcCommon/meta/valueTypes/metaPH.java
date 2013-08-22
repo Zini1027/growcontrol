@@ -26,6 +26,9 @@ public class metaPH extends metaValue {
 				return new metaPH(value);
 			}
 	});
+	public static void Init() {
+		if(PH == null) System.out.println("Failed to load meta type PH!");
+	}
 
 
 	// instance
@@ -38,8 +41,11 @@ public class metaPH extends metaValue {
 	public metaPH(String value) {
 		set(value);
 	}
-	public metaPH(metaPH meta) {
-		this(meta.getValue());
+	public metaPH(metaValue meta) {
+		if(meta instanceof metaPH)
+			set( ((metaPH) meta).getValue() );
+		else
+			set(meta.getString());
 	}
 	@Override
 	public metaValue clone() {
