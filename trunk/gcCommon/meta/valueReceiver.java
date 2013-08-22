@@ -5,9 +5,9 @@ package com.growcontrol.gcCommon.meta;
 public interface valueReceiver {
 
 	// input device name
-	public String getName();
+	public String getReceiverName();
 
 	// input event
-	public boolean onProcess(metaValue meta);
+	public boolean onProcessMeta(metaValue meta);
 
 }
