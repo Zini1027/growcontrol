@@ -187,8 +187,8 @@ socket.setSoTimeout(500);
 	// display time formatted: 29-Jun-2012 03:07:04.794
 	public static String timestampToString(double timestamp) {
 		if(timestamp <= 0.0) return "0";
-		return new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").format(new Date( (long) (timestamp*1000.0) )) +
-			new DecimalFormat(".000").format( timestamp - ((long) timestamp) );
+		return new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").format(new Date( (long)(timestamp*1000.0) )) +
+			new DecimalFormat("0.000").format( timestamp - ((long)timestamp) );
 	}
 
 
@@ -200,7 +200,7 @@ socket.setSoTimeout(500);
 		return Millis() / 1000.0;
 	}
 	public long Millis() {
-		return System.currentTimeMillis() + (long)(localOffset * 1000.0);
+		return System.currentTimeMillis() + ((long)(localOffset*1000.0));
 	}
 	public String getString() {
 		return timestampToString(Seconds());
@@ -222,7 +222,7 @@ socket.setSoTimeout(500);
 
 	// set time server host
 	public void setTimeServer(String timeServer) {
-		if(timeServer == null || timeServer.isEmpty()) throw new NullPointerException("timeServer host can't be null!");
+		if(timeServer == null || timeServer.isEmpty()) throw new NullPointerException("timeServer host cannot be null!");
 		this.timeServer = timeServer;
 	}
 

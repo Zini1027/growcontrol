@@ -5,6 +5,15 @@ import java.util.concurrent.TimeUnit;
 
 public class TimeUnitTime {
 
+	public static final long MSEC = 1;
+	public static final long SEC  = MSEC * 1000;
+	public static final long MIN  = SEC  * 60;
+	public static final long HOUR = MIN  * 60;
+	public static final long DAY  = HOUR * 24;
+	public static final long WEEK = DAY  * 7;
+	public static final long MONTH= DAY  * 30;
+	public static final long YEAR = DAY  * 365;
+
 	protected volatile long value = 0;
 	protected volatile boolean isFinal = false;
 
@@ -18,6 +27,10 @@ public class TimeUnitTime {
 	}
 	public TimeUnitTime() {
 	}
+	@Override
+	public TimeUnitTime clone() {
+		return new TimeUnitTime(this);
+	}
 
 
 	// set time
@@ -27,11 +40,11 @@ public class TimeUnitTime {
 			this.value = 0;
 			return;
 		}
-		this.value = TimeUnit.MILLISECONDS.convert(value, unit);
+		this.value = TimeU.MS.convert(value, unit);
 	}
 	public void set(TimeUnitTime value) {
 		if(value == null) return;
-		set(value.get(TimeUnit.MILLISECONDS), TimeUnit.MILLISECONDS);
+		set(value.get(TimeU.MS), TimeU.MS);
 	}
 
 
@@ -39,11 +52,62 @@ public class TimeUnitTime {
 	public long get(TimeUnit unit) {
 		if(unit == null)
 			return 0;
-		return unit.convert(this.value, TimeUnit.MILLISECONDS);
+		return unit.convert(this.value, TimeU.MS);
 	}
-	@Override
-	public String toString() {
-		return Long.toString(get(TimeU.S))+"s";
+	// time to string
+	public String getString() {
+		long l = get(TimeU.MS);
+		String str = "";
+		// year
+		if(l > YEAR) {
+			str = pxnUtils.addStringSet(str, buildString(l, YEAR, "y"), " ");
+			l = l % YEAR;
+		}
+		// week
+		if(l > WEEK) {
+			str = pxnUtils.addStringSet(str, buildString(l, WEEK, "w"), " ");
+			l = l % WEEK;
+		}
+		// day
+		if(l > DAY) {
+			str = pxnUtils.addStringSet(str, buildString(l, DAY, "d"), " ");
+			l = l % DAY;
+		}
+		// hour
+		if(l > HOUR) {
+			str = pxnUtils.addStringSet(str, buildString(l, HOUR, "h"), " ");
+			l = l % HOUR;
+		}
+		// minute
+		if(l > MIN) {
+			str = pxnUtils.addStringSet(str, buildString(l, MIN, "m"), " ");
+			l = l % MIN;
+		}
+		// second
+		if(l > SEC) {
+			str = pxnUtils.addStringSet(str, buildString(l, SEC, "s"), " ");
+			l = l % SEC;
+		}
+		// ms
+		if(l > MSEC) {
+			str = pxnUtils.addStringSet(str, buildString(l, MSEC, "n"), " ");
+		}
+		if(str.isEmpty())
+			return null;
+		return str;
+	}
+	private String buildString(long value, long unitValue, String unit) {
+		value = (long) Math.floor(
+			((double)value) / ((double)unitValue)
+		);
+		if(value <= 0)
+			return null;
+		return Long.toString(value)+unit;
+	}
+	public static String toString(TimeUnitTime value) {
+		if(value == null)
+			return null;
+		return value.getString();
 	}
 
 
@@ -76,28 +140,28 @@ public class TimeUnitTime {
 				if(v == 0) continue;
 				chr = chr.toLowerCase();
 				if(chr.equals("n"))
-					value += TimeU.MS.convert(v, TimeUnit.MILLISECONDS);
+					value += TimeU.MS.convert(v, TimeU.MS);
 				else
 				if(chr.equals("s"))
-					value += TimeU.MS.convert(v, TimeUnit.SECONDS);
+					value += TimeU.MS.convert(v, TimeU.S);
 				else
 				if(chr.equals("m"))
-					value += TimeU.MS.convert(v, TimeUnit.MINUTES);
+					value += TimeU.MS.convert(v, TimeU.M);
 				else
 				if(chr.equals("h"))
-					value += TimeU.MS.convert(v, TimeUnit.HOURS);
+					value += TimeU.MS.convert(v, TimeU.H);
 				else
 				if(chr.equals("d"))
-					value += TimeU.MS.convert(v, TimeUnit.DAYS);
+					value += TimeU.MS.convert(v, TimeU.D);
 				else
 				if(chr.equals("w"))
-					value += (TimeU.MS.convert(v, TimeUnit.DAYS) * 7);
+					value += (TimeU.MS.convert(v, TimeU.D) * 7);
 				else
 				if(chr.equals("m"))
-					value += (TimeU.MS.convert(v, TimeUnit.DAYS) * 30);
+					value += (TimeU.MS.convert(v, TimeU.D) * 30);
 				else
 				if(chr.equals("y"))
-					value += (TimeU.MS.convert(v, TimeUnit.DAYS) * 365);
+					value += (TimeU.MS.convert(v, TimeU.D) * 365);
 				// reset temp value
 				v = 0;
 			}

@@ -141,7 +141,7 @@ public class pxnThreadQueue implements Runnable {
 				runCount++;
 				inactiveCount = 0;
 				active++;
-				getLogger().debug("Running thread task: "+task.getTaskName());
+				getLogger().finer("Running thread task: "+task.getTaskName());
 				Thread.currentThread().setName(task.getTaskName());
 				try {
 					task.run();

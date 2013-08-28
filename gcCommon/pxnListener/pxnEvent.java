@@ -12,7 +12,7 @@ public class pxnEvent {
 		LOWEST
 	}
 
-	private boolean handled = false;
+	private volatile boolean handled = false;
 
 
 	// event is handled

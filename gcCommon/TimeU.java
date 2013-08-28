@@ -10,10 +10,10 @@ public final class TimeU {
 		throw new CloneNotSupportedException();
 	}
 
-	public final static TimeUnit MS = TimeUnit.MILLISECONDS;
-	public final static TimeUnit S  = TimeUnit.SECONDS;
-	public final static TimeUnit M  = TimeUnit.MINUTES;
-	public final static TimeUnit H  = TimeUnit.HOURS;
-	public final static TimeUnit D  = TimeUnit.DAYS;
+	public static final TimeUnit MS = TimeUnit.MILLISECONDS;
+	public static final TimeUnit S  = TimeUnit.SECONDS;
+	public static final TimeUnit M  = TimeUnit.MINUTES;
+	public static final TimeUnit H  = TimeUnit.HOURS;
+	public static final TimeUnit D  = TimeUnit.DAYS;
 
 }
