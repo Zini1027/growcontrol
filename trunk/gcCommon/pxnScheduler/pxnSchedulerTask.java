@@ -3,19 +3,16 @@ package com.growcontrol.gcCommon.pxnScheduler;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.growcontrol.gcCommon.TimeU;
-import com.growcontrol.gcCommon.TimeUnitTime;
-import com.growcontrol.gcCommon.pxnClock.pxnClock;
 import com.growcontrol.gcCommon.pxnScheduler.pxnTriggers.Trigger;
 
 
 public abstract class pxnSchedulerTask implements Runnable {
 
 	protected List<Trigger> triggers = new ArrayList<Trigger>();
+	protected volatile long lastTriggered = Long.MIN_VALUE;
 	protected volatile boolean multiThreaded;
 	protected volatile boolean paused = false;
-	protected volatile long timeLast = 0;
-	public volatile int isSleeping = 0;
+	private volatile int sleepCycles = 0;
 	// run count
 	protected final boolean repeat;
 	protected final int maxRunCount;
@@ -62,44 +59,37 @@ public abstract class pxnSchedulerTask implements Runnable {
 	}
 
 
-	public TimeUnitTime UntilNextTrigger() {
-		if(paused) return null;
-		TimeUnitTime untilNext = null;
+	public long UntilNextTrigger(long time) {
+		if(paused || time < 1)
+			return Long.MIN_VALUE;
+		long untilNext = Long.MIN_VALUE;
 		synchronized(triggers) {
+			if(this.lastTriggered == Long.MIN_VALUE)
+				this.lastTriggered = time;
 			for(Trigger trigger : triggers) {
-				TimeUnitTime u = trigger.UntilNext();
-				if(untilNext == null) {
+				long u = trigger.getUntilNext(time, this.lastTriggered);
+				if(u == Long.MIN_VALUE) continue;
+				if(u < untilNext || untilNext == Long.MIN_VALUE)
 					untilNext = u;
-					continue;
-				}
-				if(u.get(TimeU.MS) < untilNext.get(TimeU.MS))
-					untilNext.set(u);
 			}
 		}
 		return untilNext;
 	}
 
 
-	// run task
-	public void preRun() {}
-	public void onTrigger() {
+	// pre-run task (return true to cancel)
+	public boolean preRun(long time) {
+		runCount++;
+		return false;
+	}
+	public void doingTrigger(long time) {
 		if(paused) return;
 		// run count
 		if(maxRunCount != -1 && runCount >= maxRunCount) {
 			paused = true;
 			return;
 		}
-		// set timeLast
-		long time = getTime();
-		this.timeLast = time;
-		synchronized(triggers) {
-			for(Trigger trigger : triggers) {
-				TimeUnitTime untilNext = trigger.UntilNext();
-				if(untilNext.get(TimeU.MS) <= 0)
-					trigger.onTrigger(time);
-			}
-		}
-		runCount++;
+		this.lastTriggered = time;
 	}
 
 
@@ -114,8 +104,18 @@ public abstract class pxnSchedulerTask implements Runnable {
 	public void setPaused(boolean paused) {
 		this.paused = paused;
 	}
-	public void stop() {
-		paused = true;
+//	public void Stop() {
+//		paused = true;
+//	}
+
+
+	// sleep task
+	public int SleepCycles() {
+		sleepCycles--;
+		return sleepCycles;
+	}
+	public void SleepCycles(int cycles) {
+		sleepCycles = cycles;
 	}
 
 
@@ -127,11 +127,6 @@ public abstract class pxnSchedulerTask implements Runnable {
 //		if(runCount < 1) return -1;
 //		return execTime / ((long) runCount);
 		return -1;
-	}
-
-
-	protected static long getTime() {
-		return pxnClock.get().Millis();
 	}
 
 

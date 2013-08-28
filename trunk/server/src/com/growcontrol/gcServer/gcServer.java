@@ -85,10 +85,9 @@ System.exit(0);
 
 		// load scheduler
 		log.info("Starting schedulers..");
-		pxnScheduler.get(getAppName())
-			.start();
-		// load ticker
-		pxnTicker.get();
+		pxnScheduler.get().Start();
+		pxnTicker.get().setInterval(ServerConfig.TickInterval());
+		pxnTicker.get().Start();
 
 		// load plugins
 		try {

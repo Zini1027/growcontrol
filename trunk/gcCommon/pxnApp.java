@@ -4,6 +4,8 @@ import com.growcontrol.gcCommon.pxnClock.pxnClock;
 import com.growcontrol.gcCommon.pxnLogger.pxnConsole;
 import com.growcontrol.gcCommon.pxnLogger.pxnLevel;
 import com.growcontrol.gcCommon.pxnLogger.pxnLog;
+import com.growcontrol.gcCommon.pxnScheduler.pxnScheduler;
+import com.growcontrol.gcCommon.pxnScheduler.pxnTicker;
 import com.growcontrol.gcCommon.pxnThreadQueue.pxnThreadQueue;
 
 
@@ -61,6 +63,9 @@ public abstract class pxnApp {
 		if(startTime == -1)
 			startTime = clock.Millis();
 //System.out.println(startTime);
+		// load schedulers (don't start yet)
+		pxnScheduler.get();
+		pxnTicker.get();
 	}
 	// start console input thread
 	protected void StartConsole() {
