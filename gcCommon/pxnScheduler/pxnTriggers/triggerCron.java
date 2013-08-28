@@ -1,27 +1,23 @@
 package com.growcontrol.gcCommon.pxnScheduler.pxnTriggers;
 
-import com.growcontrol.gcCommon.TimeUnitTime;
-import com.growcontrol.gcCommon.pxnClock.pxnClock;
-
 
 // cron trigger
 // example:
 public class triggerCron implements Trigger {
 
-	protected String rawValue;
-	protected volatile long timeLast = 0;
+	protected volatile String rawValue = null;
+	protected volatile long last = 0;
 
 
 	public triggerCron(String value) {
-		if(value == null) value = "";
-		this.rawValue = value.trim().toLowerCase();
-		
+		setTrigger(value);
 	}
 
 
 	// set/get value string
 	@Override
 	public void setTrigger(String value) {
+		if(value == null) return;
 		this.rawValue = value;
 	}
 	@Override
@@ -37,21 +33,8 @@ public class triggerCron implements Trigger {
 
 	// time until next trigger
 	@Override
-	public TimeUnitTime UntilNext() {
-		return null;
-	}
-	@Override
-	public void onTrigger() {
-		timeLast = getTime();
-	}
-	@Override
-	public void onTrigger(long time) {
-		timeLast = time;
-	}
-
-
-	protected static long getTime() {
-		return pxnClock.get().Millis();
+	public long getUntilNext(long time, long last) {
+		return Long.MIN_VALUE;
 	}
 
 

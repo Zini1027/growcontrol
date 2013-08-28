@@ -2,19 +2,20 @@ package com.growcontrol.gcCommon.pxnScheduler.pxnTriggers;
 
 import com.growcontrol.gcCommon.TimeU;
 import com.growcontrol.gcCommon.TimeUnitTime;
-import com.growcontrol.gcCommon.pxnClock.pxnClock;
 
 
 // interval trigger
 // example: "5s 3h 10d"
 public class triggerInterval implements Trigger {
 
-	protected String rawValue;
-	protected TimeUnitTime interval = new TimeUnitTime();
-	protected volatile long timeLast = 0;
+	protected volatile String rawValue = null;
+	protected final TimeUnitTime interval = new TimeUnitTime();
 
 
 	public triggerInterval(String value) {
+		setTrigger(value);
+	}
+	public triggerInterval(TimeUnitTime value) {
 		setTrigger(value);
 	}
 
@@ -22,14 +23,14 @@ public class triggerInterval implements Trigger {
 	// set/get value string
 	@Override
 	public void setTrigger(String interval) {
-		if(interval == null) interval = "";
+		if(interval == null) return;
 		this.rawValue = interval.trim().toLowerCase();
 		this.interval.set(
 			TimeUnitTime.Parse(this.rawValue)
 		);
 	}
 	public void setTrigger(TimeUnitTime interval) {
-		if(interval == null) throw new NullPointerException("interval cannot be null!");
+		if(interval == null) return;
 		this.interval.set(interval);
 		this.rawValue = this.getTriggerStr();
 	}
@@ -46,27 +47,13 @@ public class triggerInterval implements Trigger {
 
 	// time until next trigger
 	@Override
-	public TimeUnitTime UntilNext() {
-		long timeNow = getTime();
-		if(timeLast == 0) timeLast = timeNow;
-		long timeSinceLast = timeNow - timeLast;
-//System.out.println("timeNow:"+timeNow+" timeLast:"+timeLast+" timeSinceLast:"+timeSinceLast+" timeUntil:"+(interval.get(TimeU.MS) - timeSinceLast) );
-		return new TimeUnitTime(
-			(interval.get(TimeU.MS) - timeSinceLast),
-			TimeU.MS);
-	}
-	@Override
-	public void onTrigger() {
-		timeLast = getTime();
-	}
-	@Override
-	public void onTrigger(long time) {
-		timeLast = time;
-	}
-
-
-	protected static long getTime() {
-		return pxnClock.get().Millis();
+	public long getUntilNext(long time, long last) {
+		if(last < 1)
+			last = time;
+		long timeSinceLast = time - last;
+		long untilNext = interval.get(TimeU.MS) - timeSinceLast;
+//pxnLog.get().severe("timeNow:"+timeNow+" timeLast:"+timeLast+" timeSinceLast:"+timeSinceLast+" timeUntil:"+(interval.get(TimeU.MS) - timeSinceLast) );
+		return untilNext;
 	}
 
 

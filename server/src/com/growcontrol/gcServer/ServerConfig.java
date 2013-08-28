@@ -1,5 +1,7 @@
 package com.growcontrol.gcServer;
 
+import com.growcontrol.gcCommon.TimeU;
+import com.growcontrol.gcCommon.TimeUnitTime;
 import com.growcontrol.gcCommon.pxnUtils;
 import com.growcontrol.gcCommon.pxnConfig.pxnConfig;
 import com.growcontrol.gcCommon.pxnConfig.pxnConfigLoader;
@@ -62,13 +64,27 @@ public final class ServerConfig {
 		return pxnLevel.Parse(str);
 	}
 	// tick interval
-	public static long TickInterval() {
-		long def = 1000;
+	public static TimeUnitTime TickInterval() {
+		final TimeUnitTime time = new TimeUnitTime(1, TimeU.S);
 		pxnConfig config = get();
-		if(config == null) return def;
-		Long l = config.getLong("Tick Interval");
-		if(l == null) return def;
-		return pxnUtils.MinMax(l.longValue(), 1, 60000);
+		if(config == null)
+			return time;
+		// numeric
+		Integer i = config.getInt("Tick Interval");
+		if(i != null) {
+			time.set(i, TimeU.MS);
+		} else {
+			// string
+			String str = config.getString("Tick Interval");
+			if(str != null) {
+				TimeUnitTime t = TimeUnitTime.Parse(str);
+				if(t != null)
+					time.set(t);
+			}
+		}
+		if(time.get(TimeU.MS) < 1 ) time.set(1,  TimeU.MS);
+		if(time.get(TimeU.S ) > 60) time.set(60, TimeU.S );
+		return time;
 	}
 	// listen port
 	public static int ListenPort() {
