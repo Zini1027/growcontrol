@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
@@ -323,6 +324,20 @@ public final class pxnUtils {
 			break;
 		}
 		return null;
+	}
+
+
+	// generate a random string
+	public static String RandomString(int length) {
+		if(length == 0) return "";
+		if(length <  0) return null;
+		String str = "";
+		while(str.length() < length) {
+			String s = UUID.randomUUID().toString();
+			if(s == null) throw new NullPointerException();
+			str += s;
+		}
+		return str.substring( 0, MinMax(length, 0, str.length()) );
 	}
 
 

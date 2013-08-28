@@ -116,7 +116,7 @@ public class pxnLogger extends pxnLogPrinter implements pxnLoggerInterface {
 	@Override
 	public void setLevel(pxnLevel level) {
 		if(level == null) return;
-		if(level.equals(this.level)) return;
+		if(level.getValue() == this.level.getValue()) return;
 //TODO: figure out why this prints so often
 		if(pxnLevel.OFF.equals(level))
 			pxnLog.get().Publish(level, "Set log level: "+pxnLevel.OFF.toString());
