@@ -1,0 +1,8 @@
+Plugin Name: gcIRC
+Plugin Version: 1.0.0
+Server Main: com.growcontrol.gcirc.gcIRC.class
+Client Main:
+Author: lorenzop
+Website: http://www.growcontrol.com/
+Depend: []
+SoftDepend: []

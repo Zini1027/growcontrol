@@ -1,0 +1,8 @@
+Plugin Name: example
+Plugin Version: 1.0.0
+Server Main: com.growcontrol.example.example.class
+Client Main:
+Author: lorenzop
+Website: http://www.growcontrol.com/
+Depend: []
+SoftDepend: []
